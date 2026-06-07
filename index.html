@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chorus Boys</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0D0A14; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; overflow: hidden; }
+    .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .star { position: absolute; border-radius: 50%; background: white; }
+    .nebula { position: fixed; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(201,150,58,0.04) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; z-index: 0; }
+    .content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2rem; width: 100%; max-width: 360px; }
+    .brand { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.45em; color: #C9963A; text-transform: uppercase; margin-bottom: 1.5rem; }
+    .title { font-family: 'Cinzel', serif; font-size: 36px; font-weight: 900; color: white; line-height: 1.05; margin-bottom: 0.4rem; }
+    .subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 15px; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; }
+    .divider { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, #C9963A, transparent); margin: 1.2rem auto 2rem; }
+    .input-wrap { width: 100%; margin-bottom: 12px; }
+    .password-input { width: 100%; background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 14px 16px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: white; text-align: center; letter-spacing: 0.1em; transition: border-color 0.2s; }
+    .password-input:focus { outline: none; border-color: rgba(201,150,58,0.5); }
+    .password-input.error { border-color: rgba(232,69,139,0.6); }
+    .enter-btn { width: 100%; background: rgba(201,150,58,0.15); border: 0.5px solid rgba(201,150,58,0.4); border-radius: 10px; padding: 14px; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.25em; color: #C9963A; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+    .enter-btn:hover { background: rgba(201,150,58,0.25); border-color: rgba(201,150,58,0.6); }
+    .error-msg { font-size: 12px; color: rgba(232,69,139,0.8); margin-top: 10px; min-height: 18px; font-family: 'Cormorant Garamond', serif; font-style: italic; }
+    .dante-line { margin-top: 3rem; font-family: 'Cinzel', serif; font-size: 7.5px; letter-spacing: 0.35em; color: rgba(201,150,58,0.3); text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="stars" id="starfield"></div>
+  <div class="nebula"></div>
+  <main class="content">
+    <div class="brand">Chorus Boys</div>
+    <h1 class="title">The Greek<br>Pantheon</h1>
+    <p class="subtitle">of Patroclus</p>
+    <div class="divider"></div>
+    <div class="input-wrap">
+      <input class="password-input" id="password" type="password" placeholder="Enter password" autocomplete="current-password" aria-label="Password">
+    </div>
+    <button class="enter-btn" onclick="checkPassword()">Enter</button>
+    <div class="error-msg" id="error-msg" role="alert" aria-live="polite"></div>
+    <div class="dante-line">compass true</div>
+  </main>
+  <script>
+    const HASH = 'a803009ab3c5dae152b6c8f3b655b29123db9b31bedde2f504052ded1cc4cecc';
+    if (sessionStorage.getItem('cb_auth') === 'true') { window.location.href = 'home.html'; }
+    async function checkPassword() {
+      const input = document.getElementById('password').value;
+      const msgEl = document.getElementById('error-msg');
+      const inputEl = document.getElementById('password');
+      if (!input) { msgEl.textContent = 'The pantheon requires a password.'; return; }
+      const encoder = new TextEncoder();
+      const data = encoder.encode(input);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      if (hashHex === HASH) {
+        sessionStorage.setItem('cb_auth', 'true');
+        window.location.href = 'home.html';
+      } else {
+        inputEl.classList.add('error');
+        msgEl.textContent = 'The gods are not convinced. Try again.';
+        document.getElementById('password').value = '';
+        setTimeout(() => { inputEl.classList.remove('error'); msgEl.textContent = ''; }, 3000);
+      }
+    }
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+    const sf = document.getElementById('starfield');
+    for (let i = 0; i < 100; i++) {
+      const s = document.createElement('div'); s.className = 'star';
+      const size = (Math.random() * 1.8 + 0.4).toFixed(1);
+      s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;opacity:${(Math.random()*0.45+0.05).toFixed(2)};`;
+      sf.appendChild(s);
+    }
+  </script>
+</body>
+</html>
