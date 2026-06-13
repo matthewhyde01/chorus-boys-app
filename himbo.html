@@ -364,18 +364,22 @@
           <div class="metric-label">Weight</div>
           <div class="metric-value" id="d-weight">79.9<span class="metric-unit">kg</span></div>
           <div class="metric-delta delta-flat" id="d-weight-delta">— flat</div>
+          <div id="d-weight-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Fat mass</div>
           <div class="metric-value" id="d-fat">13.7<span class="metric-unit">kg</span></div>
+          <div id="d-fat-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Muscle mass</div>
           <div class="metric-value" id="d-muscle">62.9<span class="metric-unit">kg</span></div>
+          <div id="d-muscle-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Hydration</div>
           <div class="metric-value" id="d-hydration">44.1<span class="metric-unit">kg</span></div>
+          <div id="d-hydration-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
       </div>
     </section>
@@ -438,6 +442,19 @@
 
     <section class="section" aria-label="Activity and recovery">
       <div class="section-title">Activity &amp; recovery</div>
+      <div class="metric-card pink-border" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;">
+          <div>
+            <div class="metric-label">Readiness</div>
+            <div style="display:flex;align-items:baseline;gap:10px;">
+              <div class="metric-value" id="d-readiness" style="font-size:40px;">—</div>
+              <div id="d-readiness-label" style="font-size:14px;color:var(--text-muted);">Loading…</div>
+            </div>
+          </div>
+          <div id="d-readiness-breakdown" style="font-size:10px;color:var(--text-muted);line-height:2;margin-left:auto;text-align:right;"></div>
+        </div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:8px;font-style:italic;">This is a starting point. We'll refine the formula over time.</div>
+      </div>
       <div class="grid-4">
         <div class="metric-card">
           <div class="metric-label">Run / walk</div>
@@ -452,8 +469,17 @@
           <div class="metric-value" id="d-active">5,233<span class="metric-unit">kJ</span></div>
         </div>
         <div class="metric-card">
+          <div class="metric-label">Resting energy</div>
+          <div class="metric-value" id="d-resting">—<span class="metric-unit">kJ</span></div>
+        </div>
+        <div class="metric-card">
           <div class="metric-label">HRV</div>
           <div class="metric-value" id="d-hrv">63<span class="metric-unit">ms</span></div>
+          <div id="d-hrv-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">VO₂ Max</div>
+          <div class="metric-value" id="d-vo2">—<span class="metric-unit" style="font-size:11px;">mL/min·kg</span></div>
         </div>
       </div>
     </section>
@@ -465,6 +491,7 @@
 
     <section class="section" aria-label="Sleep — last 7 nights">
       <div class="section-title">Sleep — last 7 nights</div>
+      <div id="sleep-summary" style="margin-bottom:12px;"></div>
       <div id="sleep-feed"><div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div></div>
     </section>
 
@@ -634,6 +661,12 @@
     // ── Utilities ────────────────────────────────────────────────────────────
 
     function withVal(v, u) { return v * Math.pow(10, u); }
+    function trendArrow(pct) { return pct > 0.5 ? '↑' : pct < -0.5 ? '↓' : '→'; }
+    function trendClass(pct, higherIsBetter = true) {
+      const good = higherIsBetter ? pct > 0.5 : pct < -0.5;
+      const bad  = higherIsBetter ? pct < -0.5 : pct > 0.5;
+      return good ? 'delta-up' : bad ? 'delta-down' : 'delta-flat';
+    }
 
     function fmtSecs(s) {
       const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
@@ -702,16 +735,31 @@
     }
 
     const now = new Date();
-    const sevenDaysAgo  = new Date(now - 7  * 86400000);
+    const sevenDaysAgo   = new Date(now - 7  * 86400000);
     const fourteenDaysAgo = new Date(now - 14 * 86400000);
+
+    // ── Parallel fetch ────────────────────────────────────────────────────────
+
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes] = await Promise.allSettled([
+      fetch('data/withings.json').then(r => r.json()),
+      fetch('data/strava.json').then(r => r.json()),
+      fetch('data/sleep.json').then(r => r.text()),
+      fetch('data/nutrition.json').then(r => r.text()),
+      fetch('data/activity.json').then(r => r.json()),
+      fetch('data/himbo_voice.json').then(r => r.json()),
+    ]);
+
+    let sufferScore3d = 0;
+    let lastNightSecs = 0;
+    let latestHRV = null, hrv7dAvg = null;
+    const voiceBrief = voiceRes.status === 'fulfilled' ? (voiceRes.value.voice_brief || '') : '';
 
     // ── Withings ─────────────────────────────────────────────────────────────
 
-    try {
-      const w = await fetch('data/withings.json').then(r => r.json());
+    if (wRes.status === 'fulfilled') try {
+      const w = wRes.value;
       const grps = w.measures.body.measuregrps.slice().sort((a, b) => b.date - a.date);
 
-      // Latest value for each type
       const latest = {};
       for (const g of grps) {
         for (const m of g.measures) {
@@ -722,12 +770,11 @@
 
       const weight = latest[1], fatPct = latest[6], muscle = latest[76], hydration = latest[77];
 
-      if (weight   != null) document.getElementById('d-weight').innerHTML    = weight.toFixed(1)    + '<span class="metric-unit">kg</span>';
-      if (muscle   != null) document.getElementById('d-muscle').innerHTML    = muscle.toFixed(1)    + '<span class="metric-unit">kg</span>';
-      if (hydration!= null) document.getElementById('d-hydration').innerHTML = hydration.toFixed(1) + '<span class="metric-unit">kg</span>';
-      if (fatPct   != null && weight != null) {
-        const fatMass = weight * fatPct / 100;
-        document.getElementById('d-fat').innerHTML = fatMass.toFixed(1) + '<span class="metric-unit">kg</span>';
+      if (weight    != null) document.getElementById('d-weight').innerHTML    = weight.toFixed(1)    + '<span class="metric-unit">kg</span>';
+      if (muscle    != null) document.getElementById('d-muscle').innerHTML    = muscle.toFixed(1)    + '<span class="metric-unit">kg</span>';
+      if (hydration != null) document.getElementById('d-hydration').innerHTML = hydration.toFixed(1) + '<span class="metric-unit">kg</span>';
+      if (fatPct != null && weight != null) {
+        document.getElementById('d-fat').innerHTML = (weight * fatPct / 100).toFixed(1) + '<span class="metric-unit">kg</span>';
       }
 
       // Weight delta vs previous reading
@@ -742,13 +789,43 @@
         }
       }
 
-      // Update weight trend chart with live Withings history
+      // 7-day averages + trend arrows
+      const sevenAgoTs = now / 1000 - 7 * 86400;
+      const grps7 = grps.filter(g => g.date >= sevenAgoTs);
+      const vals7 = { weight: [], fat: [], muscle: [], hydration: [] };
+      for (const g of grps7) {
+        const gw  = g.measures.find(m => m.type === 1);
+        const gf  = g.measures.find(m => m.type === 6);
+        const gmu = g.measures.find(m => m.type === 76);
+        const gh  = g.measures.find(m => m.type === 77);
+        if (gw)      vals7.weight.push(withVal(gw.value, gw.unit));
+        if (gf && gw) vals7.fat.push(withVal(gw.value, gw.unit) * withVal(gf.value, gf.unit) / 100);
+        if (gmu)     vals7.muscle.push(withVal(gmu.value, gmu.unit));
+        if (gh)      vals7.hydration.push(withVal(gh.value, gh.unit));
+      }
+      const avg7 = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+      const latestFat = (weight != null && fatPct != null) ? weight * fatPct / 100 : null;
+      const avgSlots = [
+        ['d-weight-avg',    avg7(vals7.weight),    weight,     'kg', false],
+        ['d-fat-avg',       avg7(vals7.fat),        latestFat,  'kg', false],
+        ['d-muscle-avg',    avg7(vals7.muscle),     muscle,     'kg', true],
+        ['d-hydration-avg', avg7(vals7.hydration),  hydration,  'kg', true],
+      ];
+      for (const [id, avgVal, latestVal, unit, higherGood] of avgSlots) {
+        if (avgVal == null) continue;
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const pct = latestVal != null ? ((latestVal - avgVal) / avgVal * 100) : 0;
+        const cls = trendClass(pct, higherGood);
+        el.innerHTML = `7d avg ${avgVal.toFixed(1)} ${unit} <span class="${cls}">${trendArrow(pct)} ${Math.abs(pct).toFixed(1)}%</span>`;
+      }
+
+      // Weight trend chart
       const pts = grps
         .filter(g => g.date * 1000 >= fourteenDaysAgo.getTime())
         .map(g => { const m = g.measures.find(m => m.type === 1); return m ? { d: new Date(g.date * 1000), v: withVal(m.value, m.unit) } : null; })
         .filter(Boolean)
         .sort((a, b) => a.d - b.d);
-
       if (pts.length > 1) {
         const vals = pts.map(p => p.v);
         weightChart.data.labels = pts.map(p => p.d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }));
@@ -761,46 +838,162 @@
 
     // ── Strava ───────────────────────────────────────────────────────────────
 
-    try {
-      const s = await fetch('data/strava.json').then(r => r.json());
+    const activitySummaryCache = {};
+    let stravaActivities = [];
+
+    window.toggleActivity = async function(i) {
+      const card = document.getElementById(`act-card-${i}`);
+      const body = document.getElementById(`act-body-${i}`);
+      if (!card || !body) return;
+      const isOpen = body.style.display !== 'none';
+      body.style.display = isOpen ? 'none' : 'block';
+      card.querySelector('.act-chevron').textContent = isOpen ? '›' : '‹';
+      if (isOpen) return;
+
+      if (activitySummaryCache[i] != null) {
+        body.querySelector('.act-summary').innerHTML = activitySummaryCache[i];
+        return;
+      }
+
+      let apiKey = localStorage.getItem('himbo_anthropic_key') || '';
+      if (!apiKey) {
+        apiKey = prompt('Enter your Anthropic API key to enable activity summaries:') || '';
+        if (apiKey) localStorage.setItem('himbo_anthropic_key', apiKey);
+      }
+      if (!apiKey) {
+        body.querySelector('.act-summary').innerHTML = '<span style="color:var(--text-muted)">No API key set.</span>';
+        return;
+      }
+
+      const a = stravaActivities[i];
+      body.querySelector('.act-summary').innerHTML = '<span style="color:var(--text-muted)">Generating summary…</span>';
+
+      const context = [
+        `Activity: ${a.name}`,
+        `Type: ${a.sport_type}`,
+        `Date: ${new Date(a.start_date_local).toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })}`,
+        `Distance: ${fmtDist(a.distance, a.sport_type)}`,
+        `Time: ${fmtSecs(a.moving_time)}`,
+        a.total_elevation_gain > 0 ? `Elevation: ${Math.round(a.total_elevation_gain)}m` : '',
+        a.average_heartrate ? `Avg HR: ${Math.round(a.average_heartrate)} bpm` : '',
+        a.suffer_score ? `Suffer score: ${a.suffer_score}` : '',
+        a.description ? `Notes: ${a.description}` : '',
+      ].filter(Boolean).join('\n');
+
+      const systemPrompt = voiceBrief
+        ? `You are Himbo — a passionate, warm, slightly dramatic fitness persona. Here is your current voice brief:\n\n${voiceBrief}\n\nWrite a short, punchy activity summary in Himbo's voice. Max 2–3 sentences. No markdown. Raw text only.`
+        : `You are Himbo — a passionate, warm, slightly dramatic fitness persona. Write a short, punchy activity summary in character. Max 2–3 sentences. No markdown. Raw text only.`;
+
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 300,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: context }],
+          }),
+        });
+        if (!resp.ok) throw new Error(`API ${resp.status}`);
+        const data = await resp.json();
+        const text = data.content?.[0]?.text || '(no response)';
+        activitySummaryCache[i] = text;
+        body.querySelector('.act-summary').textContent = text;
+      } catch(err) {
+        body.querySelector('.act-summary').innerHTML = `<span style="color:var(--pink)">Error: ${err.message}</span>`;
+      }
+    };
+
+    if (sRes.status === 'fulfilled') try {
+      const s = sRes.value;
       const recent = s.activities
         .filter(a => new Date(a.start_date_local) >= sevenDaysAgo)
         .sort((a, b) => new Date(b.start_date_local) - new Date(a.start_date_local));
+      stravaActivities = recent;
 
-      // Update summary cards
       let runKm = 0, swimM = 0;
       for (const a of recent) {
         if (['Run','Walk','TrailRun','Hike'].includes(a.sport_type)) runKm += a.distance / 1000;
         if (a.sport_type === 'Swim') swimM += a.distance;
+        const age = (now - new Date(a.start_date_local)) / 86400000;
+        if (age <= 3 && a.suffer_score) sufferScore3d += a.suffer_score;
       }
       const gymSessions = recent.filter(a => ['WeightTraining','Workout','CrossFit'].includes(a.sport_type)).length;
-      if (runKm > 0)      document.getElementById('d-run').innerHTML          = runKm.toFixed(1) + '<span class="metric-unit">km</span>';
-      if (swimM > 0)      document.getElementById('d-swim').innerHTML         = Math.round(swimM).toLocaleString() + '<span class="metric-unit">m</span>';
+      if (runKm > 0) document.getElementById('d-run').innerHTML  = runKm.toFixed(1) + '<span class="metric-unit">km</span>';
+      if (swimM > 0) document.getElementById('d-swim').innerHTML = Math.round(swimM).toLocaleString() + '<span class="metric-unit">m</span>';
       document.getElementById('d-gym-sessions').textContent = gymSessions > 0 ? gymSessions : '—';
 
-      // Activity feed
       const feed = document.getElementById('strava-feed');
       if (recent.length === 0) {
         feed.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No activities in the last 7 days.</div>';
       } else {
-        feed.innerHTML = recent.map(a => {
+        feed.innerHTML = recent.map((a, i) => {
           const date = new Date(a.start_date_local).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
-          return `<div class="challenge-item">
-            <span class="c-dot active"></span>
-            <div>
-              <div class="c-text">${a.name}</div>
-              <div class="c-tag">${date} · ${a.sport_type} · ${fmtDist(a.distance, a.sport_type)} · ${fmtSecs(a.moving_time)}</div>
+          return `<div class="metric-card" style="margin-bottom:8px;padding:10px 14px;" id="act-card-${i}">
+            <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="toggleActivity(${i})">
+              <div>
+                <div class="c-text" style="font-size:13px;">${a.name}</div>
+                <div class="c-tag" style="font-size:10px;margin-top:2px;">${date} · ${a.sport_type} · ${fmtDist(a.distance, a.sport_type)} · ${fmtSecs(a.moving_time)}</div>
+              </div>
+              <div class="act-chevron" style="font-family:'Cinzel',serif;font-size:20px;color:var(--pink);padding-left:12px;">›</div>
+            </div>
+            <div id="act-body-${i}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.07);">
+              <div class="act-summary" style="font-size:12px;line-height:1.6;color:var(--text-secondary);font-family:'Cormorant Garamond',serif;font-style:italic;"></div>
             </div>
           </div>`;
         }).join('');
       }
     } catch(e) { console.error('Strava:', e); }
 
+    // ── Activity (HRV / VO2 / Calories) ──────────────────────────────────────
+
+    if (actRes.status === 'fulfilled') try {
+      const act = actRes.value;
+      const entries = (act.entries || []).filter(e => !e.is_today);
+      const sevenAgoIso = sevenDaysAgo.toISOString().slice(0, 10);
+      const byType = type => entries.filter(e => e.type === type).sort((a, b) => b.date_iso.localeCompare(a.date_iso));
+
+      const hrvEntries = byType('Heart Rate Variability');
+      if (hrvEntries.length > 0) {
+        latestHRV = hrvEntries[0].value;
+        const hrv7 = hrvEntries.filter(e => e.date_only >= sevenAgoIso);
+        hrv7dAvg = hrv7.length > 0 ? hrv7.reduce((s, e) => s + e.value, 0) / hrv7.length : null;
+        document.getElementById('d-hrv').innerHTML = Math.round(latestHRV) + '<span class="metric-unit">ms</span>';
+        const avgEl = document.getElementById('d-hrv-avg');
+        if (avgEl && hrv7dAvg != null) {
+          const pct = (latestHRV - hrv7dAvg) / hrv7dAvg * 100;
+          avgEl.innerHTML = `7d avg ${Math.round(hrv7dAvg)} ms <span class="${trendClass(pct, true)}">${trendArrow(pct)} ${Math.abs(pct).toFixed(1)}%</span>`;
+        }
+      }
+
+      const vo2Entries = byType('VO2 Max');
+      if (vo2Entries.length > 0) {
+        document.getElementById('d-vo2').innerHTML = vo2Entries[0].value.toFixed(1) + '<span class="metric-unit">mL/kg/min</span>';
+      }
+
+      const activeEntries = byType('Active Energy Burned');
+      if (activeEntries.length > 0) {
+        const e = activeEntries[0];
+        document.getElementById('d-active').innerHTML = Math.round(e.value) + `<span class="metric-unit">${e.unit}</span>`;
+      }
+
+      const restingEntries = byType('Basal Energy Burned');
+      if (restingEntries.length > 0) {
+        const e = restingEntries[0];
+        document.getElementById('d-resting').innerHTML = Math.round(e.value) + `<span class="metric-unit">${e.unit}</span>`;
+      }
+    } catch(e) { console.error('Activity:', e); }
+
     // ── Sleep ────────────────────────────────────────────────────────────────
 
-    try {
-      const sleepText = await fetch('data/sleep.json').then(r => r.text());
-      const rows = parseCSV(sleepText);
+    if (slRes.status === 'fulfilled') try {
+      const rows = parseCSV(slRes.value);
 
       const nights = {};
       for (const row of rows) {
@@ -819,6 +1012,36 @@
         .slice(0, 7)
         .reverse();
 
+      if (nightKeys.length > 0) {
+        const last = nights[nightKeys[nightKeys.length - 1]];
+        lastNightSecs = last.Core + last.Deep + last.REM + last.Asleep;
+      }
+
+      // 7-day summary row
+      const summaryEl = document.getElementById('sleep-summary');
+      if (summaryEl && nightKeys.length > 0) {
+        const totals = nightKeys.map(k => {
+          const n = nights[k];
+          return { sleep: n.Core + n.Deep + n.REM + n.Asleep, deep: n.Deep, rem: n.REM, core: n.Core };
+        });
+        const sumAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+        const avgSleep = sumAvg(totals.map(t => t.sleep));
+        const avgDeep  = sumAvg(totals.map(t => t.deep));
+        const avgREM   = sumAvg(totals.map(t => t.rem));
+        const avgCore  = sumAvg(totals.map(t => t.core));
+        const sh = Math.floor(avgSleep / 3600), sm = Math.floor((avgSleep % 3600) / 60);
+        const scls = avgSleep >= 7.5 * 3600 ? 'delta-up' : avgSleep >= 6 * 3600 ? 'delta-warn' : 'delta-down';
+        summaryEl.innerHTML = `<div class="metric-card" style="padding:10px 14px;margin-bottom:8px;">
+          <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;">
+            <span class="metric-label" style="margin:0;">7-day avg</span>
+            <span style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;" class="${scls}">${sh}h ${sm}m</span>
+            ${avgDeep > 0 ? `<span style="font-size:10px;color:var(--text-muted);">Deep ${fmtSecs(avgDeep)}</span>` : ''}
+            ${avgCore > 0 ? `<span style="font-size:10px;color:var(--text-muted);">Core ${fmtSecs(avgCore)}</span>` : ''}
+            ${avgREM  > 0 ? `<span style="font-size:10px;color:var(--text-muted);">REM ${fmtSecs(avgREM)}</span>`  : ''}
+          </div>
+        </div>`;
+      }
+
       const feed = document.getElementById('sleep-feed');
       if (nightKeys.length === 0) {
         feed.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No sleep data available.</div>';
@@ -826,10 +1049,9 @@
         feed.innerHTML = nightKeys.map(key => {
           const n = nights[key];
           const sleep = n.Core + n.Deep + n.REM + n.Asleep;
-          const total = sleep + n.Awake;
           const h = Math.floor(sleep / 3600), m = Math.floor((sleep % 3600) / 60);
           const barPct = Math.min(100, sleep / (8 * 3600) * 100).toFixed(1);
-          const cls = sleep >= 8 * 3600 ? 'delta-up' : sleep >= 6 * 3600 ? 'delta-warn' : 'delta-down';
+          const cls  = sleep >= 8 * 3600 ? 'delta-up' : sleep >= 6 * 3600 ? 'delta-warn' : 'delta-down';
           const note = sleep >= 8 * 3600 ? '✓ 8h' : `short ${fmtSecs(8 * 3600 - sleep)}`;
           const stages = [
             n.Deep  > 0 ? `Deep ${fmtSecs(n.Deep)}`   : '',
@@ -856,9 +1078,8 @@
 
     // ── Nutrition ────────────────────────────────────────────────────────────
 
-    try {
-      const nutText = await fetch('data/nutrition.json').then(r => r.text());
-      const rows = parseCSV(nutText);
+    if (nutRes.status === 'fulfilled') try {
+      const rows = parseCSV(nutRes.value);
 
       const byDay = {};
       for (const row of rows) {
@@ -875,7 +1096,6 @@
         .sort((a, b) => byDay[a]._date - byDay[b]._date)
         .slice(-7);
 
-      // Update existing metric cards from most recent complete day
       if (dayKeys.length > 0) {
         const lat = byDay[dayKeys[dayKeys.length - 1]];
         const kj = lat['Dietary Calories'], pr = lat['Protein'], carbs = lat['Carbohydrates'], fat = lat['Total Fat'];
@@ -890,7 +1110,6 @@
         if (fat   != null) document.getElementById('d-fat-g').innerHTML   = Math.round(fat)   + '<span class="metric-unit">g</span>';
       }
 
-      // 7-day kJ chart
       const kjVals      = dayKeys.map(k => Math.round(byDay[k]['Dietary Calories'] || 0));
       const proteinVals = dayKeys.map(k => Math.round(byDay[k]['Protein']          || 0));
 
@@ -922,7 +1141,6 @@
         }
       });
 
-      // 7-day protein chart
       new Chart(document.getElementById('nutritionProteinChart').getContext('2d'), {
         type: 'bar',
         data: {
@@ -951,6 +1169,42 @@
         }
       });
     } catch(e) { console.error('Nutrition:', e); }
+
+    // ── Readiness score ───────────────────────────────────────────────────────
+
+    try {
+      let hrvScore = 50, sleepScore = 50, loadScore = 50;
+
+      if (latestHRV != null && hrv7dAvg != null && hrv7dAvg > 0) {
+        const ratio = latestHRV / hrv7dAvg;
+        hrvScore = ((Math.max(0.5, Math.min(1.5, ratio)) - 0.5) / 1.0) * 100;
+      }
+      if (lastNightSecs > 0) {
+        sleepScore = Math.min(100, (lastNightSecs / (8 * 3600)) * 100);
+      }
+      loadScore = Math.max(0, 100 - sufferScore3d / 3);
+
+      const readiness = Math.round(hrvScore * 0.4 + sleepScore * 0.4 + loadScore * 0.2);
+
+      let label, colour;
+      if (readiness >= 80)      { label = 'Excellent'; colour = '#7BAE7F'; }
+      else if (readiness >= 65) { label = 'Good';      colour = '#C9963A'; }
+      else if (readiness >= 50) { label = 'Moderate';  colour = '#D4853A'; }
+      else                      { label = 'Low';       colour = 'var(--pink)'; }
+
+      const rEl = document.getElementById('d-readiness');
+      const lEl = document.getElementById('d-readiness-label');
+      const bEl = document.getElementById('d-readiness-breakdown');
+      if (rEl) { rEl.textContent = readiness; rEl.style.color = colour; }
+      if (lEl) { lEl.textContent = label; lEl.style.color = colour; }
+      if (bEl) {
+        bEl.innerHTML = [
+          `HRV ${Math.round(hrvScore)} × 40%`,
+          `Sleep ${Math.round(sleepScore)} × 40%`,
+          `Load ${Math.round(loadScore)} × 20%`,
+        ].join('<br>');
+      }
+    } catch(e) { console.error('Readiness:', e); }
 
   })();
   </script>
