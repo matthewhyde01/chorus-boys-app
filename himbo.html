@@ -779,47 +779,64 @@
         document.getElementById('d-fat').innerHTML = (weight * fatPct / 100).toFixed(1) + '<span class="metric-unit">kg</span>';
       }
 
-      // Weight delta vs previous reading
+      // 7-day vs previous 7-day averages
+      const sevenAgoTs  = now / 1000 - 7  * 86400;
+      const fourteenAgoTs = now / 1000 - 14 * 86400;
+
+      const avg7 = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+
+      const extractVals = (grpList) => {
+        const v = { weight: [], fat: [], muscle: [], hydration: [] };
+        for (const g of grpList) {
+          const gw  = g.measures.find(m => m.type === 1);
+          const gf  = g.measures.find(m => m.type === 6);
+          const gmu = g.measures.find(m => m.type === 76);
+          const gh  = g.measures.find(m => m.type === 77);
+          if (gw)       v.weight.push(withVal(gw.value, gw.unit));
+          if (gf && gw) v.fat.push(withVal(gw.value, gw.unit) * withVal(gf.value, gf.unit) / 100);
+          if (gmu)      v.muscle.push(withVal(gmu.value, gmu.unit));
+          if (gh)       v.hydration.push(withVal(gh.value, gh.unit));
+        }
+        return v;
+      };
+
+      const curr7  = extractVals(grps.filter(g => g.date >= sevenAgoTs));
+      const prev7  = extractVals(grps.filter(g => g.date >= fourteenAgoTs && g.date < sevenAgoTs));
+
+      const trendSlots = [
+        // [avgId, deltaId, metric, unit, higherIsBetter]
+        ['d-weight-avg',    'weight',    'kg', false],
+        ['d-fat-avg',       'fat',       'kg', false],
+        ['d-muscle-avg',    'muscle',    'kg', true],
+        ['d-hydration-avg', 'hydration', 'kg', true],
+      ];
+
+      for (const [id, metric, unit, higherGood] of trendSlots) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const currAvg = avg7(curr7[metric]);
+        const prevAvg = avg7(prev7[metric]);
+        if (currAvg == null) continue;
+        if (prevAvg == null || prevAvg === 0) {
+          el.innerHTML = `7d avg <strong>${currAvg.toFixed(1)} ${unit}</strong>`;
+          continue;
+        }
+        const pct = (currAvg - prevAvg) / prevAvg * 100;
+        const cls = trendClass(pct, higherGood);
+        const sign = pct > 0 ? '+' : '';
+        el.innerHTML = `<span class="${cls}" style="font-size:13px;font-weight:600;">${trendArrow(pct)} ${sign}${pct.toFixed(1)}%</span> <span style="font-size:10px;color:var(--text-muted);">vs prev 7d &nbsp;·&nbsp; avg ${currAvg.toFixed(1)} ${unit}</span>`;
+      }
+
+      // Weight delta: latest single reading vs previous reading (kept for the pink weight card)
       if (grps.length >= 2 && weight != null) {
         const prevGrp = grps[1].measures.find(m => m.type === 1);
         if (prevGrp) {
           const delta = (weight - withVal(prevGrp.value, prevGrp.unit)).toFixed(2);
           const el = document.getElementById('d-weight-delta');
-          if (delta > 0)      { el.textContent = `↑ +${delta} kg`; el.className = 'metric-delta delta-up'; }
-          else if (delta < 0) { el.textContent = `↓ ${delta} kg`;  el.className = 'metric-delta delta-down'; }
-          else                { el.textContent = '— flat';           el.className = 'metric-delta delta-flat'; }
+          if (delta > 0)      { el.textContent = `↑ +${delta} kg vs last weigh-in`; el.className = 'metric-delta delta-up'; }
+          else if (delta < 0) { el.textContent = `↓ ${delta} kg vs last weigh-in`;  el.className = 'metric-delta delta-down'; }
+          else                { el.textContent = '— flat vs last weigh-in';          el.className = 'metric-delta delta-flat'; }
         }
-      }
-
-      // 7-day averages + trend arrows
-      const sevenAgoTs = now / 1000 - 7 * 86400;
-      const grps7 = grps.filter(g => g.date >= sevenAgoTs);
-      const vals7 = { weight: [], fat: [], muscle: [], hydration: [] };
-      for (const g of grps7) {
-        const gw  = g.measures.find(m => m.type === 1);
-        const gf  = g.measures.find(m => m.type === 6);
-        const gmu = g.measures.find(m => m.type === 76);
-        const gh  = g.measures.find(m => m.type === 77);
-        if (gw)      vals7.weight.push(withVal(gw.value, gw.unit));
-        if (gf && gw) vals7.fat.push(withVal(gw.value, gw.unit) * withVal(gf.value, gf.unit) / 100);
-        if (gmu)     vals7.muscle.push(withVal(gmu.value, gmu.unit));
-        if (gh)      vals7.hydration.push(withVal(gh.value, gh.unit));
-      }
-      const avg7 = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
-      const latestFat = (weight != null && fatPct != null) ? weight * fatPct / 100 : null;
-      const avgSlots = [
-        ['d-weight-avg',    avg7(vals7.weight),    weight,     'kg', false],
-        ['d-fat-avg',       avg7(vals7.fat),        latestFat,  'kg', false],
-        ['d-muscle-avg',    avg7(vals7.muscle),     muscle,     'kg', true],
-        ['d-hydration-avg', avg7(vals7.hydration),  hydration,  'kg', true],
-      ];
-      for (const [id, avgVal, latestVal, unit, higherGood] of avgSlots) {
-        if (avgVal == null) continue;
-        const el = document.getElementById(id);
-        if (!el) continue;
-        const pct = latestVal != null ? ((latestVal - avgVal) / avgVal * 100) : 0;
-        const cls = trendClass(pct, higherGood);
-        el.innerHTML = `7d avg ${avgVal.toFixed(1)} ${unit} <span class="${cls}">${trendArrow(pct)} ${Math.abs(pct).toFixed(1)}%</span>`;
       }
 
       // Weight trend chart
@@ -883,7 +900,7 @@
               <div class="act-chevron" style="font-family:'Cinzel',serif;font-size:20px;color:var(--pink);padding-left:12px;">›</div>
             </div>
             <div id="act-body-${i}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.07);">
-              <div style="font-size:12px;line-height:1.6;color:var(--text-secondary);font-family:'Cormorant Garamond',serif;font-style:italic;">${summary}</div>
+              <div style="font-size:14px;line-height:1.7;color:var(--text-primary);">${summary}</div>
             </div>
           </div>`;
         }).join('');
