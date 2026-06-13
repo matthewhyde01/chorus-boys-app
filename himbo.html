@@ -740,19 +740,21 @@
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
       fetch('data/nutrition.json').then(r => r.text()),
       fetch('data/activity.json').then(r => r.json()),
       fetch('data/himbo_voice.json').then(r => r.json()),
+      fetch('data/activity_summaries.json').then(r => r.json()),
     ]);
 
     let sufferScore3d = 0;
     let lastNightSecs = 0;
     let latestHRV = null, hrv7dAvg = null;
-    const voiceBrief = voiceRes.status === 'fulfilled' ? (voiceRes.value.voice_brief || '') : '';
+
+    const activitySummaries = summariesRes.status === 'fulfilled' ? summariesRes.value : {};
 
     // ── Withings ─────────────────────────────────────────────────────────────
 
@@ -838,76 +840,13 @@
 
     // ── Strava ───────────────────────────────────────────────────────────────
 
-    const activitySummaryCache = {};
-    let stravaActivities = [];
-
-    window.toggleActivity = async function(i) {
+    window.toggleActivity = function(i) {
       const card = document.getElementById(`act-card-${i}`);
       const body = document.getElementById(`act-body-${i}`);
       if (!card || !body) return;
       const isOpen = body.style.display !== 'none';
       body.style.display = isOpen ? 'none' : 'block';
       card.querySelector('.act-chevron').textContent = isOpen ? '›' : '‹';
-      if (isOpen) return;
-
-      if (activitySummaryCache[i] != null) {
-        body.querySelector('.act-summary').innerHTML = activitySummaryCache[i];
-        return;
-      }
-
-      let apiKey = localStorage.getItem('himbo_anthropic_key') || '';
-      if (!apiKey) {
-        apiKey = prompt('Enter your Anthropic API key to enable activity summaries:') || '';
-        if (apiKey) localStorage.setItem('himbo_anthropic_key', apiKey);
-      }
-      if (!apiKey) {
-        body.querySelector('.act-summary').innerHTML = '<span style="color:var(--text-muted)">No API key set.</span>';
-        return;
-      }
-
-      const a = stravaActivities[i];
-      body.querySelector('.act-summary').innerHTML = '<span style="color:var(--text-muted)">Generating summary…</span>';
-
-      const context = [
-        `Activity: ${a.name}`,
-        `Type: ${a.sport_type}`,
-        `Date: ${new Date(a.start_date_local).toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })}`,
-        `Distance: ${fmtDist(a.distance, a.sport_type)}`,
-        `Time: ${fmtSecs(a.moving_time)}`,
-        a.total_elevation_gain > 0 ? `Elevation: ${Math.round(a.total_elevation_gain)}m` : '',
-        a.average_heartrate ? `Avg HR: ${Math.round(a.average_heartrate)} bpm` : '',
-        a.suffer_score ? `Suffer score: ${a.suffer_score}` : '',
-        a.description ? `Notes: ${a.description}` : '',
-      ].filter(Boolean).join('\n');
-
-      const systemPrompt = voiceBrief
-        ? `You are Himbo — a passionate, warm, slightly dramatic fitness persona. Here is your current voice brief:\n\n${voiceBrief}\n\nWrite a short, punchy activity summary in Himbo's voice. Max 2–3 sentences. No markdown. Raw text only.`
-        : `You are Himbo — a passionate, warm, slightly dramatic fitness persona. Write a short, punchy activity summary in character. Max 2–3 sentences. No markdown. Raw text only.`;
-
-      try {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true',
-          },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 300,
-            system: systemPrompt,
-            messages: [{ role: 'user', content: context }],
-          }),
-        });
-        if (!resp.ok) throw new Error(`API ${resp.status}`);
-        const data = await resp.json();
-        const text = data.content?.[0]?.text || '(no response)';
-        activitySummaryCache[i] = text;
-        body.querySelector('.act-summary').textContent = text;
-      } catch(err) {
-        body.querySelector('.act-summary').innerHTML = `<span style="color:var(--pink)">Error: ${err.message}</span>`;
-      }
     };
 
     if (sRes.status === 'fulfilled') try {
@@ -915,7 +854,6 @@
       const recent = s.activities
         .filter(a => new Date(a.start_date_local) >= sevenDaysAgo)
         .sort((a, b) => new Date(b.start_date_local) - new Date(a.start_date_local));
-      stravaActivities = recent;
 
       let runKm = 0, swimM = 0;
       for (const a of recent) {
@@ -935,6 +873,7 @@
       } else {
         feed.innerHTML = recent.map((a, i) => {
           const date = new Date(a.start_date_local).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          const summary = activitySummaries[String(a.id)] || 'No summary available yet — check back after the next sync.';
           return `<div class="metric-card" style="margin-bottom:8px;padding:10px 14px;" id="act-card-${i}">
             <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="toggleActivity(${i})">
               <div>
@@ -944,7 +883,7 @@
               <div class="act-chevron" style="font-family:'Cinzel',serif;font-size:20px;color:var(--pink);padding-left:12px;">›</div>
             </div>
             <div id="act-body-${i}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.07);">
-              <div class="act-summary" style="font-size:12px;line-height:1.6;color:var(--text-secondary);font-family:'Cormorant Garamond',serif;font-style:italic;"></div>
+              <div style="font-size:12px;line-height:1.6;color:var(--text-secondary);font-family:'Cormorant Garamond',serif;font-style:italic;">${summary}</div>
             </div>
           </div>`;
         }).join('');
