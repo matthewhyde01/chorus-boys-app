@@ -102,6 +102,9 @@ jobs:
           })
           r.raise_for_status()
           token_data = r.json()
+          if token_data.get("status") != 0:
+              print(f"Withings token refresh error: {json.dumps(token_data)}")
+              raise RuntimeError(f"Withings API returned status {token_data.get('status')}: {token_data.get('error', 'unknown error')}")
           access_token = token_data["body"]["access_token"]
 
           # Fetch body composition — last 30 days
@@ -195,7 +198,7 @@ jobs:
 
           voice_brief = voice.get("voice_brief", "")
           system_prompt = (voice_brief + "\n\n" if voice_brief else "") + \
-              "Write a short, punchy summary of this workout for Patroclus. 2–3 sentences max. Focus on what the numbers actually mean — effort, achievement, how hard he worked. No emojis."
+              "Write a 4–5 sentence summary of this workout for Patroclus. Go beyond describing the numbers — interpret them. Was this a hard effort or recovery work? How does the suffer score reflect what his body went through? What does this activity mean in the context of the week's training? Speak directly to him, warm and a little dramatic. No emojis. No markdown."
 
           cutoff = datetime.utcnow() - timedelta(days=14)
           activities = [
@@ -271,7 +274,7 @@ jobs:
                   },
                   json={
                       "model": "claude-sonnet-4-6",
-                      "max_tokens": 300,
+                      "max_tokens": 500,
                       "system": system_prompt,
                       "messages": [{"role": "user", "content": context}],
                   },
