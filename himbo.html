@@ -314,62 +314,6 @@
       color: var(--text-muted);
     }
 
-    /* UPDATE PANEL */
-    .update-panel {
-      background: var(--bg-card);
-      border: 0.5px solid var(--border-pink);
-      border-radius: 14px;
-      padding: 1.5rem;
-    }
-
-    .update-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
-
-    .update-group-title {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 10px;
-    }
-
-    .input-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .input-label { font-size: 12px; color: var(--text-secondary); min-width: 100px; }
-
-    .input-field {
-      background: rgba(255,255,255,0.06);
-      border: 0.5px solid rgba(255,255,255,0.15);
-      border-radius: 6px;
-      padding: 5px 8px;
-      font-size: 13px;
-      font-family: 'DM Sans', sans-serif;
-      color: white;
-      width: 90px;
-    }
-
-    .input-field:focus { outline: none; border-color: var(--pink); }
-
-    .update-btn {
-      background: var(--pink);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 24px;
-      font-size: 13px;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: opacity 0.2s;
-    }
-
-    .update-btn:hover { opacity: 0.85; }
-
     /* DIVIDER */
     hr { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
 
@@ -630,38 +574,6 @@
       </div>
     </section>
 
-    <hr>
-
-    <section class="section" aria-label="Update this week's data">
-      <div class="section-title">Update this week</div>
-      <div class="update-panel">
-        <div class="update-grid">
-          <div>
-            <div class="update-group-title">Body (Withings)</div>
-            <div class="input-row"><span class="input-label">Weight (kg)</span><input class="input-field" id="in-weight" type="number" step="0.01" placeholder="79.90"></div>
-            <div class="input-row"><span class="input-label">Fat mass (kg)</span><input class="input-field" id="in-fat" type="number" step="0.01" placeholder="13.67"></div>
-            <div class="input-row"><span class="input-label">Muscle (kg)</span><input class="input-field" id="in-muscle" type="number" step="0.01" placeholder="62.91"></div>
-            <div class="input-row"><span class="input-label">Hydration (kg)</span><input class="input-field" id="in-hydration" type="number" step="0.01" placeholder="44.07"></div>
-          </div>
-          <div>
-            <div class="update-group-title">Nutrition (Apple Health)</div>
-            <div class="input-row"><span class="input-label">Daily kJ</span><input class="input-field" id="in-kj" type="number" placeholder="16000"></div>
-            <div class="input-row"><span class="input-label">Protein (g)</span><input class="input-field" id="in-protein" type="number" placeholder="180"></div>
-            <div class="input-row"><span class="input-label">Carbs (g)</span><input class="input-field" id="in-carbs" type="number" placeholder="350"></div>
-            <div class="input-row"><span class="input-label">Fat (g)</span><input class="input-field" id="in-fat-g" type="number" placeholder="100"></div>
-          </div>
-          <div>
-            <div class="update-group-title">Activity</div>
-            <div class="input-row"><span class="input-label">Run/walk (km)</span><input class="input-field" id="in-run" type="number" step="0.1" placeholder="17.8"></div>
-            <div class="input-row"><span class="input-label">Swim (m)</span><input class="input-field" id="in-swim" type="number" placeholder="2000"></div>
-            <div class="input-row"><span class="input-label">HRV (ms)</span><input class="input-field" id="in-hrv" type="number" placeholder="63"></div>
-            <div class="input-row"><span class="input-label">Gym sessions</span><input class="input-field" id="in-gym" type="number" placeholder="3"></div>
-          </div>
-        </div>
-        <button class="update-btn" onclick="updateDashboard()">Update dashboard</button>
-      </div>
-    </section>
-
   </main>
 
   <script>
@@ -714,54 +626,6 @@
       }
     });
 
-    function updateDashboard() {
-      const w = parseFloat(document.getElementById('in-weight').value);
-      const f = parseFloat(document.getElementById('in-fat').value);
-      const m = parseFloat(document.getElementById('in-muscle').value);
-      const h = parseFloat(document.getElementById('in-hydration').value);
-      const kj = parseFloat(document.getElementById('in-kj').value);
-      const pr = parseFloat(document.getElementById('in-protein').value);
-      const carbs = parseFloat(document.getElementById('in-carbs').value);
-      const fat = parseFloat(document.getElementById('in-fat-g').value);
-      const run = parseFloat(document.getElementById('in-run').value);
-      const swim = parseFloat(document.getElementById('in-swim').value);
-      const hrv = parseFloat(document.getElementById('in-hrv').value);
-      const gym = document.getElementById('in-gym').value;
-
-      if (!isNaN(w)) {
-        const prev = weightData.values[weightData.values.length - 1];
-        const delta = (w - prev).toFixed(2);
-        document.getElementById('d-weight').innerHTML = w.toFixed(1) + '<span class="metric-unit">kg</span>';
-        const de = document.getElementById('d-weight-delta');
-        if (delta > 0) { de.textContent = '↑ +' + delta + 'kg'; de.className = 'metric-delta delta-up'; }
-        else if (delta < 0) { de.textContent = '↓ ' + delta + 'kg'; de.className = 'metric-delta delta-down'; }
-        else { de.textContent = '— flat'; de.className = 'metric-delta delta-flat'; }
-        const today = new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
-        weightData.labels.push(today);
-        weightData.values.push(w);
-        weightChart.data.labels = weightData.labels;
-        weightChart.data.datasets[0].data = weightData.values;
-        weightChart.update();
-      }
-
-      if (!isNaN(f)) document.getElementById('d-fat').innerHTML = f.toFixed(1) + '<span class="metric-unit">kg</span>';
-      if (!isNaN(m)) document.getElementById('d-muscle').innerHTML = m.toFixed(1) + '<span class="metric-unit">kg</span>';
-      if (!isNaN(h)) document.getElementById('d-hydration').innerHTML = h.toFixed(1) + '<span class="metric-unit">kg</span>';
-
-      if (!isNaN(kj)) {
-        document.getElementById('d-kj').innerHTML = Math.round(kj).toLocaleString() + '<span class="metric-unit">kJ</span>';
-        const note = document.getElementById('d-kj-note');
-        if (kj >= 16000) { note.textContent = 'Target: 16,000kJ ✓'; note.className = 'metric-delta delta-up'; }
-        else { note.textContent = 'Short by ' + (16000 - Math.round(kj)).toLocaleString() + 'kJ'; note.className = 'metric-delta delta-warn'; }
-      }
-      if (!isNaN(pr)) document.getElementById('d-protein').innerHTML = Math.round(pr) + '<span class="metric-unit">g</span>';
-      if (!isNaN(carbs)) document.getElementById('d-carbs').innerHTML = Math.round(carbs) + '<span class="metric-unit">g</span>';
-      if (!isNaN(fat)) document.getElementById('d-fat-g').innerHTML = Math.round(fat) + '<span class="metric-unit">g</span>';
-      if (!isNaN(run)) document.getElementById('d-run').innerHTML = run.toFixed(1) + '<span class="metric-unit">km</span>';
-      if (!isNaN(swim)) document.getElementById('d-swim').innerHTML = Math.round(swim).toLocaleString() + '<span class="metric-unit">m</span>';
-      if (!isNaN(hrv)) document.getElementById('d-hrv').innerHTML = Math.round(hrv) + '<span class="metric-unit">ms</span>';
-      if (gym) document.getElementById('d-gym-sessions').textContent = gym;
-    }
   </script>
 
   <script>
@@ -909,8 +773,10 @@
         if (['Run','Walk','TrailRun','Hike'].includes(a.sport_type)) runKm += a.distance / 1000;
         if (a.sport_type === 'Swim') swimM += a.distance;
       }
-      if (runKm > 0) document.getElementById('d-run').innerHTML  = runKm.toFixed(1) + '<span class="metric-unit">km</span>';
-      if (swimM > 0) document.getElementById('d-swim').innerHTML = Math.round(swimM).toLocaleString() + '<span class="metric-unit">m</span>';
+      const gymSessions = recent.filter(a => ['WeightTraining','Workout','CrossFit'].includes(a.sport_type)).length;
+      if (runKm > 0)      document.getElementById('d-run').innerHTML          = runKm.toFixed(1) + '<span class="metric-unit">km</span>';
+      if (swimM > 0)      document.getElementById('d-swim').innerHTML         = Math.round(swimM).toLocaleString() + '<span class="metric-unit">m</span>';
+      document.getElementById('d-gym-sessions').textContent = gymSessions > 0 ? gymSessions : '—';
 
       // Activity feed
       const feed = document.getElementById('strava-feed');
