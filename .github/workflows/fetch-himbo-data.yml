@@ -27,20 +27,36 @@ jobs:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           python - <<'EOF'
-          import requests, json, os
+          import requests, json, os, subprocess
           from datetime import datetime, timedelta
 
           # Refresh access token
           r = requests.post("https://www.strava.com/oauth/token", data={
-              "client_id": os.environ["STRAVA_CLIENT_ID"],
+              "client_id": int(os.environ["STRAVA_CLIENT_ID"]),
               "client_secret": os.environ["STRAVA_CLIENT_SECRET"],
               "refresh_token": os.environ["STRAVA_REFRESH_TOKEN"],
               "grant_type": "refresh_token"
           })
-          r.raise_for_status()
-          access_token = r.json()["access_token"]
+          if not r.ok:
+              print(f"Strava token refresh failed {r.status_code}: {r.text}")
+              r.raise_for_status()
+          token_data = r.json()
+          access_token = token_data["access_token"]
+
+          # Strava rotates refresh tokens — update the secret so next run works
+          new_refresh = token_data.get("refresh_token", os.environ["STRAVA_REFRESH_TOKEN"])
+          if new_refresh != os.environ["STRAVA_REFRESH_TOKEN"]:
+              subprocess.run(
+                  ["gh", "secret", "set", "STRAVA_REFRESH_TOKEN", "--body", new_refresh,
+                   "--repo", os.environ["REPO"]],
+                  env={**os.environ, "GH_TOKEN": os.environ["GH_TOKEN"]},
+                  check=True
+              )
+              print("Strava: refresh token rotated and secret updated")
 
           # Fetch last 14 days of activities
           since = int((datetime.utcnow() - timedelta(days=14)).timestamp())
