@@ -176,10 +176,123 @@ jobs:
           print(f"Notion: voice brief written ({len(voice_brief)} chars)")
           EOF
 
+      - name: Generate activity summaries
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python - <<'EOF'
+          import requests, json, os
+          from datetime import datetime, timedelta
+
+          api_key = os.environ["ANTHROPIC_API_KEY"].strip()
+          if not api_key:
+              raise ValueError("Secret ANTHROPIC_API_KEY is not set")
+
+          with open("data/strava.json") as f:
+              strava = json.load(f)
+          with open("data/himbo_voice.json") as f:
+              voice = json.load(f)
+
+          voice_brief = voice.get("voice_brief", "")
+          system_prompt = (voice_brief + "\n\n" if voice_brief else "") + \
+              "Write a short, punchy summary of this workout for Patroclus. 2–3 sentences max. Focus on what the numbers actually mean — effort, achievement, how hard he worked. No emojis."
+
+          cutoff = datetime.utcnow() - timedelta(days=14)
+          activities = [
+              a for a in strava["activities"]
+              if datetime.strptime(a["start_date"][:19], "%Y-%m-%dT%H:%M:%S") >= cutoff
+          ]
+
+          # Load existing summaries to avoid regenerating on every sync
+          summaries = {}
+          try:
+              with open("data/activity_summaries.json") as f:
+                  summaries = json.load(f)
+          except FileNotFoundError:
+              pass
+
+          for a in activities:
+              aid = str(a["id"])
+              if aid in summaries:
+                  print(f"Skipping {a['name']} (already summarized)")
+                  continue
+
+              sport = a.get("sport_type") or a.get("type", "")
+              dist = a.get("distance", 0)
+              speed = a.get("average_speed", 0)
+
+              if sport == "Swim":
+                  dist_str = f"{round(dist)}m"
+              else:
+                  dist_str = f"{dist / 1000:.1f}km"
+
+              moving = a.get("moving_time", 0)
+              h, rem = divmod(moving, 3600)
+              m, s = divmod(rem, 60)
+              time_str = f"{h}h {m}m" if h else f"{m}m"
+
+              if speed > 0:
+                  if sport == "Swim":
+                      pace_secs = 100 / speed
+                  else:
+                      pace_secs = 1000 / speed
+                  pace_str = f"{int(pace_secs // 60)}:{int(pace_secs % 60):02d} {'per 100m' if sport == 'Swim' else 'per km'}"
+              else:
+                  pace_str = None
+
+              lines = [
+                  f"Activity: {a['name']}",
+                  f"Type: {sport}",
+                  f"Date: {a['start_date_local'][:10]}",
+                  f"Distance: {dist_str}",
+                  f"Moving time: {time_str}",
+              ]
+              if pace_str:
+                  lines.append(f"Average pace: {pace_str}")
+              if a.get("average_heartrate"):
+                  lines.append(f"Avg heart rate: {round(a['average_heartrate'])} bpm")
+              if a.get("max_heartrate"):
+                  lines.append(f"Max heart rate: {round(a['max_heartrate'])} bpm")
+              if a.get("total_elevation_gain", 0) > 0:
+                  lines.append(f"Elevation gain: {round(a['total_elevation_gain'])}m")
+              if a.get("suffer_score"):
+                  lines.append(f"Suffer score: {a['suffer_score']}")
+              if a.get("kudos_count"):
+                  lines.append(f"Kudos: {a['kudos_count']}")
+
+              context = "\n".join(lines)
+
+              resp = requests.post(
+                  "https://api.anthropic.com/v1/messages",
+                  headers={
+                      "x-api-key": api_key,
+                      "anthropic-version": "2023-06-01",
+                      "content-type": "application/json",
+                  },
+                  json={
+                      "model": "claude-sonnet-4-6",
+                      "max_tokens": 300,
+                      "system": system_prompt,
+                      "messages": [{"role": "user", "content": context}],
+                  },
+                  timeout=30,
+              )
+              resp.raise_for_status()
+              data = resp.json()
+              text = data["content"][0]["text"]
+              summaries[aid] = text
+              print(f"Summarized: {a['name']}")
+
+          with open("data/activity_summaries.json", "w") as f:
+              json.dump(summaries, f, indent=2)
+
+          print(f"Done. {len(summaries)} total summaries stored.")
+          EOF
+
       - name: Commit data files
         run: |
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
-          git add data/strava.json data/withings.json data/himbo_voice.json
+          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
           git push
