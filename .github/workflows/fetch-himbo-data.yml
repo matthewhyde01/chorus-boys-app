@@ -35,10 +35,16 @@ jobs:
           from datetime import datetime, timedelta
 
           # Refresh access token
+          client_id = os.environ["STRAVA_CLIENT_ID"].strip()
+          client_secret = os.environ["STRAVA_CLIENT_SECRET"].strip()
+          refresh_token = os.environ["STRAVA_REFRESH_TOKEN"].strip()
+          for name, val in [("STRAVA_CLIENT_ID", client_id), ("STRAVA_CLIENT_SECRET", client_secret), ("STRAVA_REFRESH_TOKEN", refresh_token)]:
+              if not val:
+                  raise ValueError(f"Secret {name} is not set")
           r = requests.post("https://www.strava.com/oauth/token", data={
-              "client_id": int(os.environ["STRAVA_CLIENT_ID"]),
-              "client_secret": os.environ["STRAVA_CLIENT_SECRET"],
-              "refresh_token": os.environ["STRAVA_REFRESH_TOKEN"],
+              "client_id": client_id,
+              "client_secret": client_secret,
+              "refresh_token": refresh_token,
               "grant_type": "refresh_token"
           })
           if not r.ok:
