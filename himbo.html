@@ -473,6 +473,25 @@
       </div>
     </section>
 
+    <section class="section" aria-label="Nutrition — 7 days">
+      <div class="section-title">Nutrition — 7 days</div>
+      <div class="chart-wrap">
+        <canvas id="nutritionKjChart" role="img" aria-label="Daily kilojoule intake vs 16,000kJ target over 7 days"></canvas>
+      </div>
+      <div class="chart-legend" style="margin-bottom:12px;">
+        <span><span class="legend-dot" style="background:#E8458B;"></span>Daily kJ</span>
+        <span><span class="legend-dot" style="background:rgba(201,150,58,0.5);"></span>16,000 kJ target</span>
+        <span style="margin-left:auto;font-size:10px;color:#7BAE7F;">Green = on target</span>
+      </div>
+      <div class="chart-wrap" style="height:160px;">
+        <canvas id="nutritionProteinChart" role="img" aria-label="Daily protein vs 180g target over 7 days"></canvas>
+      </div>
+      <div class="chart-legend">
+        <span><span class="legend-dot" style="background:#E8458B;"></span>Protein (g)</span>
+        <span><span class="legend-dot" style="background:rgba(201,150,58,0.5);"></span>180 g target</span>
+      </div>
+    </section>
+
     <section class="section" aria-label="Activity and recovery">
       <div class="section-title">Activity &amp; recovery</div>
       <div class="grid-4">
@@ -493,6 +512,16 @@
           <div class="metric-value" id="d-hrv">63<span class="metric-unit">ms</span></div>
         </div>
       </div>
+    </section>
+
+    <section class="section" aria-label="Recent activities — last 7 days">
+      <div class="section-title">Recent activities</div>
+      <div id="strava-feed"><div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div></div>
+    </section>
+
+    <section class="section" aria-label="Sleep — last 7 nights">
+      <div class="section-title">Sleep — last 7 nights</div>
+      <div id="sleep-feed"><div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div></div>
     </section>
 
     <hr>
@@ -733,6 +762,331 @@
       if (!isNaN(hrv)) document.getElementById('d-hrv').innerHTML = Math.round(hrv) + '<span class="metric-unit">ms</span>';
       if (gym) document.getElementById('d-gym-sessions').textContent = gym;
     }
+  </script>
+
+  <script>
+  (async function () {
+
+    // ── Utilities ────────────────────────────────────────────────────────────
+
+    function withVal(v, u) { return v * Math.pow(10, u); }
+
+    function fmtSecs(s) {
+      const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+      return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    }
+
+    function fmtDist(meters, sport) {
+      return ['Swim','Rowing','VirtualRow'].includes(sport)
+        ? `${Math.round(meters)} m`
+        : `${(meters / 1000).toFixed(1)} km`;
+    }
+
+    // Splits a CSV line into exactly `n` fields using the first n-1 commas
+    function splitCSVLine(line, n) {
+      const parts = [];
+      let rest = line;
+      for (let i = 0; i < n - 1; i++) {
+        const idx = rest.indexOf(',');
+        parts.push(rest.slice(0, idx).trim());
+        rest = rest.slice(idx + 1);
+      }
+      parts.push(rest.trim());
+      return parts;
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      const headers = lines[0].split(',').map(s => s.trim());
+      return lines.slice(1).map(line => {
+        const vals = splitCSVLine(line, headers.length);
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = vals[i] || '');
+        return obj;
+      });
+    }
+
+    // "6 Jun 2026 at 12:15 am" → Date
+    function parseAusDateTime(str) {
+      const m = str.match(/(\d+)\s+(\w+)\s+(\d{4})\s+at\s+(\d+):(\d+)\s+(am|pm)/i);
+      if (!m) return new Date(NaN);
+      const MON = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+      let h = parseInt(m[4]);
+      const pm = m[6].toLowerCase() === 'pm';
+      if (pm && h !== 12) h += 12;
+      if (!pm && h === 12) h = 0;
+      return new Date(+m[3], MON[m[2]], +m[1], h, +m[5]);
+    }
+
+    // "7:28" → secs (mm:ss), "1:05:48" → secs (h:mm:ss), "59" → secs
+    function parseDurSecs(str) {
+      const p = str.split(':').map(Number);
+      if (p.length === 1) return p[0];
+      if (p.length === 2) return p[0] * 60 + p[1];
+      return p[0] * 3600 + p[1] * 60 + p[2];
+    }
+
+    // Night label: segments before noon belong to the previous calendar day's night
+    function nightLabel(date) {
+      const d = new Date(date);
+      if (d.getHours() < 12) d.setDate(d.getDate() - 1);
+      return d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+
+    function dayLabel(date) {
+      return date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+    }
+
+    const now = new Date();
+    const sevenDaysAgo  = new Date(now - 7  * 86400000);
+    const fourteenDaysAgo = new Date(now - 14 * 86400000);
+
+    // ── Withings ─────────────────────────────────────────────────────────────
+
+    try {
+      const w = await fetch('data/withings.json').then(r => r.json());
+      const grps = w.measures.body.measuregrps.slice().sort((a, b) => b.date - a.date);
+
+      // Latest value for each type
+      const latest = {};
+      for (const g of grps) {
+        for (const m of g.measures) {
+          if (!(m.type in latest)) latest[m.type] = withVal(m.value, m.unit);
+        }
+        if ([1, 6, 76, 77].every(t => t in latest)) break;
+      }
+
+      const weight = latest[1], fatPct = latest[6], muscle = latest[76], hydration = latest[77];
+
+      if (weight   != null) document.getElementById('d-weight').innerHTML    = weight.toFixed(1)    + '<span class="metric-unit">kg</span>';
+      if (muscle   != null) document.getElementById('d-muscle').innerHTML    = muscle.toFixed(1)    + '<span class="metric-unit">kg</span>';
+      if (hydration!= null) document.getElementById('d-hydration').innerHTML = hydration.toFixed(1) + '<span class="metric-unit">kg</span>';
+      if (fatPct   != null && weight != null) {
+        const fatMass = weight * fatPct / 100;
+        document.getElementById('d-fat').innerHTML = fatMass.toFixed(1) + '<span class="metric-unit">kg</span>';
+      }
+
+      // Weight delta vs previous reading
+      if (grps.length >= 2 && weight != null) {
+        const prevGrp = grps[1].measures.find(m => m.type === 1);
+        if (prevGrp) {
+          const delta = (weight - withVal(prevGrp.value, prevGrp.unit)).toFixed(2);
+          const el = document.getElementById('d-weight-delta');
+          if (delta > 0)      { el.textContent = `↑ +${delta} kg`; el.className = 'metric-delta delta-up'; }
+          else if (delta < 0) { el.textContent = `↓ ${delta} kg`;  el.className = 'metric-delta delta-down'; }
+          else                { el.textContent = '— flat';           el.className = 'metric-delta delta-flat'; }
+        }
+      }
+
+      // Update weight trend chart with live Withings history
+      const pts = grps
+        .filter(g => g.date * 1000 >= fourteenDaysAgo.getTime())
+        .map(g => { const m = g.measures.find(m => m.type === 1); return m ? { d: new Date(g.date * 1000), v: withVal(m.value, m.unit) } : null; })
+        .filter(Boolean)
+        .sort((a, b) => a.d - b.d);
+
+      if (pts.length > 1) {
+        const vals = pts.map(p => p.v);
+        weightChart.data.labels = pts.map(p => p.d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }));
+        weightChart.data.datasets[0].data = vals;
+        weightChart.options.scales.y.min = Math.floor(Math.min(...vals) - 0.5);
+        weightChart.options.scales.y.max = Math.ceil(Math.max(...vals)  + 0.5);
+        weightChart.update();
+      }
+    } catch(e) { console.error('Withings:', e); }
+
+    // ── Strava ───────────────────────────────────────────────────────────────
+
+    try {
+      const s = await fetch('data/strava.json').then(r => r.json());
+      const recent = s.activities
+        .filter(a => new Date(a.start_date_local) >= sevenDaysAgo)
+        .sort((a, b) => new Date(b.start_date_local) - new Date(a.start_date_local));
+
+      // Update summary cards
+      let runKm = 0, swimM = 0;
+      for (const a of recent) {
+        if (['Run','Walk','TrailRun','Hike'].includes(a.sport_type)) runKm += a.distance / 1000;
+        if (a.sport_type === 'Swim') swimM += a.distance;
+      }
+      if (runKm > 0) document.getElementById('d-run').innerHTML  = runKm.toFixed(1) + '<span class="metric-unit">km</span>';
+      if (swimM > 0) document.getElementById('d-swim').innerHTML = Math.round(swimM).toLocaleString() + '<span class="metric-unit">m</span>';
+
+      // Activity feed
+      const feed = document.getElementById('strava-feed');
+      if (recent.length === 0) {
+        feed.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No activities in the last 7 days.</div>';
+      } else {
+        feed.innerHTML = recent.map(a => {
+          const date = new Date(a.start_date_local).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          return `<div class="challenge-item">
+            <span class="c-dot active"></span>
+            <div>
+              <div class="c-text">${a.name}</div>
+              <div class="c-tag">${date} · ${a.sport_type} · ${fmtDist(a.distance, a.sport_type)} · ${fmtSecs(a.moving_time)}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    } catch(e) { console.error('Strava:', e); }
+
+    // ── Sleep ────────────────────────────────────────────────────────────────
+
+    try {
+      const sleepText = await fetch('data/sleep.json').then(r => r.text());
+      const rows = parseCSV(sleepText);
+
+      const nights = {};
+      for (const row of rows) {
+        const start = parseAusDateTime(row.start);
+        if (isNaN(start)) continue;
+        const key = nightLabel(start);
+        if (!nights[key]) nights[key] = { Core: 0, Deep: 0, REM: 0, Awake: 0, Asleep: 0, _date: start };
+        const secs = parseDurSecs(row.duration);
+        const stage = row.stage;
+        if (stage in nights[key]) nights[key][stage] += secs;
+        else nights[key].Asleep += secs;
+      }
+
+      const nightKeys = Object.keys(nights)
+        .sort((a, b) => nights[b]._date - nights[a]._date)
+        .slice(0, 7)
+        .reverse();
+
+      const feed = document.getElementById('sleep-feed');
+      if (nightKeys.length === 0) {
+        feed.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No sleep data available.</div>';
+      } else {
+        feed.innerHTML = nightKeys.map(key => {
+          const n = nights[key];
+          const sleep = n.Core + n.Deep + n.REM + n.Asleep;
+          const total = sleep + n.Awake;
+          const h = Math.floor(sleep / 3600), m = Math.floor((sleep % 3600) / 60);
+          const barPct = Math.min(100, sleep / (8 * 3600) * 100).toFixed(1);
+          const cls = sleep >= 8 * 3600 ? 'delta-up' : sleep >= 6 * 3600 ? 'delta-warn' : 'delta-down';
+          const note = sleep >= 8 * 3600 ? '✓ 8h' : `short ${fmtSecs(8 * 3600 - sleep)}`;
+          const stages = [
+            n.Deep  > 0 ? `Deep ${fmtSecs(n.Deep)}`   : '',
+            n.Core  > 0 ? `Core ${fmtSecs(n.Core)}`   : '',
+            n.REM   > 0 ? `REM ${fmtSecs(n.REM)}`     : '',
+            n.Awake > 0 ? `Awake ${fmtSecs(n.Awake)}` : '',
+          ].filter(Boolean).join(' · ');
+          return `<div class="metric-card" style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+              <div class="metric-label">${key}</div>
+              <div style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;">${h}h ${m}m</div>
+            </div>
+            <div class="jewel-bar">
+              <div class="jewel-fill" style="width:${barPct}%;background:linear-gradient(90deg,#6B7FD7,#9B77D4);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+              <div style="font-size:10px;color:var(--text-muted);">${stages}</div>
+              <div class="metric-delta ${cls}" style="font-size:10px;">${note}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    } catch(e) { console.error('Sleep:', e); }
+
+    // ── Nutrition ────────────────────────────────────────────────────────────
+
+    try {
+      const nutText = await fetch('data/nutrition.json').then(r => r.text());
+      const rows = parseCSV(nutText);
+
+      const byDay = {};
+      for (const row of rows) {
+        const d = parseAusDateTime(row.date);
+        if (isNaN(d)) continue;
+        const key = dayLabel(d);
+        if (!byDay[key]) byDay[key] = { _date: d };
+        byDay[key][row.type] = parseFloat(row.value);
+      }
+
+      const todayKey = dayLabel(now);
+      const dayKeys = Object.keys(byDay)
+        .filter(k => !(k === todayKey && (byDay[k]['Dietary Calories'] || 0) < 8000))
+        .sort((a, b) => byDay[a]._date - byDay[b]._date)
+        .slice(-7);
+
+      // Update existing metric cards from most recent complete day
+      if (dayKeys.length > 0) {
+        const lat = byDay[dayKeys[dayKeys.length - 1]];
+        const kj = lat['Dietary Calories'], pr = lat['Protein'], carbs = lat['Carbohydrates'], fat = lat['Total Fat'];
+        if (kj != null) {
+          document.getElementById('d-kj').innerHTML = Math.round(kj).toLocaleString() + '<span class="metric-unit">kJ</span>';
+          const note = document.getElementById('d-kj-note');
+          if (kj >= 16000) { note.textContent = 'Target: 16,000 kJ ✓'; note.className = 'metric-delta delta-up'; }
+          else             { note.textContent = `Short by ${(16000 - Math.round(kj)).toLocaleString()} kJ`; note.className = 'metric-delta delta-warn'; }
+        }
+        if (pr    != null) document.getElementById('d-protein').innerHTML = Math.round(pr)    + '<span class="metric-unit">g</span>';
+        if (carbs != null) document.getElementById('d-carbs').innerHTML   = Math.round(carbs) + '<span class="metric-unit">g</span>';
+        if (fat   != null) document.getElementById('d-fat-g').innerHTML   = Math.round(fat)   + '<span class="metric-unit">g</span>';
+      }
+
+      // 7-day kJ chart
+      const kjVals      = dayKeys.map(k => Math.round(byDay[k]['Dietary Calories'] || 0));
+      const proteinVals = dayKeys.map(k => Math.round(byDay[k]['Protein']          || 0));
+
+      new Chart(document.getElementById('nutritionKjChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: dayKeys,
+          datasets: [
+            {
+              data: kjVals,
+              backgroundColor: kjVals.map(v => v >= 16000 ? 'rgba(123,174,127,0.55)' : 'rgba(232,69,139,0.45)'),
+              borderColor:     kjVals.map(v => v >= 16000 ? '#7BAE7F' : '#E8458B'),
+              borderWidth: 1, borderRadius: 4,
+            },
+            {
+              data: Array(dayKeys.length).fill(16000),
+              type: 'line', borderColor: 'rgba(201,150,58,0.55)', borderDash: [4,3],
+              borderWidth: 1.5, pointRadius: 0, fill: false,
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toLocaleString() + ' kJ' } } },
+          scales: {
+            y: { ticks: { font: { size: 10 }, color: 'rgba(255,255,255,0.3)', callback: v => (v/1000).toFixed(0)+'k' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { ticks: { font: { size: 10 }, color: 'rgba(255,255,255,0.3)' }, grid: { display: false } }
+          }
+        }
+      });
+
+      // 7-day protein chart
+      new Chart(document.getElementById('nutritionProteinChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: dayKeys,
+          datasets: [
+            {
+              data: proteinVals,
+              backgroundColor: proteinVals.map(v => v >= 180 ? 'rgba(123,174,127,0.55)' : 'rgba(232,69,139,0.45)'),
+              borderColor:     proteinVals.map(v => v >= 180 ? '#7BAE7F' : '#E8458B'),
+              borderWidth: 1, borderRadius: 4,
+            },
+            {
+              data: Array(dayKeys.length).fill(180),
+              type: 'line', borderColor: 'rgba(201,150,58,0.55)', borderDash: [4,3],
+              borderWidth: 1.5, pointRadius: 0, fill: false,
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y + 'g' } } },
+          scales: {
+            y: { ticks: { font: { size: 10 }, color: 'rgba(255,255,255,0.3)', callback: v => v+'g' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            x: { ticks: { font: { size: 10 }, color: 'rgba(255,255,255,0.3)' }, grid: { display: false } }
+          }
+        }
+      });
+    } catch(e) { console.error('Nutrition:', e); }
+
+  })();
   </script>
 
 </body>
