@@ -1,9 +1,19 @@
 {
-  "updated_at": "2026-06-14T10:04:29.165607Z",
+  "updated_at": "2026-06-14T10:25:45.490914Z",
   "tracks": {
     "track1": "Wetsuit comes off, no poncho, toes out \u2014 at one Bold & Beautiful or swim session this week. Don't hide them.",
     "track2": "none",
     "track3": "Look at one daily routine this week and ask \u2014 is this what I'd choose, or just what I do?"
+  },
+  "completed": {
+    "track1": [
+      {
+        "text": "Wear the knit cardigan to Bold & Beautiful Sunday",
+        "date": "7 June 2026"
+      }
+    ],
+    "track2": [],
+    "track3": []
   },
   "stretch": [
     "Change room thong challenge",
