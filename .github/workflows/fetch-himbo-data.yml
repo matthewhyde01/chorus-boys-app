@@ -31,7 +31,7 @@ jobs:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
           python - <<'EOF'
@@ -92,7 +92,7 @@ jobs:
           WITHINGS_CLIENT_ID: ${{ secrets.WITHINGS_CLIENT_ID }}
           WITHINGS_CLIENT_SECRET: ${{ secrets.WITHINGS_CLIENT_SECRET }}
           WITHINGS_REFRESH_TOKEN: ${{ secrets.WITHINGS_REFRESH_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
           python - <<'EOF'
@@ -188,8 +188,6 @@ jobs:
               return ""
 
           def fetch_blocks(block_id, depth=0):
-              """Fetch all blocks with pagination, recursing up to 5 levels deep.
-              Also queries embedded child_database blocks."""
               results = []
               cursor = None
               while True:
@@ -209,7 +207,6 @@ jobs:
                       text = extract_block_text(block)
                       children = []
                       if bt == "child_database" and depth < 3:
-                          # Query the embedded database — get last 10 pages sorted newest first
                           children = fetch_database_pages(block["id"], depth)
                       elif block.get("has_children") and depth < 5:
                           children = fetch_blocks(block["id"], depth + 1)
@@ -220,7 +217,6 @@ jobs:
               return results
 
           def fetch_database_pages(db_id, depth=0):
-              """Query a Notion database and return content from its most recent pages."""
               r = requests.post(
                   f"https://api.notion.com/v1/databases/{db_id}/query",
                   headers={**notion_headers, "content-type": "application/json"},
@@ -236,7 +232,6 @@ jobs:
               pages = r.json().get("results", [])
               results = []
               for page in pages:
-                  # Extract page title from properties
                   title = ""
                   for prop in page.get("properties", {}).values():
                       if prop.get("type") == "title":
@@ -244,7 +239,6 @@ jobs:
                           break
                   if not title:
                       title = page.get("id", "")[:8]
-                  # Fetch page body blocks (one more level deep)
                   children = fetch_blocks(page["id"], depth + 1) if depth < 3 else []
                   results.append({"type": "heading_2", "text": title, "children": children})
               return results
@@ -268,7 +262,6 @@ jobs:
               json.dump({"voice_brief": full_text}, f, indent=2)
           print(f"Notion: voice brief written ({len(full_text)} chars)")
 
-          # ── Claude helper ─────────────────────────────────────────────────
           def claude_call(system, user, model="claude-haiku-4-5-20251001", max_tokens=1000):
               r = requests.post(
                   "https://api.anthropic.com/v1/messages",
@@ -295,7 +288,6 @@ jobs:
                   t = t.rsplit("```", 1)[0]
               return t.strip()
 
-          # ── Extract challenges + completed + stretch ───────────────────────
           print("Extracting challenges...")
           raw_challenges = claude_call(
               "You are a data parser. Extract challenges from the Himbo Notion page. "
@@ -344,17 +336,12 @@ jobs:
           print(f"Completed: {completed}")
           print(f"Stretch: {stretch}")
 
-          # ── Joy Police — structured Himbo-voiced breakdown ────────────────
           print("Generating Joy Police card...")
-
-          # Extract the last 2 Saturday reflection log entries from the full text
-          # Look for "Saturday" entries — they appear as headings in the flattened text
           import re
           saturday_blocks = re.findall(
               r'(?:Saturday\s+\d+\s+\w+\s+\d{4}.*?)(?=Saturday\s+\d+\s+\w+\s+\d{4}|$)',
               full_text, re.DOTALL | re.IGNORECASE
           )
-          # Take last 2 entries (most recent) and cap at 3000 chars total
           recent_entries = "\n\n---\n\n".join(saturday_blocks[-2:])[:3000] if saturday_blocks else ""
 
           if recent_entries:
@@ -394,15 +381,12 @@ jobs:
               json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", **joy_data}, f, indent=2)
           print(f"Joy Police written: rounds={len(joy_data.get('rounds',''))} chars")
 
-          # ── Generate sleep AI card ────────────────────────────────────────
           print("Generating sleep AI card...")
           sleep_analysis = ""
           try:
               with open("data/sleep.json") as f:
                   sleep_csv = f.read()
               sleep_sample = "\n".join(sleep_csv.strip().split("\n")[:55])
-
-              # Use first 1500 chars of voice brief for character context
               voice_context = full_text[:1500]
 
               sleep_analysis = claude_call(
@@ -457,7 +441,6 @@ jobs:
               if datetime.strptime(a["start_date"][:19], "%Y-%m-%dT%H:%M:%S") >= cutoff
           ]
 
-          # Load existing summaries to avoid regenerating on every sync
           summaries = {}
           try:
               with open("data/activity_summaries.json") as f:
