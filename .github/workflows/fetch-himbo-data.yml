@@ -87,9 +87,11 @@ jobs:
           WITHINGS_CLIENT_ID: ${{ secrets.WITHINGS_CLIENT_ID }}
           WITHINGS_CLIENT_SECRET: ${{ secrets.WITHINGS_CLIENT_SECRET }}
           WITHINGS_REFRESH_TOKEN: ${{ secrets.WITHINGS_REFRESH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           python - <<'EOF'
-          import requests, json, os
+          import requests, json, os, subprocess
           from datetime import datetime, timedelta
 
           # Refresh access token
@@ -105,7 +107,19 @@ jobs:
           if token_data.get("status") != 0:
               print(f"Withings token refresh error: {json.dumps(token_data)}")
               raise RuntimeError(f"Withings API returned status {token_data.get('status')}: {token_data.get('error', 'unknown error')}")
-          access_token = token_data["body"]["access_token"]
+          body = token_data["body"]
+          access_token = body["access_token"]
+
+          # Withings rotates refresh tokens — update the secret so next run works
+          new_refresh = body.get("refresh_token", os.environ["WITHINGS_REFRESH_TOKEN"])
+          if new_refresh != os.environ["WITHINGS_REFRESH_TOKEN"]:
+              subprocess.run(
+                  ["gh", "secret", "set", "WITHINGS_REFRESH_TOKEN", "--body", new_refresh,
+                   "--repo", os.environ["REPO"]],
+                  env={**os.environ, "GH_TOKEN": os.environ["GH_TOKEN"]},
+                  check=True
+              )
+              print("Withings: refresh token rotated and secret updated")
 
           # Fetch body composition — last 30 days
           # Measure types: 1=weight, 6=fat%, 8=fat mass, 76=muscle mass, 77=hydration
