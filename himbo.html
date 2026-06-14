@@ -28,6 +28,9 @@
       --text-primary: rgba(255,255,255,0.92);
       --text-secondary: rgba(255,255,255,0.45);
       --text-muted: rgba(255,255,255,0.25);
+      --sleep-deep: #7BAE7F;
+      --sleep-rem: #E8A84A;
+      --sleep-core: #6B7FD7;
     }
 
     body {
@@ -314,6 +317,11 @@
       color: var(--text-muted);
     }
 
+    /* SLEEP STAGE COLOURS */
+    .sleep-deep { color: var(--sleep-deep); }
+    .sleep-rem  { color: var(--sleep-rem); }
+    .sleep-core { color: var(--sleep-core); }
+
     /* DIVIDER */
     hr { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
 
@@ -364,24 +372,22 @@
           <div class="metric-label">Weight</div>
           <div class="metric-value" id="d-weight">79.9<span class="metric-unit">kg</span></div>
           <div class="metric-delta delta-flat" id="d-weight-delta">— flat</div>
-          <div id="d-weight-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Fat mass</div>
           <div class="metric-value" id="d-fat">13.7<span class="metric-unit">kg</span></div>
-          <div id="d-fat-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Muscle mass</div>
           <div class="metric-value" id="d-muscle">62.9<span class="metric-unit">kg</span></div>
-          <div id="d-muscle-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Hydration</div>
           <div class="metric-value" id="d-hydration">44.1<span class="metric-unit">kg</span></div>
-          <div id="d-hydration-avg" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
       </div>
+      <!-- Separate detail cards — populated by JS -->
+      <div id="body-detail-cards" style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;"></div>
     </section>
 
     <section class="section" aria-label="Weight trend chart">
@@ -391,6 +397,7 @@
       </div>
       <div class="chart-legend">
         <span><span class="legend-dot" style="background:#E8458B;"></span>Weight (kg)</span>
+        <span><span class="legend-dot" style="background:rgba(201,150,58,0.6);display:inline-block;width:10px;height:2px;border-top:2px dashed rgba(201,150,58,0.7);"></span>Trend</span>
         <span style="margin-left:auto;">Target: maintain or increase slowly during bulk</span>
       </div>
     </section>
@@ -398,24 +405,24 @@
     <hr>
 
     <section class="section" aria-label="Nutrition">
-      <div class="section-title">Nutrition</div>
+      <div class="section-title">Nutrition — 7-day average</div>
       <div class="grid-4">
         <div class="metric-card pink-border">
-          <div class="metric-label">Daily kJ</div>
+          <div class="metric-label">Avg daily kJ</div>
           <div class="metric-value" id="d-kj">14,175<span class="metric-unit">kJ</span></div>
           <div class="metric-delta delta-warn" id="d-kj-note">Target: 16,000kJ</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Protein</div>
+          <div class="metric-label">Avg protein</div>
           <div class="metric-value" id="d-protein">201<span class="metric-unit">g</span></div>
-          <div class="metric-delta delta-up">Target: 180g ✓</div>
+          <div class="metric-delta delta-up" id="d-protein-note">Target: 180g ✓</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Carbs</div>
+          <div class="metric-label">Avg carbs</div>
           <div class="metric-value" id="d-carbs">413<span class="metric-unit">g</span></div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Fat</div>
+          <div class="metric-label">Avg fat</div>
           <div class="metric-value" id="d-fat-g">105<span class="metric-unit">g</span></div>
         </div>
       </div>
@@ -459,18 +466,22 @@
         <div class="metric-card">
           <div class="metric-label">Run / walk</div>
           <div class="metric-value" id="d-run">17.8<span class="metric-unit">km</span></div>
+          <div id="d-run-trend" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Swim</div>
           <div class="metric-value" id="d-swim">2,000<span class="metric-unit">m</span></div>
+          <div id="d-swim-trend" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Active energy</div>
           <div class="metric-value" id="d-active">5,233<span class="metric-unit">kJ</span></div>
+          <div id="d-active-trend" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Resting energy</div>
           <div class="metric-value" id="d-resting">—<span class="metric-unit">kJ</span></div>
+          <div id="d-resting-trend" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
         <div class="metric-card">
           <div class="metric-label">HRV</div>
@@ -479,7 +490,8 @@
         </div>
         <div class="metric-card">
           <div class="metric-label">VO₂ Max</div>
-          <div class="metric-value" id="d-vo2">—<span class="metric-unit" style="font-size:11px;">mL/min·kg</span></div>
+          <div class="metric-value" id="d-vo2">—<span class="metric-unit" style="font-size:11px;">mL/kg/min</span></div>
+          <div id="d-vo2-trend" style="font-size:10px;color:var(--text-muted);margin-top:3px;"></div>
         </div>
       </div>
     </section>
@@ -493,6 +505,10 @@
       <div class="section-title">Sleep — last 7 nights</div>
       <div id="sleep-summary" style="margin-bottom:12px;"></div>
       <div id="sleep-feed"><div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div></div>
+      <div class="metric-card pink-border" id="sleep-ai-card" style="margin-top:12px;">
+        <div class="metric-label" style="margin-bottom:8px;">Himbo on your sleep</div>
+        <div id="sleep-ai-text" style="font-size:13px;line-height:1.7;color:var(--text-primary);font-style:italic;color:var(--text-secondary);">Loading…</div>
+      </div>
     </section>
 
     <hr>
@@ -521,61 +537,18 @@
 
     <section class="section" aria-label="Active challenges">
       <div class="section-title">Challenges</div>
-
-      <div class="track-label">Track 1 — Visibility</div>
-      <div class="challenge-item done">
-        <span class="c-dot done"></span>
-        <div>
-          <div class="c-text">Wear the knit cardigan to Bold &amp; Beautiful ✅</div>
-          <div class="c-tag">Set 6 June · Completed 7 June · Ally said it was lovely</div>
-        </div>
-      </div>
-
-      <div class="track-label" style="margin-top:1rem;">Track 3 — Internal work</div>
-      <div class="challenge-item active">
-        <span class="c-dot active"></span>
-        <div>
-          <div class="c-text">Immunity to Change map — name the assumption underneath the joy police behaviour.</div>
-          <div class="c-tag">Ongoing · 3-month milestone</div>
-        </div>
-      </div>
-
-      <div class="track-label gold" style="margin-top:1rem;">Stretch goals</div>
-      <div class="challenge-item stretch">
-        <span class="c-dot stretch"></span>
-        <div>
-          <div class="c-text">Wear a pink thong in the men's change room after a swim — no flinching, no rushing.</div>
-          <div class="c-tag">Joint with Eros · No deadline · Done when done</div>
-        </div>
+      <div id="challenges-container">
+        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading challenges from Notion…</div>
       </div>
     </section>
 
     <hr>
 
     <section class="section" aria-label="Joy police log">
-      <div class="section-title">Joy police — week of 7 June</div>
+      <div class="section-title">Joy police</div>
       <div class="metric-card pink-border">
-        <div class="joy-item">
-          <span class="joy-dot loss"></span>
-          <span class="joy-text">Pink hat left at home for run club — "too warm"</span>
-        </div>
-        <div class="joy-item">
-          <span class="joy-dot loss"></span>
-          <span class="joy-text">Knit cardigan skipped for run club — "too much"</span>
-        </div>
-        <div class="joy-item">
-          <span class="joy-dot win"></span>
-          <span class="joy-text">Stood in chemist aisle, took time comparing nail polish without shrinking</span>
-        </div>
-        <div class="joy-item">
-          <span class="joy-dot win"></span>
-          <span class="joy-text">Wore knit cardigan to Bold &amp; Beautiful — unbothered</span>
-        </div>
-        <div class="joy-item">
-          <span class="joy-dot win"></span>
-          <span class="joy-text">Mod About You on toes — Himbo pink, chosen deliberately</span>
-        </div>
-        <div class="joy-score">Wins: 3 &nbsp;·&nbsp; Losses: 2 &nbsp;·&nbsp; <span style="color:#7BAE7F;font-weight:500;">Matt won the week 💅</span></div>
+        <div class="metric-label" style="margin-bottom:8px;">From the most recent check-in</div>
+        <div id="joy-ai-text" style="font-size:13px;line-height:1.7;color:var(--text-primary);font-style:italic;color:var(--text-secondary);">Loading…</div>
       </div>
     </section>
 
@@ -607,7 +580,7 @@
     // Date
     document.getElementById('nav-date').textContent = new Date().toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
-    // Weight chart
+    // Weight chart — initialised with placeholder data; async section replaces it
     const weightData = {
       labels: ['26 May','27 May','28 May','29 May','30 May','31 May','1 Jun','2 Jun','3 Jun','4 Jun','5 Jun','6 Jun'],
       values: [79.78,79.24,79.49,79.85,79.93,80.16,80.30,79.45,79.99,79.50,78.58,79.90]
@@ -618,25 +591,37 @@
       type: 'line',
       data: {
         labels: weightData.labels,
-        datasets: [{
-          label: 'Weight (kg)',
-          data: weightData.values,
-          borderColor: '#E8458B',
-          backgroundColor: 'rgba(232,69,139,0.06)',
-          pointBackgroundColor: '#E8458B',
-          pointRadius: 3,
-          pointHoverRadius: 5,
-          fill: true,
-          tension: 0.3,
-          borderWidth: 2
-        }]
+        datasets: [
+          {
+            label: 'Weight (kg)',
+            data: weightData.values,
+            borderColor: '#E8458B',
+            backgroundColor: 'rgba(232,69,139,0.06)',
+            pointBackgroundColor: '#E8458B',
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            fill: true,
+            tension: 0.3,
+            borderWidth: 2
+          },
+          {
+            label: 'Trend',
+            data: [],
+            borderColor: 'rgba(201,150,58,0.7)',
+            borderDash: [5, 4],
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: false,
+            tension: 0
+          }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
-          tooltip: { callbacks: { label: ctx => ctx.parsed.y.toFixed(2) + ' kg' } }
+          tooltip: { callbacks: { label: ctx => ctx.datasetIndex === 0 ? ctx.parsed.y.toFixed(2) + ' kg' : 'Trend: ' + ctx.parsed.y.toFixed(2) + ' kg' } }
         },
         scales: {
           y: {
@@ -677,6 +662,18 @@
       return ['Swim','Rowing','VirtualRow'].includes(sport)
         ? `${Math.round(meters)} m`
         : `${(meters / 1000).toFixed(1)} km`;
+    }
+
+    function linearRegression(values) {
+      const n = values.length;
+      if (n < 2) return values.slice();
+      const sumX = n * (n - 1) / 2;
+      const sumY = values.reduce((a, b) => a + b, 0);
+      const sumXY = values.reduce((s, v, i) => s + i * v, 0);
+      const sumX2 = values.reduce((s, _, i) => s + i * i, 0);
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const intercept = (sumY - slope * sumX) / n;
+      return values.map((_, i) => parseFloat((slope * i + intercept).toFixed(3)));
     }
 
     // Splits a CSV line into exactly `n` fields using the first n-1 commas
@@ -734,13 +731,29 @@
       return date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
     }
 
+    function renderTrend(elId, curr, prev, unit, higherGood, decimals = 1) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      if (curr == null || prev == null || prev === 0) {
+        if (curr != null) el.innerHTML = `<span style="color:var(--text-muted);">no prev data</span>`;
+        return;
+      }
+      const pct = (curr - prev) / Math.abs(prev) * 100;
+      const absDiff = Math.abs(curr - prev).toFixed(decimals);
+      const cls = trendClass(pct, higherGood);
+      const sign = pct > 0 ? '+' : '−';
+      el.innerHTML = `<span class="${cls}">${trendArrow(pct)} ${sign}${absDiff}${unit}</span> <span style="color:var(--text-muted);">vs prev 7d</span>`;
+    }
+
     const now = new Date();
-    const sevenDaysAgo   = new Date(now - 7  * 86400000);
+    const sevenDaysAgo    = new Date(now - 7  * 86400000);
     const fourteenDaysAgo = new Date(now - 14 * 86400000);
+    const sevenAgoIso     = sevenDaysAgo.toISOString().slice(0, 10);
+    const fourteenAgoIso  = fourteenDaysAgo.toISOString().slice(0, 10);
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, challengesRes, joyRes, sleepAiRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
@@ -748,6 +761,9 @@
       fetch('data/activity.json').then(r => r.json()),
       fetch('data/himbo_voice.json').then(r => r.json()),
       fetch('data/activity_summaries.json').then(r => r.json()),
+      fetch('data/himbo_challenges.json').then(r => r.json()),
+      fetch('data/himbo_joy.json').then(r => r.json()),
+      fetch('data/himbo_sleep_ai.json').then(r => r.json()),
     ]);
 
     let sufferScore3d = 0;
@@ -770,19 +786,21 @@
         if ([1, 6, 76, 77].every(t => t in latest)) break;
       }
 
-      const weight = latest[1], fatPct = latest[6], muscle = latest[76], hydration = latest[77];
+      const weight    = latest[1];
+      const fatPct    = latest[6];
+      const muscle    = latest[76];
+      const hydration = latest[77];
+      const fatKg     = (weight != null && fatPct != null) ? weight * fatPct / 100 : null;
+      const fatPctCalc = (fatKg != null && weight != null && weight > 0) ? fatKg / weight * 100 : null;
 
       if (weight    != null) document.getElementById('d-weight').innerHTML    = weight.toFixed(1)    + '<span class="metric-unit">kg</span>';
       if (muscle    != null) document.getElementById('d-muscle').innerHTML    = muscle.toFixed(1)    + '<span class="metric-unit">kg</span>';
       if (hydration != null) document.getElementById('d-hydration').innerHTML = hydration.toFixed(1) + '<span class="metric-unit">kg</span>';
-      if (fatPct != null && weight != null) {
-        document.getElementById('d-fat').innerHTML = (weight * fatPct / 100).toFixed(1) + '<span class="metric-unit">kg</span>';
-      }
+      if (fatKg     != null) document.getElementById('d-fat').innerHTML       = fatKg.toFixed(1)     + '<span class="metric-unit">kg</span>';
 
       // 7-day vs previous 7-day averages
-      const sevenAgoTs  = now / 1000 - 7  * 86400;
+      const sevenAgoTs    = now / 1000 - 7  * 86400;
       const fourteenAgoTs = now / 1000 - 14 * 86400;
-
       const avg7 = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
 
       const extractVals = (grpList) => {
@@ -800,46 +818,69 @@
         return v;
       };
 
-      const curr7  = extractVals(grps.filter(g => g.date >= sevenAgoTs));
-      const prev7  = extractVals(grps.filter(g => g.date >= fourteenAgoTs && g.date < sevenAgoTs));
+      const curr7 = extractVals(grps.filter(g => g.date >= sevenAgoTs));
+      const prev7 = extractVals(grps.filter(g => g.date >= fourteenAgoTs && g.date < sevenAgoTs));
 
-      const trendSlots = [
-        // [avgId, deltaId, metric, unit, higherIsBetter]
-        ['d-weight-avg',    'weight',    'kg', false],
-        ['d-fat-avg',       'fat',       'kg', false],
-        ['d-muscle-avg',    'muscle',    'kg', true],
-        ['d-hydration-avg', 'hydration', 'kg', true],
-      ];
+      const thisWeightAvg    = avg7(curr7.weight);
+      const prevWeightAvg    = avg7(prev7.weight);
+      const thisFatAvg       = avg7(curr7.fat);
+      const prevFatAvg       = avg7(prev7.fat);
+      const thisMuscleAvg    = avg7(curr7.muscle);
+      const prevMuscleAvg    = avg7(prev7.muscle);
+      const thisHydrationAvg = avg7(curr7.hydration);
+      const prevHydrationAvg = avg7(prev7.hydration);
 
-      for (const [id, metric, unit, higherGood] of trendSlots) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        const currAvg = avg7(curr7[metric]);
-        const prevAvg = avg7(prev7[metric]);
-        if (currAvg == null) continue;
-        if (prevAvg == null || prevAvg === 0) {
-          el.innerHTML = `7d avg <strong>${currAvg.toFixed(1)} ${unit}</strong>`;
-          continue;
-        }
-        const pct = (currAvg - prevAvg) / prevAvg * 100;
-        const cls = trendClass(pct, higherGood);
-        const sign = pct > 0 ? '+' : '';
-        el.innerHTML = `<span class="${cls}" style="font-size:13px;font-weight:600;">${trendArrow(pct)} ${sign}${pct.toFixed(1)}%</span> <span style="font-size:10px;color:var(--text-muted);">vs prev 7d &nbsp;·&nbsp; avg ${currAvg.toFixed(1)} ${unit}</span>`;
+      // Weight delta in the main card: this week avg vs prev week avg in kg
+      const wDeltaEl = document.getElementById('d-weight-delta');
+      if (wDeltaEl && thisWeightAvg != null && prevWeightAvg != null) {
+        const kgDiff = thisWeightAvg - prevWeightAvg;
+        const sign = kgDiff >= 0 ? '+' : '';
+        const cls  = kgDiff > 0.1 ? 'metric-delta delta-up' : kgDiff < -0.1 ? 'metric-delta delta-down' : 'metric-delta delta-flat';
+        wDeltaEl.className = cls;
+        wDeltaEl.textContent = `${sign}${kgDiff.toFixed(2)} kg vs prev 7d avg`;
       }
 
-      // Weight delta: latest single reading vs previous reading (kept for the pink weight card)
-      if (grps.length >= 2 && weight != null) {
-        const prevGrp = grps[1].measures.find(m => m.type === 1);
-        if (prevGrp) {
-          const delta = (weight - withVal(prevGrp.value, prevGrp.unit)).toFixed(2);
-          const el = document.getElementById('d-weight-delta');
-          if (delta > 0)      { el.textContent = `↑ +${delta} kg vs last weigh-in`; el.className = 'metric-delta delta-up'; }
-          else if (delta < 0) { el.textContent = `↓ ${delta} kg vs last weigh-in`;  el.className = 'metric-delta delta-down'; }
-          else                { el.textContent = '— flat vs last weigh-in';          el.className = 'metric-delta delta-flat'; }
-        }
+      // Fat % for main fat card
+      if (fatPctCalc != null) {
+        const fatEl = document.getElementById('d-fat');
+        if (fatEl) fatEl.innerHTML = fatKg.toFixed(1) + '<span class="metric-unit">kg</span><span style="font-size:12px;color:var(--text-muted);margin-left:8px;">' + fatPctCalc.toFixed(1) + '%</span>';
       }
 
-      // Weight trend chart
+      // Body detail cards
+      const detailEl = document.getElementById('body-detail-cards');
+      if (detailEl) {
+        function detailCard(label, currAvg, prevAvg, unit, higherGood, extraLine) {
+          if (currAvg == null) return '';
+          const hasPrev = prevAvg != null && prevAvg !== 0;
+          let deltaHtml = '';
+          if (hasPrev) {
+            const kgDiff = currAvg - prevAvg;
+            const pct    = kgDiff / Math.abs(prevAvg) * 100;
+            const cls    = trendClass(pct, higherGood);
+            const sign   = kgDiff >= 0 ? '+' : '';
+            deltaHtml = `<div class="metric-delta ${cls}" style="margin-top:4px;">${trendArrow(pct)} ${sign}${kgDiff.toFixed(2)} ${unit} vs prev 7d</div>`;
+          }
+          return `<div class="metric-card" style="padding:12px 14px;">
+            <div class="metric-label" style="margin-bottom:6px;">${label}</div>
+            <div style="font-size:13px;color:var(--text-primary);">This 7d avg <strong>${currAvg.toFixed(1)} ${unit}</strong></div>
+            ${hasPrev ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Prev 7d avg ${prevAvg.toFixed(1)} ${unit}</div>` : ''}
+            ${deltaHtml}
+            ${extraLine || ''}
+          </div>`;
+        }
+
+        // Fat % for detail card
+        const fatPctCurrDetail = (thisFatAvg != null && thisWeightAvg != null && thisWeightAvg > 0) ? (thisFatAvg / thisWeightAvg * 100).toFixed(1) + '%' : null;
+        const fatExtra = fatPctCurrDetail ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Body fat ${fatPctCurrDetail}</div>` : '';
+
+        detailEl.innerHTML =
+          detailCard('Weight — detail', thisWeightAvg, prevWeightAvg, 'kg', false) +
+          detailCard('Fat mass — detail', thisFatAvg, prevFatAvg, 'kg', false, fatExtra) +
+          detailCard('Muscle — detail', thisMuscleAvg, prevMuscleAvg, 'kg', true) +
+          detailCard('Hydration — detail', thisHydrationAvg, prevHydrationAvg, 'kg', true);
+      }
+
+      // Weight trend chart — real data + linear regression
       const pts = grps
         .filter(g => g.date * 1000 >= fourteenDaysAgo.getTime())
         .map(g => { const m = g.measures.find(m => m.type === 1); return m ? { d: new Date(g.date * 1000), v: withVal(m.value, m.unit) } : null; })
@@ -849,6 +890,7 @@
         const vals = pts.map(p => p.v);
         weightChart.data.labels = pts.map(p => p.d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }));
         weightChart.data.datasets[0].data = vals;
+        weightChart.data.datasets[1].data = linearRegression(vals);
         weightChart.options.scales.y.min = Math.floor(Math.min(...vals) - 0.5);
         weightChart.options.scales.y.max = Math.ceil(Math.max(...vals)  + 0.5);
         weightChart.update();
@@ -871,18 +913,32 @@
       const recent = s.activities
         .filter(a => new Date(a.start_date_local) >= sevenDaysAgo)
         .sort((a, b) => new Date(b.start_date_local) - new Date(a.start_date_local));
+      const prevWeekActs = s.activities
+        .filter(a => { const d = new Date(a.start_date_local); return d >= fourteenDaysAgo && d < sevenDaysAgo; });
 
       let runKm = 0, swimM = 0;
+      let runKmPrev = 0, swimMPrev = 0;
+
       for (const a of recent) {
         if (['Run','Walk','TrailRun','Hike'].includes(a.sport_type)) runKm += a.distance / 1000;
         if (a.sport_type === 'Swim') swimM += a.distance;
         const age = (now - new Date(a.start_date_local)) / 86400000;
         if (age <= 3 && a.suffer_score) sufferScore3d += a.suffer_score;
       }
+      for (const a of prevWeekActs) {
+        if (['Run','Walk','TrailRun','Hike'].includes(a.sport_type)) runKmPrev += a.distance / 1000;
+        if (a.sport_type === 'Swim') swimMPrev += a.distance;
+      }
+
       const gymSessions = recent.filter(a => ['WeightTraining','Workout','CrossFit'].includes(a.sport_type)).length;
       if (runKm > 0) document.getElementById('d-run').innerHTML  = runKm.toFixed(1) + '<span class="metric-unit">km</span>';
       if (swimM > 0) document.getElementById('d-swim').innerHTML = Math.round(swimM).toLocaleString() + '<span class="metric-unit">m</span>';
       document.getElementById('d-gym-sessions').textContent = gymSessions > 0 ? gymSessions : '—';
+
+      // Run trend
+      renderTrend('d-run-trend', runKm > 0 ? runKm : null, runKmPrev > 0 ? runKmPrev : null, ' km', true);
+      // Swim trend
+      renderTrend('d-swim-trend', swimM > 0 ? swimM : null, swimMPrev > 0 ? swimMPrev : null, ' m', true, 0);
 
       const feed = document.getElementById('strava-feed');
       if (recent.length === 0) {
@@ -912,13 +968,29 @@
     if (actRes.status === 'fulfilled') try {
       const act = actRes.value;
       const entries = (act.entries || []).filter(e => !e.is_today);
-      const sevenAgoIso = sevenDaysAgo.toISOString().slice(0, 10);
-      const byType = type => entries.filter(e => e.type === type).sort((a, b) => b.date_iso.localeCompare(a.date_iso));
 
-      const hrvEntries = byType('Heart Rate Variability');
+      // Match multiple possible type names from different export formats
+      const byTypeMulti = (...types) => entries
+        .filter(e => types.some(t => e.type === t))
+        .sort((a, b) => (b.date_iso || b.date_only || '').localeCompare(a.date_iso || a.date_only || ''));
+
+      const hrvEntries    = byTypeMulti('Heart Rate Variability', 'HRV', 'HeartRateVariability');
+      const vo2Entries    = byTypeMulti('VO2 Max', 'VO2Max', 'VO₂ Max', 'Cardio Fitness', 'CardioFitness');
+      const activeEntries = byTypeMulti('Active Energy Burned', 'Active Calories', 'Active Energy', 'ActiveEnergyBurned');
+      const restingEntries = byTypeMulti('Basal Energy Burned', 'Resting Energy Burned', 'Resting Energy', 'BasalEnergyBurned', 'Resting Calories');
+
+      function metricTrend(entries, elId, unit, higherGood, format = v => Math.round(v)) {
+        const curr7  = entries.filter(e => (e.date_iso || e.date_only || '') >= sevenAgoIso);
+        const prev7  = entries.filter(e => { const d = (e.date_iso || e.date_only || ''); return d >= fourteenAgoIso && d < sevenAgoIso; });
+        if (curr7.length === 0 && prev7.length === 0) return;
+        const currAvg = curr7.length ? curr7.reduce((s, e) => s + e.value, 0) / curr7.length : null;
+        const prevAvg = prev7.length ? prev7.reduce((s, e) => s + e.value, 0) / prev7.length : null;
+        renderTrend(elId, currAvg, prevAvg, ' ' + unit, higherGood, 1);
+      }
+
       if (hrvEntries.length > 0) {
         latestHRV = hrvEntries[0].value;
-        const hrv7 = hrvEntries.filter(e => e.date_only >= sevenAgoIso);
+        const hrv7 = hrvEntries.filter(e => (e.date_iso || e.date_only || '') >= sevenAgoIso);
         hrv7dAvg = hrv7.length > 0 ? hrv7.reduce((s, e) => s + e.value, 0) / hrv7.length : null;
         document.getElementById('d-hrv').innerHTML = Math.round(latestHRV) + '<span class="metric-unit">ms</span>';
         const avgEl = document.getElementById('d-hrv-avg');
@@ -928,21 +1000,29 @@
         }
       }
 
-      const vo2Entries = byType('VO2 Max');
       if (vo2Entries.length > 0) {
         document.getElementById('d-vo2').innerHTML = vo2Entries[0].value.toFixed(1) + '<span class="metric-unit">mL/kg/min</span>';
+        metricTrend(vo2Entries, 'd-vo2-trend', 'mL/kg/min', true);
       }
 
-      const activeEntries = byType('Active Energy Burned');
       if (activeEntries.length > 0) {
         const e = activeEntries[0];
-        document.getElementById('d-active').innerHTML = Math.round(e.value) + `<span class="metric-unit">${e.unit}</span>`;
+        document.getElementById('d-active').innerHTML = Math.round(e.value) + `<span class="metric-unit">${e.unit || 'kJ'}</span>`;
+        metricTrend(activeEntries, 'd-active-trend', e.unit || 'kJ', true);
+      } else if (sRes.status === 'fulfilled') {
+        // Fallback: sum Strava kilojoules for the week
+        const stravaKj = (sRes.value.activities || [])
+          .filter(a => new Date(a.start_date_local) >= sevenDaysAgo)
+          .reduce((s, a) => s + (a.kilojoules || 0), 0);
+        if (stravaKj > 0) {
+          document.getElementById('d-active').innerHTML = Math.round(stravaKj).toLocaleString() + '<span class="metric-unit">kJ</span>';
+        }
       }
 
-      const restingEntries = byType('Basal Energy Burned');
       if (restingEntries.length > 0) {
         const e = restingEntries[0];
-        document.getElementById('d-resting').innerHTML = Math.round(e.value) + `<span class="metric-unit">${e.unit}</span>`;
+        document.getElementById('d-resting').innerHTML = Math.round(e.value) + `<span class="metric-unit">${e.unit || 'kJ'}</span>`;
+        metricTrend(restingEntries, 'd-resting-trend', e.unit || 'kJ', true);
       }
     } catch(e) { console.error('Activity:', e); }
 
@@ -973,7 +1053,7 @@
         lastNightSecs = last.Core + last.Deep + last.REM + last.Asleep;
       }
 
-      // 7-day summary row
+      // 7-day summary row — larger fonts, colour-coded stages
       const summaryEl = document.getElementById('sleep-summary');
       if (summaryEl && nightKeys.length > 0) {
         const totals = nightKeys.map(k => {
@@ -991,9 +1071,9 @@
           <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;">
             <span class="metric-label" style="margin:0;">7-day avg</span>
             <span style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;" class="${scls}">${sh}h ${sm}m</span>
-            ${avgDeep > 0 ? `<span style="font-size:10px;color:var(--text-muted);">Deep ${fmtSecs(avgDeep)}</span>` : ''}
-            ${avgCore > 0 ? `<span style="font-size:10px;color:var(--text-muted);">Core ${fmtSecs(avgCore)}</span>` : ''}
-            ${avgREM  > 0 ? `<span style="font-size:10px;color:var(--text-muted);">REM ${fmtSecs(avgREM)}</span>`  : ''}
+            ${avgDeep > 0 ? `<span style="font-size:14px;font-weight:600;" class="sleep-deep">Deep ${fmtSecs(avgDeep)}</span>` : ''}
+            ${avgCore > 0 ? `<span style="font-size:14px;font-weight:600;" class="sleep-core">Core ${fmtSecs(avgCore)}</span>` : ''}
+            ${avgREM  > 0 ? `<span style="font-size:14px;font-weight:600;" class="sleep-rem">REM ${fmtSecs(avgREM)}</span>`  : ''}
           </div>
         </div>`;
       }
@@ -1010,10 +1090,10 @@
           const cls  = sleep >= 8 * 3600 ? 'delta-up' : sleep >= 6 * 3600 ? 'delta-warn' : 'delta-down';
           const note = sleep >= 8 * 3600 ? '✓ 8h' : `short ${fmtSecs(8 * 3600 - sleep)}`;
           const stages = [
-            n.Deep  > 0 ? `Deep ${fmtSecs(n.Deep)}`   : '',
-            n.Core  > 0 ? `Core ${fmtSecs(n.Core)}`   : '',
-            n.REM   > 0 ? `REM ${fmtSecs(n.REM)}`     : '',
-            n.Awake > 0 ? `Awake ${fmtSecs(n.Awake)}` : '',
+            n.Deep  > 0 ? `<span class="sleep-deep">Deep ${fmtSecs(n.Deep)}</span>`   : '',
+            n.Core  > 0 ? `<span class="sleep-core">Core ${fmtSecs(n.Core)}</span>`   : '',
+            n.REM   > 0 ? `<span class="sleep-rem">REM ${fmtSecs(n.REM)}</span>`     : '',
+            n.Awake > 0 ? `<span style="color:var(--text-muted)">Awake ${fmtSecs(n.Awake)}</span>` : '',
           ].filter(Boolean).join(' · ');
           return `<div class="metric-card" style="margin-bottom:8px;">
             <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
@@ -1024,13 +1104,25 @@
               <div class="jewel-fill" style="width:${barPct}%;background:linear-gradient(90deg,#6B7FD7,#9B77D4);"></div>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-              <div style="font-size:10px;color:var(--text-muted);">${stages}</div>
+              <div style="font-size:10px;">${stages}</div>
               <div class="metric-delta ${cls}" style="font-size:10px;">${note}</div>
             </div>
           </div>`;
         }).join('');
       }
     } catch(e) { console.error('Sleep:', e); }
+
+    // ── Sleep AI card ─────────────────────────────────────────────────────────
+
+    if (sleepAiRes.status === 'fulfilled') try {
+      const ai = sleepAiRes.value;
+      const el = document.getElementById('sleep-ai-text');
+      if (el && ai.analysis) {
+        el.textContent = ai.analysis;
+        el.style.fontStyle = 'normal';
+        el.style.color = 'var(--text-primary)';
+      }
+    } catch(e) { console.error('Sleep AI:', e); }
 
     // ── Nutrition ────────────────────────────────────────────────────────────
 
@@ -1047,23 +1139,35 @@
       }
 
       const todayKey = dayLabel(now);
+      // Exclude today entirely — show 7-day average of completed days
       const dayKeys = Object.keys(byDay)
-        .filter(k => !(k === todayKey && (byDay[k]['Dietary Calories'] || 0) < 8000))
+        .filter(k => k !== todayKey)
         .sort((a, b) => byDay[a]._date - byDay[b]._date)
         .slice(-7);
 
       if (dayKeys.length > 0) {
-        const lat = byDay[dayKeys[dayKeys.length - 1]];
-        const kj = lat['Dietary Calories'], pr = lat['Protein'], carbs = lat['Carbohydrates'], fat = lat['Total Fat'];
+        const avg = key => {
+          const vals = dayKeys.map(k => byDay[k][key] || 0).filter(v => v > 0);
+          return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
+        };
+        const kj    = avg('Dietary Calories');
+        const pr    = avg('Protein');
+        const carbs = avg('Carbohydrates');
+        const fat   = avg('Total Fat');
+
         if (kj != null) {
           document.getElementById('d-kj').innerHTML = Math.round(kj).toLocaleString() + '<span class="metric-unit">kJ</span>';
           const note = document.getElementById('d-kj-note');
-          if (kj >= 16000) { note.textContent = 'Target: 16,000 kJ ✓'; note.className = 'metric-delta delta-up'; }
-          else             { note.textContent = `Short by ${(16000 - Math.round(kj)).toLocaleString()} kJ`; note.className = 'metric-delta delta-warn'; }
+          if (kj >= 16000) { note.textContent = '7d avg ≥ 16,000 kJ ✓'; note.className = 'metric-delta delta-up'; }
+          else             { note.textContent = `Avg short by ${(16000 - Math.round(kj)).toLocaleString()} kJ`; note.className = 'metric-delta delta-warn'; }
         }
-        if (pr    != null) document.getElementById('d-protein').innerHTML = Math.round(pr)    + '<span class="metric-unit">g</span>';
-        if (carbs != null) document.getElementById('d-carbs').innerHTML   = Math.round(carbs) + '<span class="metric-unit">g</span>';
-        if (fat   != null) document.getElementById('d-fat-g').innerHTML   = Math.round(fat)   + '<span class="metric-unit">g</span>';
+        if (pr != null) {
+          document.getElementById('d-protein').innerHTML = Math.round(pr) + '<span class="metric-unit">g</span>';
+          const pNote = document.getElementById('d-protein-note');
+          if (pNote) { pNote.textContent = pr >= 180 ? '7d avg ≥ 180g ✓' : `Avg ${Math.round(pr)}g of 180g target`; pNote.className = pr >= 180 ? 'metric-delta delta-up' : 'metric-delta delta-warn'; }
+        }
+        if (carbs != null) document.getElementById('d-carbs').innerHTML = Math.round(carbs) + '<span class="metric-unit">g</span>';
+        if (fat   != null) document.getElementById('d-fat-g').innerHTML = Math.round(fat)   + '<span class="metric-unit">g</span>';
       }
 
       const kjVals      = dayKeys.map(k => Math.round(byDay[k]['Dietary Calories'] || 0));
@@ -1161,6 +1265,64 @@
         ].join('<br>');
       }
     } catch(e) { console.error('Readiness:', e); }
+
+    // ── Challenges (from pre-generated Notion data) ───────────────────────────
+
+    if (challengesRes.status === 'fulfilled') try {
+      const c = challengesRes.value;
+      const tracks = c.tracks || {};
+      const container = document.getElementById('challenges-container');
+      if (!container) throw new Error('no container');
+
+      function trackBlock(label, key, dotClass, itemClass, isGold) {
+        const text = tracks[key];
+        const hasChallenge = text && text.trim().toLowerCase() !== 'none' && text.trim() !== '';
+        const marginTop = key === 'track1' ? '' : 'margin-top:1rem;';
+        const labelGold = isGold ? 'gold' : '';
+        let html = `<div class="track-label ${labelGold}" style="${marginTop}">${label}</div>`;
+        if (hasChallenge) {
+          html += `<div class="challenge-item ${itemClass}">
+            <span class="c-dot ${dotClass}"></span>
+            <div>
+              <div class="c-text">${text}</div>
+              <div class="c-tag">Current · ${label}</div>
+            </div>
+          </div>`;
+        } else {
+          html += `<div class="challenge-item done" style="opacity:0.45;">
+            <span class="c-dot done"></span>
+            <div><div class="c-text">No active challenge this week</div></div>
+          </div>`;
+        }
+        return html;
+      }
+
+      container.innerHTML =
+        trackBlock('Track 1 — Visibility',    'track1', 'active', 'active', false) +
+        trackBlock('Track 2 — Physique',      'track2', 'active', 'active', false) +
+        trackBlock('Track 3 — Internal Work', 'track3', 'active', 'active', false);
+
+      if (c.updated_at) {
+        container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
+      }
+    } catch(e) {
+      console.error('Challenges:', e);
+      // Fallback — keep the loading placeholder visible
+    }
+
+    // ── Joy Police (from pre-generated Notion data) ───────────────────────────
+
+    if (joyRes.status === 'fulfilled') try {
+      const j = joyRes.value;
+      const el = document.getElementById('joy-ai-text');
+      if (el && j.entry && j.entry.trim()) {
+        el.textContent = j.entry;
+        el.style.fontStyle = 'normal';
+        el.style.color = 'var(--text-primary)';
+      } else if (el) {
+        el.textContent = 'No Joy Police entry found for this week.';
+      }
+    } catch(e) { console.error('Joy Police:', e); }
 
   })();
   </script>

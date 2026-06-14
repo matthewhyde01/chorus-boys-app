@@ -151,51 +151,169 @@ jobs:
           print("Withings: data written")
           EOF
 
-      - name: Fetch Himbo voice from Notion
+      - name: Fetch Himbo voice from Notion + generate AI cards
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python - <<'EOF'
-          import requests, json, os
+          import requests, json, os, time
+          from datetime import datetime, timedelta
 
-          key = os.environ["NOTION_API_KEY"].strip()
-          if not key:
+          notion_key = os.environ["NOTION_API_KEY"].strip()
+          anthropic_key = os.environ["ANTHROPIC_API_KEY"].strip()
+          if not notion_key:
               raise ValueError("Secret NOTION_API_KEY is not set")
+          if not anthropic_key:
+              raise ValueError("Secret ANTHROPIC_API_KEY is not set")
 
-          headers = {
-              "Authorization": f"Bearer {key}",
+          notion_headers = {
+              "Authorization": f"Bearer {notion_key}",
               "Notion-Version": "2022-06-28",
           }
 
-          page_id = "379db4862bcd81dbbe27d4a8dbb1fa58"
-          r = requests.get(
-              f"https://api.notion.com/v1/blocks/{page_id}/children?page_size=100",
-              headers=headers
-          )
-          if not r.ok:
-              print(f"Notion fetch failed {r.status_code}: {r.text}")
-              r.raise_for_status()
-
-          blocks = r.json().get("results", [])
-
+          PAGE_ID = "379db4862bcd81dbbe27d4a8dbb1fa58"
           TEXT_TYPES = {"paragraph", "heading_1", "heading_2", "heading_3",
-                        "bulleted_list_item", "numbered_list_item", "quote", "callout"}
+                        "bulleted_list_item", "numbered_list_item", "quote", "callout", "toggle"}
 
-          def extract_text(block):
+          def extract_block_text(block):
               bt = block.get("type", "")
               if bt in TEXT_TYPES:
                   rt = block.get(bt, {}).get("rich_text", [])
                   return " ".join(t.get("plain_text", "") for t in rt)
               return ""
 
-          parts = [extract_text(b) for b in blocks]
-          voice_brief = "\n".join(p for p in parts if p.strip())
+          def fetch_blocks(block_id, depth=0):
+              """Fetch blocks with up to 2 levels of children."""
+              url = f"https://api.notion.com/v1/blocks/{block_id}/children?page_size=100"
+              r = requests.get(url, headers=notion_headers)
+              if not r.ok:
+                  print(f"Notion fetch failed for {block_id}: {r.status_code}")
+                  return []
+              results = []
+              for block in r.json().get("results", []):
+                  text = extract_block_text(block)
+                  children = []
+                  if block.get("has_children") and depth < 2:
+                      children = fetch_blocks(block["id"], depth + 1)
+                  results.append({"type": block.get("type", ""), "text": text, "children": children})
+              return results
+
+          def flatten_blocks(blocks, indent=0):
+              lines = []
+              prefix = "  " * indent
+              for b in blocks:
+                  if b["text"]:
+                      lines.append(prefix + b["text"])
+                  if b.get("children"):
+                      lines.extend(flatten_blocks(b["children"], indent + 1))
+              return lines
+
+          print("Fetching Notion page...")
+          blocks = fetch_blocks(PAGE_ID)
+          full_text = "\n".join(flatten_blocks(blocks))
 
           os.makedirs("data", exist_ok=True)
           with open("data/himbo_voice.json", "w") as f:
-              json.dump({"voice_brief": voice_brief}, f, indent=2)
+              json.dump({"voice_brief": full_text}, f, indent=2)
+          print(f"Notion: voice brief written ({len(full_text)} chars)")
 
-          print(f"Notion: voice brief written ({len(voice_brief)} chars)")
+          # ── Claude helper ─────────────────────────────────────────────────
+          def claude_call(system, user, model="claude-haiku-4-5-20251001", max_tokens=800):
+              r = requests.post(
+                  "https://api.anthropic.com/v1/messages",
+                  headers={
+                      "x-api-key": anthropic_key,
+                      "anthropic-version": "2023-06-01",
+                      "content-type": "application/json",
+                  },
+                  json={
+                      "model": model,
+                      "max_tokens": max_tokens,
+                      "system": system,
+                      "messages": [{"role": "user", "content": user}],
+                  },
+                  timeout=45,
+              )
+              r.raise_for_status()
+              return r.json()["content"][0]["text"].strip()
+
+          # Truncate page content for API calls (first 4000 chars covers most pages)
+          page_excerpt = full_text[:4000]
+
+          # ── Extract challenges per track ──────────────────────────────────
+          print("Extracting challenges...")
+          raw_challenges = claude_call(
+              "You are a data parser. Extract the current active challenges from the Himbo Notion page. "
+              "The page has three tracks: Track 1 Visibility, Track 2 Physique, Track 3 Internal Work. "
+              "Look in the Challenges section for each track's current challenge. "
+              "Return ONLY valid JSON in this exact shape, nothing else:\n"
+              '{"track1": "challenge text", "track2": "challenge text", "track3": "challenge text"}\n'
+              "If a track has no current challenge, use the string \"none\".",
+              f"Himbo Notion page content:\n\n{page_excerpt}"
+          )
+          try:
+              # Strip code fences if present
+              ct = raw_challenges.strip()
+              if ct.startswith("```"):
+                  ct = "\n".join(ct.split("\n")[1:])
+                  ct = ct.rsplit("```", 1)[0]
+              tracks = json.loads(ct.strip())
+          except Exception as e:
+              print(f"Challenges parse error: {e}\nRaw: {raw_challenges[:200]}")
+              tracks = {"track1": "none", "track2": "none", "track3": "none"}
+
+          with open("data/himbo_challenges.json", "w") as f:
+              json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", "tracks": tracks}, f, indent=2)
+          print(f"Challenges written: {tracks}")
+
+          # ── Extract Joy Police from most recent Saturday check-in ─────────
+          print("Extracting Joy Police...")
+          joy_entry = claude_call(
+              "You are a data parser. Find the Joy Police paragraph from the most recent Saturday check-in "
+              "reflection log entry in this Notion page. Return ONLY the paragraph text — no quotes, "
+              "no explanation, no formatting. Just the plain text of the Joy Police observation.",
+              f"Himbo Notion page content:\n\n{page_excerpt}"
+          )
+
+          with open("data/himbo_joy.json", "w") as f:
+              json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", "entry": joy_entry}, f, indent=2)
+          print(f"Joy Police written ({len(joy_entry)} chars)")
+
+          # ── Generate sleep AI card ────────────────────────────────────────
+          print("Generating sleep AI card...")
+          sleep_analysis = ""
+          try:
+              with open("data/sleep.json") as f:
+                  sleep_csv = f.read()
+              sleep_sample = "\n".join(sleep_csv.strip().split("\n")[:55])
+
+              # Use first 1500 chars of voice brief for character context
+              voice_context = full_text[:1500]
+
+              sleep_analysis = claude_call(
+                  f"You are Himbo — the warm, mischievous, specific voice for Matt's wellness dashboard. "
+                  f"Here is context about who Himbo is:\n{voice_context}\n\n"
+                  "Write a short response (3–4 sentences) about Matt's sleep over the last 7 days. "
+                  "Be specific to the actual numbers in the data. "
+                  "His sleep context: target bedtime 8:30pm. Interventions he's trying: "
+                  "Smiling Mind nightly, magnesium + creatine taken earlier, "
+                  "hot shower + cold blast, yin yoga wind-down, lavender oil, screens off early. "
+                  "Celebrate wins. Name gaps without moralising. Warm, mischievous, never preachy. "
+                  "No emojis. No markdown. No bullet points. Speak directly to him.",
+                  f"Last 7 days of sleep data (CSV format):\n{sleep_sample}",
+                  model="claude-sonnet-4-6",
+                  max_tokens=300,
+              )
+          except FileNotFoundError:
+              sleep_analysis = "No sleep data synced yet — check back after your next export."
+          except Exception as e:
+              print(f"Sleep AI error: {e}")
+              sleep_analysis = ""
+
+          with open("data/himbo_sleep_ai.json", "w") as f:
+              json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", "analysis": sleep_analysis}, f, indent=2)
+          print(f"Sleep AI written ({len(sleep_analysis)} chars)")
           EOF
 
       - name: Generate activity summaries
@@ -315,7 +433,7 @@ jobs:
         run: |
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
-          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json
+          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_challenges.json data/himbo_joy.json data/himbo_sleep_ai.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
           git pull --rebase
           git push
