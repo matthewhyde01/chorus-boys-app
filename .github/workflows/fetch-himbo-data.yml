@@ -181,10 +181,15 @@ jobs:
               if bt in TEXT_TYPES:
                   rt = block.get(bt, {}).get("rich_text", [])
                   return " ".join(t.get("plain_text", "") for t in rt)
+              if bt == "child_database":
+                  return block.get("child_database", {}).get("title", "")
+              if bt == "child_page":
+                  return block.get("child_page", {}).get("title", "")
               return ""
 
           def fetch_blocks(block_id, depth=0):
-              """Fetch all blocks with pagination, recursing up to 4 levels deep."""
+              """Fetch all blocks with pagination, recursing up to 5 levels deep.
+              Also queries embedded child_database blocks."""
               results = []
               cursor = None
               while True:
@@ -200,14 +205,48 @@ jobs:
                       break
                   data = r.json()
                   for block in data.get("results", []):
+                      bt = block.get("type", "")
                       text = extract_block_text(block)
                       children = []
-                      if block.get("has_children") and depth < 4:
+                      if bt == "child_database" and depth < 3:
+                          # Query the embedded database — get last 10 pages sorted newest first
+                          children = fetch_database_pages(block["id"], depth)
+                      elif block.get("has_children") and depth < 5:
                           children = fetch_blocks(block["id"], depth + 1)
-                      results.append({"type": block.get("type", ""), "text": text, "children": children})
+                      results.append({"type": bt, "text": text, "children": children})
                   if not data.get("has_more"):
                       break
                   cursor = data.get("next_cursor")
+              return results
+
+          def fetch_database_pages(db_id, depth=0):
+              """Query a Notion database and return content from its most recent pages."""
+              r = requests.post(
+                  f"https://api.notion.com/v1/databases/{db_id}/query",
+                  headers={**notion_headers, "content-type": "application/json"},
+                  json={
+                      "page_size": 10,
+                      "sorts": [{"timestamp": "created_time", "direction": "descending"}],
+                  },
+                  timeout=30,
+              )
+              if not r.ok:
+                  print(f"DB query failed for {db_id}: {r.status_code} {r.text[:200]}")
+                  return []
+              pages = r.json().get("results", [])
+              results = []
+              for page in pages:
+                  # Extract page title from properties
+                  title = ""
+                  for prop in page.get("properties", {}).values():
+                      if prop.get("type") == "title":
+                          title = " ".join(t.get("plain_text", "") for t in prop.get("title", []))
+                          break
+                  if not title:
+                      title = page.get("id", "")[:8]
+                  # Fetch page body blocks (one more level deep)
+                  children = fetch_blocks(page["id"], depth + 1) if depth < 3 else []
+                  results.append({"type": "heading_2", "text": title, "children": children})
               return results
 
           def flatten_blocks(blocks, indent=0):
@@ -230,7 +269,7 @@ jobs:
           print(f"Notion: voice brief written ({len(full_text)} chars)")
 
           # ── Claude helper ─────────────────────────────────────────────────
-          def claude_call(system, user, model="claude-haiku-4-5-20251001", max_tokens=800):
+          def claude_call(system, user, model="claude-haiku-4-5-20251001", max_tokens=1000):
               r = requests.post(
                   "https://api.anthropic.com/v1/messages",
                   headers={
@@ -244,71 +283,116 @@ jobs:
                       "system": system,
                       "messages": [{"role": "user", "content": user}],
                   },
-                  timeout=45,
+                  timeout=60,
               )
               r.raise_for_status()
               return r.json()["content"][0]["text"].strip()
 
-          # Use full text — no truncation. The challenges section is past 4000 chars.
-          page_excerpt = full_text
+          def strip_fences(raw):
+              t = raw.strip()
+              if t.startswith("```"):
+                  t = "\n".join(t.split("\n")[1:])
+                  t = t.rsplit("```", 1)[0]
+              return t.strip()
 
-          # ── Extract challenges per track + stretch challenges ─────────────
+          # ── Extract challenges + completed + stretch ───────────────────────
           print("Extracting challenges...")
           raw_challenges = claude_call(
               "You are a data parser. Extract challenges from the Himbo Notion page. "
-              "Look in the Challenges section. Find:\n"
-              "1. The current challenge for each of: Track 1 (Visibility), Track 2 (Physique), Track 3 (Internal Work). "
-              "Look for text like 'Current challenge:' under each track heading.\n"
-              "2. All stretch challenges listed under 'Stretch Challenges'.\n"
-              "Return ONLY valid JSON in this exact shape, nothing else:\n"
-              '{"track1": "challenge text or none", "track2": "challenge text or none", '
-              '"track3": "challenge text or none", "stretch": ["challenge 1", "challenge 2"]}\n'
-              "Use \"none\" for any track with no current challenge. "
-              "For stretch, return an empty array [] if none found. "
-              "Do not include assignment dates in the challenge text.",
-              f"Himbo Notion page content:\n\n{page_excerpt}"
+              "Look in the Challenges section. Find ALL of:\n"
+              "1. Current challenge for Track 1 (Visibility), Track 2 (Physique), Track 3 (Internal Work). "
+              "Look for 'Current challenge:' text under each track heading.\n"
+              "2. Completed challenges for each track — listed under 'Completed challenges:'. "
+              "Each completed challenge may have a date. Return as an array of objects with 'text' and 'date' fields.\n"
+              "3. All stretch challenges listed under 'Stretch Challenges'.\n"
+              "Return ONLY valid JSON, nothing else:\n"
+              '{"track1": "text or none", "track2": "text or none", "track3": "text or none", '
+              '"completed": {'
+              '"track1": [{"text": "...", "date": "..."}], '
+              '"track2": [], '
+              '"track3": []'
+              '}, '
+              '"stretch": ["challenge 1", "challenge 2"]}\n'
+              "Use \"none\" for missing current challenges. "
+              "Use empty arrays [] where there are no completed challenges or stretch items. "
+              "Do not include assignment dates in the current challenge text.",
+              f"Himbo Notion page content:\n\n{full_text}"
           )
           try:
-              ct = raw_challenges.strip()
-              if ct.startswith("```"):
-                  ct = "\n".join(ct.split("\n")[1:])
-                  ct = ct.rsplit("```", 1)[0]
-              parsed = json.loads(ct.strip())
+              parsed = json.loads(strip_fences(raw_challenges))
               tracks = {
                   "track1": parsed.get("track1", "none"),
                   "track2": parsed.get("track2", "none"),
                   "track3": parsed.get("track3", "none"),
               }
+              completed = parsed.get("completed", {"track1": [], "track2": [], "track3": []})
               stretch = parsed.get("stretch", [])
           except Exception as e:
-              print(f"Challenges parse error: {e}\nRaw: {raw_challenges[:400]}")
+              print(f"Challenges parse error: {e}\nRaw: {raw_challenges[:500]}")
               tracks = {"track1": "none", "track2": "none", "track3": "none"}
+              completed = {"track1": [], "track2": [], "track3": []}
               stretch = []
 
           with open("data/himbo_challenges.json", "w") as f:
               json.dump({
                   "updated_at": datetime.utcnow().isoformat() + "Z",
                   "tracks": tracks,
+                  "completed": completed,
                   "stretch": stretch,
               }, f, indent=2)
-          print(f"Challenges written: {tracks}")
-          print(f"Stretch challenges: {stretch}")
+          print(f"Challenges: {tracks}")
+          print(f"Completed: {completed}")
+          print(f"Stretch: {stretch}")
 
-          # ── Extract Joy Police from most recent Saturday check-in ─────────
-          print("Extracting Joy Police...")
-          joy_entry = claude_call(
-              "You are a data parser. Find the Joy Police paragraph from the most recent Saturday check-in "
-              "reflection log entry in this Notion page. The reflection log has dated entries. "
-              "Look for entries titled 'Saturday [date]' and find the Joy Police section within the most recent one. "
-              "Return ONLY the paragraph text — no quotes, no explanation, no formatting. "
-              "Just the plain text of the Joy Police observation. "
-              "If no reflection log entries are found, return exactly: none",
-              f"Himbo Notion page content:\n\n{page_excerpt}"
+          # ── Joy Police — structured Himbo-voiced breakdown ────────────────
+          print("Generating Joy Police card...")
+
+          # Extract the last 2 Saturday reflection log entries from the full text
+          # Look for "Saturday" entries — they appear as headings in the flattened text
+          import re
+          saturday_blocks = re.findall(
+              r'(?:Saturday\s+\d+\s+\w+\s+\d{4}.*?)(?=Saturday\s+\d+\s+\w+\s+\d{4}|$)',
+              full_text, re.DOTALL | re.IGNORECASE
           )
+          # Take last 2 entries (most recent) and cap at 3000 chars total
+          recent_entries = "\n\n---\n\n".join(saturday_blocks[-2:])[:3000] if saturday_blocks else ""
+
+          if recent_entries:
+              voice_context = full_text[:1500]
+              track3_challenge = tracks.get("track3", "none")
+
+              raw_joy = claude_call(
+                  f"You are Himbo. Here is your character context:\n{voice_context}\n\n"
+                  "Write a Joy Police breakdown based on the last 2 Saturday reflection log entries. "
+                  "Return ONLY valid JSON with exactly these three fields:\n"
+                  '{"rounds": "...", "pattern": "...", "focus": "..."}\n\n'
+                  '"rounds": Specific wins and losses from this week. Named and concrete — '
+                  'call out the actual moments. e.g. "Poncho stayed on at Balmoral — they got that one. '
+                  'But the black bag to Lavendra? You got that one." 2-4 sentences.\n'
+                  '"pattern": ONE line on what the joy police are currently doing overall. '
+                  'e.g. "They\'re loud in front of your people, quiet with strangers."\n'
+                  f'"focus": State this week\'s Track 3 challenge directly: "{track3_challenge}"\n\n'
+                  "Himbo voice: warm, mischievous, specific, never preachy.",
+                  f"Last 2 Saturday reflection log entries:\n\n{recent_entries}",
+                  model="claude-sonnet-4-6",
+                  max_tokens=400,
+              )
+              try:
+                  joy_data = json.loads(strip_fences(raw_joy))
+              except Exception as e:
+                  print(f"Joy parse error: {e}\nRaw: {raw_joy[:300]}")
+                  joy_data = {"rounds": raw_joy, "pattern": "", "focus": track3_challenge}
+          else:
+              print("No Saturday reflection entries found in page content yet.")
+              joy_data = {
+                  "rounds": "",
+                  "pattern": "",
+                  "focus": tracks.get("track3", "none"),
+              }
 
           with open("data/himbo_joy.json", "w") as f:
-              json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", "entry": joy_entry}, f, indent=2)
-          print(f"Joy Police written ({len(joy_entry)} chars)")
+              json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", **joy_data}, f, indent=2)
+          print(f"Joy Police written: rounds={len(joy_data.get('rounds',''))} chars")
 
           # ── Generate sleep AI card ────────────────────────────────────────
           print("Generating sleep AI card...")

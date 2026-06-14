@@ -322,6 +322,51 @@
     .sleep-rem  { color: var(--sleep-rem); }
     .sleep-core { color: var(--sleep-core); }
 
+    /* COMPLETED CHALLENGES */
+    details.completed-challenges { margin-top: 1rem; }
+    details.completed-challenges summary {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 0;
+      user-select: none;
+    }
+    details.completed-challenges summary::-webkit-details-marker { display: none; }
+    details.completed-challenges summary::before {
+      content: '›';
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      color: var(--text-muted);
+      display: inline-block;
+      transition: transform 0.2s;
+    }
+    details.completed-challenges[open] summary::before { transform: rotate(90deg); }
+
+    /* JOY POLICE BREAKDOWN */
+    .joy-block {
+      padding: 10px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .joy-block:last-child { border-bottom: none; padding-bottom: 0; }
+    .joy-block-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+    .joy-block-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-primary);
+    }
+
     /* DIVIDER */
     hr { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
 
@@ -1282,6 +1327,8 @@
       const container = document.getElementById('challenges-container');
       if (!container) throw new Error('no container');
 
+      const completed = c.completed || {};
+
       function trackBlock(label, key, isFirst) {
         const text = tracks[key];
         const hasChallenge = text && text.trim().toLowerCase() !== 'none' && text.trim() !== '';
@@ -1321,6 +1368,25 @@
         </div>`).join('');
       }
 
+      // Completed challenges — collapsible
+      const allCompleted = [
+        ...(completed.track1 || []).map(x => ({ ...x, track: 'Track 1 — Visibility' })),
+        ...(completed.track2 || []).map(x => ({ ...x, track: 'Track 2 — Physique' })),
+        ...(completed.track3 || []).map(x => ({ ...x, track: 'Track 3 — Internal Work' })),
+      ];
+      if (allCompleted.length > 0) {
+        html += `<details class="completed-challenges">
+          <summary>Completed challenges (${allCompleted.length})</summary>
+          ${allCompleted.map(item => `<div class="challenge-item done" style="margin-top:6px;">
+            <span class="c-dot done"></span>
+            <div>
+              <div class="c-text">${item.text}</div>
+              <div class="c-tag">${item.track}${item.date ? ' · ' + item.date : ''}</div>
+            </div>
+          </div>`).join('')}
+        </details>`;
+      }
+
       if (c.updated_at) {
         html += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
       }
@@ -1330,17 +1396,37 @@
       console.error('Challenges:', e);
     }
 
-    // ── Joy Police (from pre-generated Notion data) ───────────────────────────
+    // ── Joy Police (structured Himbo breakdown) ───────────────────────────────
 
     if (joyRes.status === 'fulfilled') try {
       const j = joyRes.value;
-      const el = document.getElementById('joy-ai-text');
-      if (el && j.entry && j.entry.trim() && j.entry.trim().toLowerCase() !== 'none') {
-        el.textContent = j.entry;
-        el.style.fontStyle = 'normal';
-        el.style.color = 'var(--text-primary)';
-      } else if (el) {
-        el.textContent = 'No Joy Police entry found for this week.';
+      const card = document.querySelector('#joy-ai-text')?.closest('.metric-card');
+      const container = document.getElementById('joy-ai-text')?.parentElement;
+
+      const rounds  = j.rounds  || '';
+      const pattern = j.pattern || '';
+      const focus   = j.focus   || '';
+      const hasContent = rounds || pattern || focus;
+
+      if (container && hasContent) {
+        // Replace the simple text container with the three-part layout
+        container.innerHTML = `
+          ${rounds ? `<div class="joy-block">
+            <div class="joy-block-label">Rounds this week</div>
+            <div class="joy-block-text">${rounds}</div>
+          </div>` : ''}
+          ${pattern ? `<div class="joy-block">
+            <div class="joy-block-label">The pattern</div>
+            <div class="joy-block-text">${pattern}</div>
+          </div>` : ''}
+          ${focus ? `<div class="joy-block">
+            <div class="joy-block-label">This week's focus</div>
+            <div class="joy-block-text">${focus}</div>
+          </div>` : ''}
+          ${j.updated_at ? `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced ${new Date(j.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>` : ''}
+        `;
+      } else if (container) {
+        container.innerHTML = `<div style="font-size:13px;color:var(--text-muted);font-style:italic;">Reflection log not yet synced — check back after Saturday's check-in.</div>`;
       }
     } catch(e) { console.error('Joy Police:', e); }
 
