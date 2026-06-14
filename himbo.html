@@ -1272,21 +1272,24 @@
 
     // ── Challenges (from pre-generated Notion data) ───────────────────────────
 
+    console.log('[Himbo] challengesRes:', challengesRes.status, challengesRes.status === 'fulfilled' ? challengesRes.value : challengesRes.reason);
+    console.log('[Himbo] joyRes:', joyRes.status, joyRes.status === 'fulfilled' ? joyRes.value : joyRes.reason);
+
     if (challengesRes.status === 'fulfilled') try {
       const c = challengesRes.value;
       const tracks = c.tracks || {};
+      const stretch = c.stretch || [];
       const container = document.getElementById('challenges-container');
       if (!container) throw new Error('no container');
 
-      function trackBlock(label, key, dotClass, itemClass, isGold) {
+      function trackBlock(label, key, isFirst) {
         const text = tracks[key];
         const hasChallenge = text && text.trim().toLowerCase() !== 'none' && text.trim() !== '';
-        const marginTop = key === 'track1' ? '' : 'margin-top:1rem;';
-        const labelGold = isGold ? 'gold' : '';
-        let html = `<div class="track-label ${labelGold}" style="${marginTop}">${label}</div>`;
+        const marginTop = isFirst ? '' : 'margin-top:1rem;';
+        let html = `<div class="track-label" style="${marginTop}">${label}</div>`;
         if (hasChallenge) {
-          html += `<div class="challenge-item ${itemClass}">
-            <span class="c-dot ${dotClass}"></span>
+          html += `<div class="challenge-item active">
+            <span class="c-dot active"></span>
             <div>
               <div class="c-text">${text}</div>
               <div class="c-tag">Current · ${label}</div>
@@ -1301,17 +1304,30 @@
         return html;
       }
 
-      container.innerHTML =
-        trackBlock('Track 1 — Visibility',    'track1', 'active', 'active', false) +
-        trackBlock('Track 2 — Physique',      'track2', 'active', 'active', false) +
-        trackBlock('Track 3 — Internal Work', 'track3', 'active', 'active', false);
+      let html =
+        trackBlock('Track 1 — Visibility',    'track1', true) +
+        trackBlock('Track 2 — Physique',      'track2', false) +
+        trackBlock('Track 3 — Internal Work', 'track3', false);
+
+      // Stretch challenges
+      if (stretch.length > 0) {
+        html += `<div class="track-label gold" style="margin-top:1rem;">Stretch challenges</div>`;
+        html += stretch.map(s => `<div class="challenge-item stretch">
+          <span class="c-dot stretch"></span>
+          <div>
+            <div class="c-text">${s}</div>
+            <div class="c-tag">No deadline · Done when done</div>
+          </div>
+        </div>`).join('');
+      }
 
       if (c.updated_at) {
-        container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
+        html += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
       }
+
+      container.innerHTML = html;
     } catch(e) {
       console.error('Challenges:', e);
-      // Fallback — keep the loading placeholder visible
     }
 
     // ── Joy Police (from pre-generated Notion data) ───────────────────────────
@@ -1319,7 +1335,7 @@
     if (joyRes.status === 'fulfilled') try {
       const j = joyRes.value;
       const el = document.getElementById('joy-ai-text');
-      if (el && j.entry && j.entry.trim()) {
+      if (el && j.entry && j.entry.trim() && j.entry.trim().toLowerCase() !== 'none') {
         el.textContent = j.entry;
         el.style.fontStyle = 'normal';
         el.style.color = 'var(--text-primary)';

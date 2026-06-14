@@ -184,19 +184,30 @@ jobs:
               return ""
 
           def fetch_blocks(block_id, depth=0):
-              """Fetch blocks with up to 2 levels of children."""
-              url = f"https://api.notion.com/v1/blocks/{block_id}/children?page_size=100"
-              r = requests.get(url, headers=notion_headers)
-              if not r.ok:
-                  print(f"Notion fetch failed for {block_id}: {r.status_code}")
-                  return []
+              """Fetch all blocks with pagination, recursing up to 4 levels deep."""
               results = []
-              for block in r.json().get("results", []):
-                  text = extract_block_text(block)
-                  children = []
-                  if block.get("has_children") and depth < 2:
-                      children = fetch_blocks(block["id"], depth + 1)
-                  results.append({"type": block.get("type", ""), "text": text, "children": children})
+              cursor = None
+              while True:
+                  params = "?page_size=100"
+                  if cursor:
+                      params += f"&start_cursor={cursor}"
+                  r = requests.get(
+                      f"https://api.notion.com/v1/blocks/{block_id}/children{params}",
+                      headers=notion_headers
+                  )
+                  if not r.ok:
+                      print(f"Notion fetch failed for {block_id} depth={depth}: {r.status_code}")
+                      break
+                  data = r.json()
+                  for block in data.get("results", []):
+                      text = extract_block_text(block)
+                      children = []
+                      if block.get("has_children") and depth < 4:
+                          children = fetch_blocks(block["id"], depth + 1)
+                      results.append({"type": block.get("type", ""), "text": text, "children": children})
+                  if not data.get("has_more"):
+                      break
+                  cursor = data.get("next_cursor")
               return results
 
           def flatten_blocks(blocks, indent=0):
@@ -238,41 +249,60 @@ jobs:
               r.raise_for_status()
               return r.json()["content"][0]["text"].strip()
 
-          # Truncate page content for API calls (first 4000 chars covers most pages)
-          page_excerpt = full_text[:4000]
+          # Use full text — no truncation. The challenges section is past 4000 chars.
+          page_excerpt = full_text
 
-          # ── Extract challenges per track ──────────────────────────────────
+          # ── Extract challenges per track + stretch challenges ─────────────
           print("Extracting challenges...")
           raw_challenges = claude_call(
-              "You are a data parser. Extract the current active challenges from the Himbo Notion page. "
-              "The page has three tracks: Track 1 Visibility, Track 2 Physique, Track 3 Internal Work. "
-              "Look in the Challenges section for each track's current challenge. "
+              "You are a data parser. Extract challenges from the Himbo Notion page. "
+              "Look in the Challenges section. Find:\n"
+              "1. The current challenge for each of: Track 1 (Visibility), Track 2 (Physique), Track 3 (Internal Work). "
+              "Look for text like 'Current challenge:' under each track heading.\n"
+              "2. All stretch challenges listed under 'Stretch Challenges'.\n"
               "Return ONLY valid JSON in this exact shape, nothing else:\n"
-              '{"track1": "challenge text", "track2": "challenge text", "track3": "challenge text"}\n'
-              "If a track has no current challenge, use the string \"none\".",
+              '{"track1": "challenge text or none", "track2": "challenge text or none", '
+              '"track3": "challenge text or none", "stretch": ["challenge 1", "challenge 2"]}\n'
+              "Use \"none\" for any track with no current challenge. "
+              "For stretch, return an empty array [] if none found. "
+              "Do not include assignment dates in the challenge text.",
               f"Himbo Notion page content:\n\n{page_excerpt}"
           )
           try:
-              # Strip code fences if present
               ct = raw_challenges.strip()
               if ct.startswith("```"):
                   ct = "\n".join(ct.split("\n")[1:])
                   ct = ct.rsplit("```", 1)[0]
-              tracks = json.loads(ct.strip())
+              parsed = json.loads(ct.strip())
+              tracks = {
+                  "track1": parsed.get("track1", "none"),
+                  "track2": parsed.get("track2", "none"),
+                  "track3": parsed.get("track3", "none"),
+              }
+              stretch = parsed.get("stretch", [])
           except Exception as e:
-              print(f"Challenges parse error: {e}\nRaw: {raw_challenges[:200]}")
+              print(f"Challenges parse error: {e}\nRaw: {raw_challenges[:400]}")
               tracks = {"track1": "none", "track2": "none", "track3": "none"}
+              stretch = []
 
           with open("data/himbo_challenges.json", "w") as f:
-              json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", "tracks": tracks}, f, indent=2)
+              json.dump({
+                  "updated_at": datetime.utcnow().isoformat() + "Z",
+                  "tracks": tracks,
+                  "stretch": stretch,
+              }, f, indent=2)
           print(f"Challenges written: {tracks}")
+          print(f"Stretch challenges: {stretch}")
 
           # ── Extract Joy Police from most recent Saturday check-in ─────────
           print("Extracting Joy Police...")
           joy_entry = claude_call(
               "You are a data parser. Find the Joy Police paragraph from the most recent Saturday check-in "
-              "reflection log entry in this Notion page. Return ONLY the paragraph text — no quotes, "
-              "no explanation, no formatting. Just the plain text of the Joy Police observation.",
+              "reflection log entry in this Notion page. The reflection log has dated entries. "
+              "Look for entries titled 'Saturday [date]' and find the Joy Police section within the most recent one. "
+              "Return ONLY the paragraph text — no quotes, no explanation, no formatting. "
+              "Just the plain text of the Joy Police observation. "
+              "If no reflection log entries are found, return exactly: none",
               f"Himbo Notion page content:\n\n{page_excerpt}"
           )
 
