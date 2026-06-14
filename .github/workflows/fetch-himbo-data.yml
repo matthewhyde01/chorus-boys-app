@@ -3,6 +3,11 @@ name: Fetch Himbo Data
 on:
   workflow_dispatch:
 
+# Triggered via workflow_dispatch only. Two sources:
+# 1. cron-job.org — scheduled noon + midnight AEST
+# 2. Chorus Boys Sync — manual Home Screen shortcut (iOS)
+# No internal GitHub cron schedule — all scheduling handled externally.
+
 jobs:
   fetch-data:
     runs-on: ubuntu-latest
