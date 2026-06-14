@@ -312,4 +312,5 @@ jobs:
           git config user.email "dante@chorus-boys"
           git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
+          git pull --rebase
           git push
