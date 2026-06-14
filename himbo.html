@@ -758,7 +758,7 @@
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
       fetch('data/nutrition.json').then(r => r.text()),
-      fetch('data/activity.json').then(r => r.json()),
+      fetch('data/activity.json').then(r => r.text()),
       fetch('data/himbo_voice.json').then(r => r.json()),
       fetch('data/activity_summaries.json').then(r => r.json()),
       fetch('data/himbo_challenges.json').then(r => r.json()),
@@ -966,16 +966,20 @@
     // ── Activity (HRV / VO2 / Calories) ──────────────────────────────────────
 
     if (actRes.status === 'fulfilled') try {
-      const act = actRes.value;
-      const entries = (act.entries || []).filter(e => !e.is_today);
+      // activity.json is a CSV: date,type,value,unit
+      const todayIso = now.toISOString().slice(0, 10);
+      const entries = parseCSV(actRes.value).map(row => {
+        const d = parseAusDateTime(row.date);
+        return { type: row.type, value: parseFloat(row.value), unit: row.unit,
+                 date_iso: isNaN(d) ? '' : d.toISOString().slice(0, 10) };
+      }).filter(e => e.date_iso && e.date_iso !== todayIso && !isNaN(e.value));
 
-      // Match multiple possible type names from different export formats
       const byTypeMulti = (...types) => entries
         .filter(e => types.some(t => e.type === t))
-        .sort((a, b) => (b.date_iso || b.date_only || '').localeCompare(a.date_iso || a.date_only || ''));
+        .sort((a, b) => b.date_iso.localeCompare(a.date_iso));
 
       const hrvEntries    = byTypeMulti('Heart Rate Variability', 'HRV', 'HeartRateVariability');
-      const vo2Entries    = byTypeMulti('VO2 Max', 'VO2Max', 'VO₂ Max', 'Cardio Fitness', 'CardioFitness');
+      const vo2Entries    = byTypeMulti('VO2 Max', 'VO2Max', 'VO₂ Max', 'Cardio Fitness', 'CardioFitness').filter(e => e.value > 0);
       const activeEntries = byTypeMulti('Active Energy Burned', 'Active Calories', 'Active Energy', 'ActiveEnergyBurned');
       const restingEntries = byTypeMulti('Basal Energy Burned', 'Resting Energy Burned', 'Resting Energy', 'BasalEnergyBurned', 'Resting Calories');
 
