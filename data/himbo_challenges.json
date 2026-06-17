@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-16T14:01:02.203098Z",
+  "updated_at": "2026-06-17T07:02:48.105292Z",
   "tracks": {
     "track1": "none",
     "track2": "none",
@@ -8,8 +8,12 @@
   "completed": {
     "track1": [
       {
-        "text": "Wear the knit cardigan to Bold & Beautiful",
-        "date": "7 June 2026"
+        "text": "Wear the knit cardigan to Bold & Beautiful Sunday",
+        "date": "2026-06-07"
+      },
+      {
+        "text": "At one Bold & Beautiful or swim session this week \u2014 wetsuit comes off, no poncho, toes out. Don't hide them.",
+        "date": "2026-06-13"
       }
     ],
     "track2": [],
