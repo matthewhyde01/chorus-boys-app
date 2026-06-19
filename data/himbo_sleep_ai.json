@@ -1,4 +1,4 @@
 {
-  "updated_at": "2026-06-19T14:01:16.669383Z",
-  "analysis": "Let me calculate the sleep sessions first.\n\n**Night of June 11 (into June 12):**\nBedtime: 9:05pm. End: 3:38am. Total window ~6h33m.\n\n**Night of June 12 (into June 13):**\nBedtime: 8:34pm \u2014 before the 8:30pm target, basically nailed it. End: 3:31am. Total window ~6h57m.\n\nLet me tally stages for each night.\n\n**June 11\u219212:**\nCore: 12:57+10:28+18:26+41:52+2:29+1:59+1:09:17+9:58+1:08:47+7:58 = let me add carefully:\n12:57+10:28=23:25, +18:26=41:51, +41:52=1:23:43, +2:29=1:26:12, +1:59=1:28:11, +69:17=2:37:28, +9:58=2:47:26, +68:47=3:56:13, +7:58=4:04:11\nDeep: 23:55+1:29=25:24\nREM: 10:28+"
+  "updated_at": "2026-06-19T20:03:40.184670Z",
+  "analysis": "Let me work through the data carefully.\n\n**Session 1: Jun 11 9:05pm \u2013 Jun 12 3:38am**\nStart: 9:05pm (target 8:30pm, so 35 min late)\nEnd: 3:38am\nTotal duration: ~6h 33min\n\nLet me add up stages:\n- Core: 12:57 + 10:28 + 18:26 + 41:52 + 2:29 + 1:59 + 1:09:17 + 9:58 + 1:08:47 + 7:58 = let me add these in minutes:\n  - 12.95 + 10.47 + 18.43 + 41.87 + 2.48 + 1.98 + 69.28 + 9.97 + 68.78 + 7.97 = 244.18 min \u2248 4h 4min\n- Deep: 23:55 + 1:29 = 25.4 min\n- REM: 10:28 + 7:58 + 13:57 + 1:59 + 44:51 + 32:54 = 10."
 }
