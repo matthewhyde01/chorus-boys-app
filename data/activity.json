@@ -1,33 +1,33 @@
 date,type,value,unit
-11 Jun 2026 at 6:48 am,Heart Rate Variability,54.43383004674438,ms
-12 Jun 2026 at 1:26 am,Heart Rate Variability,61.41521608067401,ms
 13 Jun 2026 at 1:30 am,Heart Rate Variability,58.36394470735939,ms
 14 Jun 2026 at 1:25 am,Heart Rate Variability,62.61000285370521,ms
 15 Jun 2026 at 1:26 am,Heart Rate Variability,54.77659747504877,ms
 16 Jun 2026 at 1:25 am,Heart Rate Variability,55.58052836263654,ms
 17 Jun 2026 at 1:26 am,Heart Rate Variability,51.70959414939762,ms
-18 Jun 2026 at 1:25 am,Heart Rate Variability,76.50634525686878,ms
-11 Jun 2026 at 12:43 pm,VO2 Max,55.6,mL/min·kg
-12 Jun 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+18 Jun 2026 at 1:25 am,Heart Rate Variability,77.05262609616584,ms
+19 Jun 2026 at 1:26 am,Heart Rate Variability,56.9612390077316,ms
+20 Jun 2026 at 1:26 am,Heart Rate Variability,83.521092087532,ms
 13 Jun 2026 at 6:59 am,VO2 Max,55.32,mL/min·kg
 14 Jun 2026 at 3:29 pm,VO2 Max,55.16,mL/min·kg
 15 Jun 2026 at 12:00 am,VO2 Max,0,mL/min·kg
 16 Jun 2026 at 6:06 pm,VO2 Max,55.74,mL/min·kg
 17 Jun 2026 at 12:00 am,VO2 Max,0,mL/min·kg
 18 Jun 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-11 Jun 2026 at 6:47 am,Resting Calories,6391.013975999997,kJ
-12 Jun 2026 at 12:05 am,Resting Calories,8324.775096000078,kJ
+19 Jun 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+20 Jun 2026 at 12:00 am,VO2 Max,0,mL/min·kg
 13 Jun 2026 at 12:05 am,Resting Calories,8599.262232000216,kJ
 14 Jun 2026 at 12:03 am,Resting Calories,8426.111576000256,kJ
 15 Jun 2026 at 12:00 am,Resting Calories,8743.455423999667,kJ
 16 Jun 2026 at 12:00 am,Resting Calories,8670.214503999588,kJ
 17 Jun 2026 at 12:05 am,Resting Calories,8516.967136000008,kJ
-18 Jun 2026 at 12:11 am,Resting Calories,6752.892319999636,kJ
-11 Jun 2026 at 6:46 am,Active Calories,2598.983648000002,kJ
-12 Jun 2026 at 12:03 am,Active Calories,2579.465287999991,kJ
+18 Jun 2026 at 12:11 am,Resting Calories,8470.704647999635,kJ
+19 Jun 2026 at 12:08 am,Resting Calories,8530.393592000004,kJ
+20 Jun 2026 at 12:06 am,Resting Calories,1878.808464,kJ
 13 Jun 2026 at 12:05 am,Active Calories,6297.091544000016,kJ
 14 Jun 2026 at 12:03 am,Active Calories,6367.93084800004,kJ
 15 Jun 2026 at 12:00 am,Active Calories,6850.475752000022,kJ
 16 Jun 2026 at 12:00 am,Active Calories,6829.208480000004,kJ
 17 Jun 2026 at 12:09 am,Active Calories,5978.409159218761,kJ
-18 Jun 2026 at 12:01 am,Active Calories,7020.9002710108,kJ
+18 Jun 2026 at 12:01 am,Active Calories,7056.694391010799,kJ
+19 Jun 2026 at 12:08 am,Active Calories,2982.388671999993,kJ
+20 Jun 2026 at 12:06 am,Active Calories,124.616256,kJ
