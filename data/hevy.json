@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-20T14:01:22.664899Z",
+  "updated_at": "2026-06-20T23:41:07.130281Z",
   "sessions_this_week": 4,
   "muscle_best": {
     "Chest": {
@@ -7,20 +7,20 @@
       "exercise": "Incline Bench Press (Barbell)",
       "date": "2026-06-17"
     },
-    "Shoulders": {
-      "e1rm": 9.0,
-      "exercise": "Lateral Raise (Dumbbell)",
-      "date": "2026-06-17"
+    "Back": {
+      "e1rm": 84.0,
+      "exercise": "Lat Pulldown - Reverse Grip",
+      "date": "2026-06-18"
     },
     "Biceps": {
       "e1rm": 31.5,
       "exercise": "Bicep Curl (Barbell)",
       "date": "2026-06-17"
     },
-    "Back": {
-      "e1rm": 84.0,
-      "exercise": "Lat Pulldown - Reverse Grip",
-      "date": "2026-06-18"
+    "Shoulders": {
+      "e1rm": 9.0,
+      "exercise": "Lateral Raise (Dumbbell)",
+      "date": "2026-06-17"
     },
     "Quad": {
       "e1rm": 154.0,
@@ -33,111 +33,80 @@
       "date": "2026-06-18"
     }
   },
-  "exercise_history": {
-    "Incline Bench Press (Barbell)": [
+  "muscle_history": {
+    "Chest": [
+      {
+        "date": "2026-06-14",
+        "e1rm": 32.0
+      },
       {
         "date": "2026-06-17",
         "e1rm": 76.0
+      },
+      {
+        "date": "2026-06-20",
+        "e1rm": 32.0
       }
     ],
-    "Bench Press (Dumbbell)": [
+    "Back": [
+      {
+        "date": "2026-06-14",
+        "e1rm": 77.0
+      },
+      {
+        "date": "2026-06-18",
+        "e1rm": 84.0
+      },
+      {
+        "date": "2026-06-20",
+        "e1rm": 77.0
+      }
+    ],
+    "Biceps": [
+      {
+        "date": "2026-06-14",
+        "e1rm": 16.8
+      },
       {
         "date": "2026-06-17",
-        "e1rm": 28.5
+        "e1rm": 31.5
+      },
+      {
+        "date": "2026-06-20",
+        "e1rm": 16.8
       }
     ],
-    "Lateral Raise (Dumbbell)": [
+    "Shoulders": [
       {
         "date": "2026-06-17",
         "e1rm": 9.0
       }
     ],
-    "Bicep Curl (Barbell)": [
-      {
-        "date": "2026-06-17",
-        "e1rm": 31.5
-      }
-    ],
-    "Incline Bench Press (Dumbbell)": [
-      {
-        "date": "2026-06-20",
-        "e1rm": 32.0
-      },
-      {
-        "date": "2026-06-14",
-        "e1rm": 32.0
-      }
-    ],
-    "Seated Cable Row - Bar Wide Grip": [
-      {
-        "date": "2026-06-20",
-        "e1rm": 77.0
-      },
-      {
-        "date": "2026-06-14",
-        "e1rm": 77.0
-      }
-    ],
-    "Single Arm Cable Row": [
-      {
-        "date": "2026-06-20",
-        "e1rm": 28.0
-      },
-      {
-        "date": "2026-06-14",
-        "e1rm": 28.0
-      }
-    ],
-    "Hammer Curl (Dumbbell)": [
-      {
-        "date": "2026-06-20",
-        "e1rm": 16.8
-      },
-      {
-        "date": "2026-06-14",
-        "e1rm": 16.8
-      }
-    ],
-    "Lat Pulldown - Reverse Grip": [
-      {
-        "date": "2026-06-18",
-        "e1rm": 84.0
-      }
-    ],
-    "Squat (Barbell)": [
-      {
-        "date": "2026-06-18",
-        "e1rm": 114.0
-      }
-    ],
-    "Romanian Deadlift (Barbell)": [
-      {
-        "date": "2026-06-18",
-        "e1rm": 101.3
-      }
-    ],
-    "Leg Press Horizontal (Machine)": [
+    "Quad": [
       {
         "date": "2026-06-18",
         "e1rm": 154.0
       }
+    ],
+    "Hinge": [
+      {
+        "date": "2026-06-18",
+        "e1rm": 101.3
+      }
     ]
   },
-  "recent_workouts": [
+  "exercise_history": {},
+  "weekly_volume": [
     {
-      "title": "Workout",
-      "date": "2026-06-17",
-      "duration_min": 35,
-      "exercises": [
-        "Incline Bench Press (Barbell)",
-        "Bench Press (Dumbbell)",
-        "Single Arm Landmine Press (Barbell)",
-        "Cable Chest Fly",
-        "Lateral Raise (Dumbbell)",
-        "Bicep Curl (Barbell)",
-        "Push Up"
-      ]
+      "week_of": "2026-06-08",
+      "volume_kg": 5580
     },
+    {
+      "week_of": "2026-06-15",
+      "volume_kg": 17836
+    }
+  ],
+  "recent_workouts": [
     {
       "title": "Workout",
       "date": "2026-06-20",
@@ -170,6 +139,20 @@
     },
     {
       "title": "Workout",
+      "date": "2026-06-17",
+      "duration_min": 35,
+      "exercises": [
+        "Incline Bench Press (Barbell)",
+        "Bench Press (Dumbbell)",
+        "Single Arm Landmine Press (Barbell)",
+        "Cable Chest Fly",
+        "Lateral Raise (Dumbbell)",
+        "Bicep Curl (Barbell)",
+        "Push Up"
+      ]
+    },
+    {
+      "title": "Workout",
       "date": "2026-06-14",
       "duration_min": 40,
       "exercises": [
@@ -184,5 +167,6 @@
         "Side Plank"
       ]
     }
-  ]
+  ],
+  "recent_prs": []
 }

@@ -1,71 +1,6 @@
 {
-  "updated_at": "2026-06-20T14:00:46.075326Z",
+  "updated_at": "2026-06-20T23:40:23.034482Z",
   "activities": [
-    {
-      "resource_state": 2,
-      "athlete": {
-        "id": 7234187,
-        "resource_state": 1
-      },
-      "name": "B&B swims \ud83d\udc97\ud83c\udfca\ud83c\udffb\u200d\u2642\ufe0f\ud83e\ude72",
-      "distance": 158.0,
-      "moving_time": 2060,
-      "elapsed_time": 2060,
-      "total_elevation_gain": 3.6,
-      "type": "Swim",
-      "sport_type": "Swim",
-      "device_name": "Apple Watch Series 9",
-      "id": 18816008973,
-      "start_date": "2026-06-06T21:00:18Z",
-      "start_date_local": "2026-06-07T07:00:18Z",
-      "timezone": "(GMT+10:00) Australia/Sydney",
-      "utc_offset": 36000.0,
-      "location_city": null,
-      "location_state": null,
-      "location_country": null,
-      "achievement_count": 2,
-      "kudos_count": 3,
-      "comment_count": 0,
-      "athlete_count": 5,
-      "photo_count": 0,
-      "map": {
-        "id": "a18816008973",
-        "summary_polyline": "blhmE__lz[]_@KWi@gAU_ACi@J]Re@HKCAd@a@b@}@^]R[N_@z@yAl@i@NGNO\\c@?ML?F}BCsBBqAB[Ek@PcB?c@A{@QS@GBLHDOCDM@HQHLB@B_@dA@TOd@CTK\\Ed@Md@E`ACRFVHp@DT?VFNDd@E|@k@rB[f@m@`BKHIPk@R_@ZUFGAA~@a@f@KPWtABr@^v@`@^",
-        "resource_state": 2
-      },
-      "trainer": false,
-      "commute": false,
-      "manual": false,
-      "private": false,
-      "visibility": "followers_only",
-      "flagged": false,
-      "gear_id": null,
-      "start_latlng": [
-        -33.799218,
-        151.290887
-      ],
-      "end_latlng": [
-        -33.798989,
-        151.291053
-      ],
-      "average_speed": 0.077,
-      "max_speed": 6.562,
-      "has_heartrate": true,
-      "average_heartrate": 122.4,
-      "max_heartrate": 139.0,
-      "heartrate_opt_out": false,
-      "display_hide_heartrate_option": true,
-      "elev_high": 9.8,
-      "elev_low": -2.0,
-      "upload_id": 19926770169,
-      "upload_id_str": "19926770169",
-      "external_id": "56AD04D6-8E63-4931-B376-A335AAAB44D3.fit",
-      "from_accepted_tag": false,
-      "pr_count": 2,
-      "total_photo_count": 0,
-      "has_kudoed": false,
-      "suffer_score": 1.0
-    },
     {
       "resource_state": 2,
       "athlete": {
@@ -1294,6 +1229,71 @@
       "total_photo_count": 0,
       "has_kudoed": false,
       "suffer_score": 14.0
+    },
+    {
+      "resource_state": 2,
+      "athlete": {
+        "id": 7234187,
+        "resource_state": 1
+      },
+      "name": "B&B \ud83d\udc97\ud83e\ude72\ud83c\udfca\ud83c\udffb\u200d\u2642\ufe0f",
+      "distance": 1364.5,
+      "moving_time": 2029,
+      "elapsed_time": 2029,
+      "total_elevation_gain": 21.0,
+      "type": "Swim",
+      "sport_type": "Swim",
+      "device_name": "Apple Watch Series 9",
+      "id": 19003036323,
+      "start_date": "2026-06-20T20:59:46Z",
+      "start_date_local": "2026-06-21T06:59:46Z",
+      "timezone": "(GMT+10:00) Australia/Sydney",
+      "utc_offset": 36000.0,
+      "location_city": null,
+      "location_state": null,
+      "location_country": null,
+      "achievement_count": 2,
+      "kudos_count": 0,
+      "comment_count": 0,
+      "athlete_count": 5,
+      "photo_count": 0,
+      "map": {
+        "id": "a19003036323",
+        "summary_polyline": "~khmEs~kz[OSc@cAa@y@KiCbAuAb@WLWRO`@Wf@c@pAwBRs@Nk@RmBDu@Am@DoBC{@P{B?iACKFMAZMj@OpBBx@?~JO\\e@d@Yl@Mp@]d@eAv@e@h@e@@E@[ZUl@]l@Gp@Bv@Rn@h@`@?D",
+        "resource_state": 2
+      },
+      "trainer": false,
+      "commute": false,
+      "manual": false,
+      "private": false,
+      "visibility": "followers_only",
+      "flagged": false,
+      "gear_id": null,
+      "start_latlng": [
+        -33.799192,
+        151.290823
+      ],
+      "end_latlng": [
+        -33.798963,
+        151.29117
+      ],
+      "average_speed": 0.672,
+      "max_speed": 5.602,
+      "has_heartrate": true,
+      "average_heartrate": 113.0,
+      "max_heartrate": 126.0,
+      "heartrate_opt_out": false,
+      "display_hide_heartrate_option": true,
+      "elev_high": 8.2,
+      "elev_low": -1.8,
+      "upload_id": 20116752068,
+      "upload_id_str": "20116752068",
+      "external_id": "E91FF87D-2954-47E6-B68F-3F5CC57CC109.fit",
+      "from_accepted_tag": false,
+      "pr_count": 0,
+      "total_photo_count": 0,
+      "has_kudoed": false,
+      "suffer_score": 12.0
     }
   ]
 }
