@@ -279,7 +279,9 @@ jobs:
                   timeout=60,
               )
               r.raise_for_status()
-              return r.json()["content"][0]["text"].strip()
+              # Filter to text-type blocks only — guards against any thinking-block leakage
+              text_blocks = [b["text"] for b in r.json()["content"] if b.get("type") == "text"]
+              return "".join(text_blocks).strip()
 
           def strip_fences(raw):
               t = raw.strip()
@@ -294,10 +296,7 @@ jobs:
               "filter": {
                   "and": [
                       {"property": "God", "select": {"equals": "Himbo"}},
-                      {"or": [
-                          {"property": "Status", "select": {"equals": "Active"}},
-                          {"property": "Status", "select": {"equals": "Planned"}},
-                      ]},
+                      {"property": "Status", "select": {"equals": "Active"}},
                   ]
               },
               "sorts": [{"property": "Status", "direction": "ascending"}],
@@ -370,11 +369,20 @@ jobs:
           print(f"Challenges: {len(challenges_list)} active/planned, grace_total={grace_total}")
 
           print("Generating Joy Police card...")
-          saturday_blocks = re.findall(
-              r'(?:Saturday\s+\d+\s+\w+\s+\d{4}.*?)(?=Saturday\s+\d+\s+\w+\s+\d{4}|$)',
+          # Extract all dated Saturday entries, parse dates, sort, take most recent 2
+          MONTHS = {"january":1,"february":2,"march":3,"april":4,"may":5,"june":6,
+                    "july":7,"august":8,"september":9,"october":10,"november":11,"december":12}
+          raw_blocks = re.findall(
+              r'(Saturday\s+\d+\s+\w+\s+\d{4}.*?)(?=Saturday\s+\d+\s+\w+\s+\d{4}|$)',
               full_text, re.DOTALL | re.IGNORECASE
           )
-          recent_entries = "\n\n---\n\n".join(saturday_blocks[-2:])[:3000] if saturday_blocks else ""
+          def parse_sat_date(block):
+              m = re.match(r'Saturday\s+(\d+)\s+(\w+)\s+(\d{4})', block.strip(), re.IGNORECASE)
+              if not m: return datetime.min
+              mon = MONTHS.get(m.group(2).lower(), 0)
+              return datetime(int(m.group(3)), mon, int(m.group(1))) if mon else datetime.min
+          dated = sorted(raw_blocks, key=parse_sat_date)
+          recent_entries = "\n\n---\n\n".join(b.strip() for b in dated[-2:])[:3000] if dated else ""
 
           if recent_entries:
               voice_context = full_text[:1500]
@@ -427,47 +435,75 @@ jobs:
               with open("data/sleep.json") as f:
                   sleep_csv = f.read()
 
-              # Pre-bucket CSV rows by night: sessions starting before noon belong to the previous night
+              # Pre-bucket by night: ≥18:00 → tonight; <11:00 → previous night; 11–17:59 → same day
+              def sleep_night_of(start_dt):
+                  if start_dt.hour >= 18:
+                      return start_dt.date()
+                  elif start_dt.hour < 11:
+                      return (start_dt - timedelta(days=1)).date()
+                  else:
+                      return start_dt.date()
+
               reader = csv.DictReader(io.StringIO(sleep_csv))
               nights = {}
               for row in reader:
                   start_str = row.get("From") or row.get("Start") or row.get("from") or ""
+                  end_str   = row.get("To")   or row.get("End")   or row.get("to")   or ""
                   if not start_str:
                       continue
-                  try:
-                      start_dt = datetime.strptime(start_str[:16], "%Y-%m-%d %H:%M")
-                  except ValueError:
+                  for fmt in ("%Y-%m-%d %H:%M", "%d/%m/%Y %H:%M", "%Y-%m-%dT%H:%M"):
                       try:
-                          start_dt = datetime.strptime(start_str[:16], "%d/%m/%Y %H:%M")
+                          start_dt = datetime.strptime(start_str[:16], fmt)
+                          break
                       except ValueError:
                           continue
-                  night_date = (start_dt - timedelta(hours=12)).date()
-                  if night_date not in nights:
-                      nights[night_date] = []
-                  nights[night_date].append(row)
+                  else:
+                      continue
+                  nd = sleep_night_of(start_dt)
+                  if nd not in nights:
+                      nights[nd] = {"night_of": nd.isoformat(), "sessions": [], "total_duration_min": 0}
+                  nights[nd]["sessions"].append(row)
+                  if end_str:
+                      for fmt in ("%Y-%m-%d %H:%M", "%d/%m/%Y %H:%M", "%Y-%m-%dT%H:%M"):
+                          try:
+                              end_dt = datetime.strptime(end_str[:16], fmt)
+                              nights[nd]["total_duration_min"] += int((end_dt - start_dt).total_seconds() / 60)
+                              break
+                          except ValueError:
+                              continue
 
-              # Keep last 7 nights
+              # Last 7 nights, pre-summarised — model receives totals, not raw rows
               recent_nights = sorted(nights.keys())[-7:]
-              bucketed_lines = []
+              bucketed_summary = []
               for nd in recent_nights:
-                  for row in nights[nd]:
-                      bucketed_lines.append(f"Night of {nd}: " + ", ".join(f"{k}={v}" for k, v in row.items()))
+                  n = nights[nd]
+                  total_h = n["total_duration_min"] // 60
+                  total_m = n["total_duration_min"] % 60
+                  session_count = len(n["sessions"])
+                  first_start = n["sessions"][0].get("From") or n["sessions"][0].get("Start","")
+                  bucketed_summary.append(
+                      f"Night of {nd}: {total_h}h {total_m}m total across {session_count} session(s). First sleep: {first_start[:16]}"
+                  )
 
-              sleep_sample = "\n".join(bucketed_lines) if bucketed_lines else "\n".join(sleep_csv.strip().split("\n")[:55])
+              sleep_sample = "\n".join(bucketed_summary) if bucketed_summary else "\n".join(sleep_csv.strip().split("\n")[:15])
               voice_context = full_text[:1500]
 
               sleep_analysis = claude_call(
                   f"You are Himbo — the warm, mischievous, specific voice for Matt's wellness dashboard. "
                   f"Here is context about who Himbo is:\n{voice_context}\n\n"
-                  "Write a short response (3–4 sentences) about Matt's sleep over the last 7 days. "
+                  "Output only the finished assessment paragraph. "
+                  "Do not show your reasoning process, do not narrate how you are interpreting or organising the data, "
+                  "do not use phrases like 'let me work through this' or 'let me re-examine.' "
+                  "The data you are given is already correctly grouped by night — do not re-derive or question the grouping. "
+                  "Write the final summary directly.\n\n"
+                  "Write a short response (3–4 sentences) about Matt's sleep over the last 7 nights. "
                   "Be specific to the actual numbers in the data. "
                   "His sleep context: target bedtime 8:30pm. Interventions he's trying: "
                   "Smiling Mind nightly, magnesium + creatine taken earlier, "
                   "hot shower + cold blast, yin yoga wind-down, lavender oil, screens off early. "
                   "Celebrate wins. Name gaps without moralising. Warm, mischievous, never preachy. "
-                  "No emojis. No markdown. No bullet points. Speak directly to him. "
-                  "Return only the finished response text — no thinking, no preamble, no explanation.",
-                  f"Last 7 nights of sleep data (pre-bucketed — each row is one full night):\n{sleep_sample}",
+                  "No emojis. No markdown. No bullet points. Speak directly to him.",
+                  f"Last 7 nights of sleep (pre-bucketed totals — each line is one full night):\n{sleep_sample}",
                   model="claude-sonnet-4-6",
                   max_tokens=300,
               )
@@ -526,18 +562,28 @@ jobs:
 
               snapshot_text = "\n".join(snapshot_lines)
 
-              # Fetch existing children to find/replace the snapshot callout
-              children_r = requests.get(
-                  f"https://api.notion.com/v1/blocks/{PAGE_ID}/children?page_size=25",
-                  headers=notion_headers
-              )
+              # Paginate all children to find every existing snapshot callout
               existing_ids = []
-              if children_r.ok:
-                  for blk in children_r.json().get("results", []):
+              snap_cursor = None
+              while True:
+                  params = "?page_size=100"
+                  if snap_cursor:
+                      params += f"&start_cursor={snap_cursor}"
+                  children_r = requests.get(
+                      f"https://api.notion.com/v1/blocks/{PAGE_ID}/children{params}",
+                      headers=notion_headers
+                  )
+                  if not children_r.ok:
+                      break
+                  snap_data = children_r.json()
+                  for blk in snap_data.get("results", []):
                       if blk.get("type") == "callout":
                           icon_emoji = (blk.get("callout",{}).get("icon") or {}).get("emoji","")
                           if icon_emoji == "📊":
                               existing_ids.append(blk["id"])
+                  if not snap_data.get("has_more"):
+                      break
+                  snap_cursor = snap_data.get("next_cursor")
 
               # Delete old snapshot callout(s)
               for bid in existing_ids:
@@ -775,82 +821,113 @@ jobs:
           def epley(weight_kg, reps):
               return weight_kg * (1 + reps / 30) if reps > 1 else weight_kg
 
-          # Compute best e1RM per muscle per session, then best ever per muscle
-          muscle_best = {}
+          def workout_duration_min(w):
+              s = w.get("start_time") or w.get("created_at","")
+              e = w.get("end_time","")
+              if not s or not e: return None
+              try:
+                  sd = datetime.strptime(s[:19].replace("T"," "), "%Y-%m-%d %H:%M:%S")
+                  ed = datetime.strptime(e[:19].replace("T"," "), "%Y-%m-%d %H:%M:%S")
+                  return round((ed - sd).total_seconds() / 60)
+              except: return None
+
+          BASELINE_DATE = datetime(2026, 5, 18)
           now = datetime.utcnow()
           week_ago = now - timedelta(days=7)
+
+          muscle_best = {}
+          muscle_history = {}   # {muscle: [{date, e1rm}]}
+          exercise_all_time = {}  # {exercise: best_e1rm_ever_before_today}
+          weekly_volume = {}    # {week_start_iso: total_kg_lifted}
+          prs = []
           sessions_this_week = 0
           recent_workouts = []
 
-          for w in workouts:
-              start_str = w.get("start_time") or w.get("created_at", "")
+          # Sort workouts chronologically for PR detection
+          def workout_dt(w):
+              s = w.get("start_time") or w.get("created_at","")
+              try: return datetime.strptime(s[:19].replace("T"," "), "%Y-%m-%d %H:%M:%S")
+              except: return datetime.min
+          workouts_sorted = sorted(workouts, key=workout_dt)
+
+          for w in workouts_sorted:
+              start_str = w.get("start_time") or w.get("created_at","")
               try:
                   start_dt = datetime.strptime(start_str[:19].replace("T"," "), "%Y-%m-%d %H:%M:%S")
               except:
                   start_dt = None
 
+              dur = workout_duration_min(w)
+              # §5b: skip workouts under 5 minutes (abandoned/test logs)
+              if dur is not None and dur < 5:
+                  print(f"Skipping short workout: {w.get('name','')} ({dur} min)")
+                  continue
+
               if start_dt and start_dt >= week_ago:
                   sessions_this_week += 1
 
-              # Collect exercise names for the recent workout list
+              # Weekly volume (ISO week_start Monday)
+              if start_dt:
+                  week_start = (start_dt - timedelta(days=start_dt.weekday())).date().isoformat()
+                  weekly_volume.setdefault(week_start, 0)
+
               exercise_names = []
+              session_prs = []
               for ex in w.get("exercises", []):
                   ex_title = ex.get("title","")
                   exercise_names.append(ex_title)
                   muscle = next((v for k, v in MUSCLE_MAP.items() if k.lower() in ex_title.lower()), None)
-                  if not muscle:
-                      continue
-                  for s in ex.get("sets", []):
-                      if s.get("type") == "warmup":
-                          continue
-                      wt = s.get("weight_kg") or 0
-                      reps = s.get("reps") or 0
-                      if wt and reps:
-                          e1rm = epley(wt, reps)
-                          if muscle not in muscle_best or e1rm > muscle_best[muscle]["e1rm"]:
-                              muscle_best[muscle] = {
-                                  "e1rm": round(e1rm, 1),
-                                  "exercise": ex_title,
-                                  "date": start_str[:10],
-                              }
 
-              # Recent workouts list (last 5)
-              if len(recent_workouts) < 5:
-                  duration = None
-                  end_str = w.get("end_time","")
-                  if start_dt and end_str:
-                      try:
-                          end_dt = datetime.strptime(end_str[:19].replace("T"," "), "%Y-%m-%d %H:%M:%S")
-                          duration = round((end_dt - start_dt).seconds / 60)
-                      except:
-                          pass
-                  recent_workouts.append({
-                      "title": w.get("name","Workout"),
-                      "date": start_str[:10],
-                      "duration_min": duration,
-                      "exercises": list(dict.fromkeys(exercise_names)),
-                  })
-
-          # Build exercise_history for trend data (last 90 days, best per session per exercise)
-          exercise_history = {}
-          for w in workouts:
-              start_str = w.get("start_time") or w.get("created_at","")
-              for ex in w.get("exercises", []):
-                  title = ex.get("title","")
-                  muscle = next((v for k, v in MUSCLE_MAP.items() if k.lower() in title.lower()), None)
-                  if not muscle:
-                      continue
                   best_this_session = 0
                   for s in ex.get("sets", []):
                       if s.get("type") == "warmup": continue
                       wt = s.get("weight_kg") or 0
-                      reps = s.get("reps") or 0
-                      if wt and reps:
-                          best_this_session = max(best_this_session, epley(wt, reps))
-                  if best_this_session:
-                      if title not in exercise_history:
-                          exercise_history[title] = []
-                      exercise_history[title].append({"date": start_str[:10], "e1rm": round(best_this_session, 1)})
+                      reps_count = s.get("reps") or 0
+                      if wt and reps_count:
+                          e1rm = epley(wt, reps_count)
+                          best_this_session = max(best_this_session, e1rm)
+                          # Weekly volume
+                          if start_dt:
+                              weekly_volume[week_start] = weekly_volume.get(week_start, 0) + wt * reps_count
+
+                  if best_this_session and muscle:
+                      # PR detection: did this session beat the all-time best for this exercise?
+                      prev_best = exercise_all_time.get(ex_title, 0)
+                      if best_this_session > prev_best and prev_best > 0:
+                          session_prs.append({"exercise": ex_title, "e1rm": round(best_this_session, 1), "prev": round(prev_best, 1), "date": start_str[:10]})
+                      exercise_all_time[ex_title] = max(exercise_all_time.get(ex_title, 0), best_this_session)
+
+                      # muscle_best: all-time
+                      if muscle not in muscle_best or best_this_session > muscle_best[muscle]["e1rm"]:
+                          muscle_best[muscle] = {"e1rm": round(best_this_session, 1), "exercise": ex_title, "date": start_str[:10]}
+
+                      # muscle_history: only from baseline date
+                      if start_dt and start_dt >= BASELINE_DATE:
+                          muscle_history.setdefault(muscle, []).append({"date": start_str[:10], "e1rm": round(best_this_session, 1)})
+
+              prs.extend(session_prs)
+
+              if len(recent_workouts) < 5 or (start_dt and start_dt >= week_ago):
+                  recent_workouts = [r for r in recent_workouts if r.get("date","") != start_str[:10] or r.get("title") != w.get("name","")]
+                  recent_workouts.append({"title": w.get("name","Workout"), "date": start_str[:10], "duration_min": dur, "exercises": list(dict.fromkeys(exercise_names))})
+
+          # Keep only last 5 recent workouts, most recent first
+          recent_workouts = sorted(recent_workouts, key=lambda x: x["date"], reverse=True)[:5]
+
+          # Deduplicate muscle_history per day (keep best per day)
+          for muscle in muscle_history:
+              by_date = {}
+              for entry in muscle_history[muscle]:
+                  d = entry["date"]
+                  if d not in by_date or entry["e1rm"] > by_date[d]:
+                      by_date[d] = entry["e1rm"]
+              muscle_history[muscle] = sorted([{"date": d, "e1rm": v} for d, v in by_date.items()], key=lambda x: x["date"])
+
+          # Weekly volume as sorted list
+          weekly_volume_list = sorted([{"week_of": k, "volume_kg": round(v)} for k, v in weekly_volume.items()], key=lambda x: x["week_of"])
+
+          # Only the most recent PRs (last 7 days)
+          recent_prs = [p for p in prs if p["date"] >= week_ago.date().isoformat()]
 
           os.makedirs("data", exist_ok=True)
           with open("data/hevy.json", "w") as f:
@@ -858,10 +935,13 @@ jobs:
                   "updated_at": datetime.utcnow().isoformat()+"Z",
                   "sessions_this_week": sessions_this_week,
                   "muscle_best": muscle_best,
-                  "exercise_history": exercise_history,
+                  "muscle_history": muscle_history,
+                  "exercise_history": {},
+                  "weekly_volume": weekly_volume_list,
                   "recent_workouts": recent_workouts,
+                  "recent_prs": recent_prs,
               }, f, indent=2)
-          print(f"Hevy: wrote {len(muscle_best)} muscle groups, {sessions_this_week} sessions this week")
+          print(f"Hevy: {len(muscle_best)} muscle groups, {sessions_this_week} sessions this week, {len(recent_prs)} PRs")
           EOF
 
       - name: Commit data files
