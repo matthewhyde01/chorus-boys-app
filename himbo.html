@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-  <script>if(sessionStorage.getItem('cb_auth')!=='true'){window.location.href='login.html';}</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -381,7 +380,7 @@
 <body>
 
   <nav class="nav">
-    <a href="home.html" class="nav-brand" aria-label="Back to Chorus Boys">
+    <a href="index.html" class="nav-brand" aria-label="Back to Chorus Boys">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
         <path d="M9 2L4 7L9 12" stroke="#C9963A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -507,6 +506,10 @@
         </div>
         <div style="font-size:10px;color:var(--text-muted);margin-top:8px;font-style:italic;">This is a starting point. We'll refine the formula over time.</div>
       </div>
+      <div class="metric-card" style="margin-bottom:12px;">
+        <div class="metric-label" style="margin-bottom:8px;">Himbo on this week</div>
+        <div id="activity-commentary-text" style="font-size:13px;line-height:1.7;color:var(--text-secondary);font-style:italic;">Loading…</div>
+      </div>
       <div class="grid-4">
         <div class="metric-card">
           <div class="metric-label">Run / walk</div>
@@ -565,9 +568,9 @@
         <div style="font-size:14px;font-weight:500;color:white;margin-bottom:4px;">Scott's Undulating Periodisation · From 18 May 2026</div>
         <div style="font-size:12px;color:var(--text-muted);">Day 1: Chest/Shoulders/Arms &nbsp;·&nbsp; Day 2: Back/Legs &nbsp;·&nbsp; Day 3: Full body &nbsp;·&nbsp; Day 4: Heavy compound</div>
       </div>
-      <div class="grid-2">
-        <div class="metric-card">
-          <div class="metric-label">Gym sessions this week</div>
+      <div class="grid-4" style="margin-bottom:12px;">
+        <div class="metric-card pink-border">
+          <div class="metric-label">Sessions this week</div>
           <div class="metric-value" id="d-gym-sessions">—</div>
         </div>
         <div class="metric-card">
@@ -575,6 +578,14 @@
           <div class="metric-value" style="font-size:18px;padding-top:4px;" id="d-shoulder">Improving</div>
           <div class="metric-delta delta-up">Trending better since 3 June</div>
         </div>
+      </div>
+      <div class="section-title" style="margin-top:1.5rem;">Estimated 1RM by muscle group</div>
+      <div id="hevy-muscle-grid" class="grid-2" style="margin-bottom:12px;">
+        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading from Hevy…</div>
+      </div>
+      <div class="section-title" style="margin-top:1.5rem;">Recent workouts</div>
+      <div id="hevy-recent-workouts">
+        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div>
       </div>
     </section>
 
@@ -609,13 +620,8 @@
           </div>
           <span style="font-size:10px;color:var(--gold-light);border:0.5px solid var(--border-gold);border-radius:99px;padding:3px 10px;white-space:nowrap;">Saving</span>
         </div>
-        <div class="jewel-bar">
-          <div class="jewel-fill" style="width:15%;"></div>
-        </div>
-        <div class="jewel-labels">
-          <span>Unlocks: ear piercing + crop top unbothered</span>
-          <span>Next pay 🌈</span>
-        </div>
+        <div id="jewel-grace" style="font-size:12px;color:var(--text-muted);margin-top:8px;">Grace earned: —</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;font-style:italic;">Worthiness threshold: to be decided at date night</div>
       </div>
     </section>
 
@@ -798,7 +804,7 @@
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, challengesRes, joyRes, sleepAiRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, challengesRes, joyRes, sleepAiRes, commentaryRes, hevyRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
@@ -809,6 +815,8 @@
       fetch('data/himbo_challenges.json').then(r => r.json()),
       fetch('data/himbo_joy.json').then(r => r.json()),
       fetch('data/himbo_sleep_ai.json').then(r => r.json()),
+      fetch('data/himbo_commentary.json').then(r => r.json()),
+      fetch('data/hevy.json').then(r => r.json()),
     ]);
 
     let sufferScore3d = 0;
@@ -1315,86 +1323,65 @@
       }
     } catch(e) { console.error('Readiness:', e); }
 
-    // ── Challenges (from pre-generated Notion data) ───────────────────────────
+    // ── Activity commentary (§3) ─────────────────────────────────────────────
 
-    console.log('[Himbo] challengesRes:', challengesRes.status, challengesRes.status === 'fulfilled' ? challengesRes.value : challengesRes.reason);
-    console.log('[Himbo] joyRes:', joyRes.status, joyRes.status === 'fulfilled' ? joyRes.value : joyRes.reason);
+    if (commentaryRes.status === 'fulfilled') try {
+      const c = commentaryRes.value;
+      const el = document.getElementById('activity-commentary-text');
+      if (el && c.commentary) {
+        el.textContent = c.commentary;
+        el.style.fontStyle = 'normal';
+        el.style.color = 'var(--text-primary)';
+      }
+    } catch(e) { console.error('Commentary:', e); }
+
+    // ── Challenges — Service Compendium (§6 + §8) ─────────────────────────────
 
     if (challengesRes.status === 'fulfilled') try {
       const c = challengesRes.value;
-      const tracks = c.tracks || {};
-      const stretch = c.stretch || [];
+      const challenges = c.challenges || [];
       const container = document.getElementById('challenges-container');
       if (!container) throw new Error('no container');
 
-      const completed = c.completed || {};
-
-      function trackBlock(label, key, isFirst) {
-        const text = tracks[key];
-        const hasChallenge = text && text.trim().toLowerCase() !== 'none' && text.trim() !== '';
-        const marginTop = isFirst ? '' : 'margin-top:1rem;';
-        let html = `<div class="track-label" style="${marginTop}">${label}</div>`;
-        if (hasChallenge) {
-          html += `<div class="challenge-item active">
-            <span class="c-dot active"></span>
-            <div>
-              <div class="c-text">${text}</div>
-              <div class="c-tag">Current · ${label}</div>
+      if (challenges.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active or planned challenges right now.</div>';
+      } else {
+        const dotClass = tier => tier === 'Trial' ? 'active' : tier === 'Devotion' ? 'stretch' : 'done';
+        container.innerHTML = challenges.map(ch => {
+          const statusPill = ch.status === 'Planned'
+            ? '<span style="font-size:10px;color:var(--text-muted);border:0.5px solid var(--border);border-radius:99px;padding:2px 8px;margin-left:6px;">Planned</span>'
+            : '';
+          const meta = [
+            ch.tier    ? `<span style="color:var(--text-muted);">${ch.tier}</span>` : '',
+            ch.mystery ? `<span style="color:var(--gold-light);">${ch.mystery}</span>` : '',
+            ch.due_date ? `<span style="color:var(--text-muted);">Due ${ch.due_date}</span>` : '',
+          ].filter(Boolean).join(' · ');
+          const trigger = ch.trigger_condition
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Trigger: ${ch.trigger_condition}</div>`
+            : '';
+          return `<div class="challenge-item active" style="margin-bottom:8px;">
+            <span class="c-dot ${dotClass(ch.tier)}"></span>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:baseline;flex-wrap:wrap;">
+                <div class="c-text">${ch.service || 'Unnamed challenge'}</div>${statusPill}
+              </div>
+              ${meta ? `<div style="font-size:10px;margin-top:3px;">${meta}</div>` : ''}
+              ${trigger}
             </div>
           </div>`;
-        } else {
-          html += `<div class="challenge-item done" style="opacity:0.45;">
-            <span class="c-dot done"></span>
-            <div><div class="c-text">No active challenge this week</div></div>
-          </div>`;
-        }
-        return html;
-      }
-
-      let html =
-        trackBlock('Track 1 — Visibility',    'track1', true) +
-        trackBlock('Track 2 — Physique',      'track2', false) +
-        trackBlock('Track 3 — Internal Work', 'track3', false);
-
-      // Stretch challenges
-      if (stretch.length > 0) {
-        html += `<div class="track-label gold" style="margin-top:1rem;">Stretch challenges</div>`;
-        html += stretch.map(s => `<div class="challenge-item stretch">
-          <span class="c-dot stretch"></span>
-          <div>
-            <div class="c-text">${s}</div>
-            <div class="c-tag">No deadline · Done when done</div>
-          </div>
-        </div>`).join('');
-      }
-
-      // Completed challenges — collapsible
-      const allCompleted = [
-        ...(completed.track1 || []).map(x => ({ ...x, track: 'Track 1 — Visibility' })),
-        ...(completed.track2 || []).map(x => ({ ...x, track: 'Track 2 — Physique' })),
-        ...(completed.track3 || []).map(x => ({ ...x, track: 'Track 3 — Internal Work' })),
-      ];
-      if (allCompleted.length > 0) {
-        html += `<details class="completed-challenges">
-          <summary>Completed challenges (${allCompleted.length})</summary>
-          ${allCompleted.map(item => `<div class="challenge-item done" style="margin-top:6px;">
-            <span class="c-dot done"></span>
-            <div>
-              <div class="c-text">${item.text}</div>
-              <div class="c-tag">${item.track}${item.date ? ' · ' + item.date : ''}</div>
-            </div>
-          </div>`).join('')}
-        </details>`;
+        }).join('');
       }
 
       if (c.updated_at) {
-        html += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
+        container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
       }
 
-      container.innerHTML = html;
-    } catch(e) {
-      console.error('Challenges:', e);
-    }
+      // Grace total → jewellery section (§8)
+      const graceEl = document.getElementById('jewel-grace');
+      if (graceEl && c.grace_total != null) {
+        graceEl.textContent = `Grace earned: ${c.grace_total}`;
+      }
+    } catch(e) { console.error('Challenges:', e); }
 
     // ── Joy Police (structured Himbo breakdown) ───────────────────────────────
 
@@ -1429,6 +1416,42 @@
         container.innerHTML = `<div style="font-size:13px;color:var(--text-muted);font-style:italic;">Reflection log not yet synced — check back after Saturday's check-in.</div>`;
       }
     } catch(e) { console.error('Joy Police:', e); }
+
+    // ── Hevy gym data (§5) ────────────────────────────────────────────────────
+
+    if (hevyRes.status === 'fulfilled') try {
+      const h = hevyRes.value;
+      const sessEl = document.getElementById('d-gym-sessions');
+      if (sessEl && h.sessions_this_week != null) sessEl.textContent = h.sessions_this_week;
+
+      // Estimated 1RM grid by muscle group
+      const muscleGrid = document.getElementById('hevy-muscle-grid');
+      if (muscleGrid && h.muscle_best && Object.keys(h.muscle_best).length > 0) {
+        muscleGrid.innerHTML = Object.entries(h.muscle_best).map(([muscle, best]) => `
+          <div class="metric-card">
+            <div class="metric-label">${muscle}</div>
+            <div class="metric-value" style="font-size:20px;">${Math.round(best.e1rm)} kg</div>
+            <div class="metric-delta" style="color:var(--text-muted);font-size:11px;">${best.exercise} · ${new Date(best.date).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</div>
+          </div>`).join('');
+      } else if (muscleGrid) {
+        muscleGrid.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No gym data yet — sync needed.</div>';
+      }
+
+      // Recent workouts list
+      const recentEl = document.getElementById('hevy-recent-workouts');
+      if (recentEl && h.recent_workouts && h.recent_workouts.length > 0) {
+        recentEl.innerHTML = h.recent_workouts.map(w => {
+          const exerciseList = (w.exercises || []).slice(0, 4).join(', ') + (w.exercises?.length > 4 ? ` +${w.exercises.length - 4} more` : '');
+          return `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);">
+            <div style="font-size:13px;font-weight:500;color:var(--text-primary);">${w.title || 'Workout'}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${new Date(w.date).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})}${w.duration_min ? ' · ' + w.duration_min + ' min' : ''}</div>
+            ${exerciseList ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">${exerciseList}</div>` : ''}
+          </div>`;
+        }).join('');
+      } else if (recentEl) {
+        recentEl.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No recent workouts found.</div>';
+      }
+    } catch(e) { console.error('Hevy:', e); }
 
   })();
   </script>

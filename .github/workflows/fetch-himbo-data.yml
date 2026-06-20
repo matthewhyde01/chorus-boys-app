@@ -157,7 +157,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python - <<'EOF'
-          import requests, json, os, time
+          import requests, json, os, time, csv, io, re
           from datetime import datetime, timedelta
 
           notion_key = os.environ["NOTION_API_KEY"].strip()
@@ -288,56 +288,88 @@ jobs:
                   t = t.rsplit("```", 1)[0]
               return t.strip()
 
-          print("Extracting challenges...")
-          raw_challenges = claude_call(
-              "You are a data parser. Extract challenges from the Himbo Notion page. "
-              "Look in the Challenges section. Find ALL of:\n"
-              "1. Current challenge for Track 1 (Visibility), Track 2 (Physique), Track 3 (Internal Work). "
-              "Look for 'Current challenge:' text under each track heading.\n"
-              "2. Completed challenges for each track — listed under 'Completed challenges:'. "
-              "Each completed challenge may have a date. Return as an array of objects with 'text' and 'date' fields.\n"
-              "3. All stretch challenges listed under 'Stretch Challenges'.\n"
-              "Return ONLY valid JSON, nothing else:\n"
-              '{"track1": "text or none", "track2": "text or none", "track3": "text or none", '
-              '"completed": {'
-              '"track1": [{"text": "...", "date": "..."}], '
-              '"track2": [], '
-              '"track3": []'
-              '}, '
-              '"stretch": ["challenge 1", "challenge 2"]}\n'
-              "Use \"none\" for missing current challenges. "
-              "Use empty arrays [] where there are no completed challenges or stretch items. "
-              "Do not include assignment dates in the current challenge text.",
-              f"Himbo Notion page content:\n\n{full_text}"
+          print("Querying Service Compendium challenges (§6)...")
+          CHALLENGES_DB_ID = "dc3f975b-7f4d-4361-b859-079936ccdd10"
+          challenges_payload = {
+              "filter": {
+                  "and": [
+                      {"property": "God", "select": {"equals": "Himbo"}},
+                      {"or": [
+                          {"property": "Status", "select": {"equals": "Active"}},
+                          {"property": "Status", "select": {"equals": "Planned"}},
+                      ]},
+                  ]
+              },
+              "sorts": [{"property": "Status", "direction": "ascending"}],
+              "page_size": 50,
+          }
+          ch_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHALLENGES_DB_ID}/query",
+              headers={**notion_headers, "content-type": "application/json"},
+              json=challenges_payload,
+              timeout=30,
           )
-          try:
-              parsed = json.loads(strip_fences(raw_challenges))
-              tracks = {
-                  "track1": parsed.get("track1", "none"),
-                  "track2": parsed.get("track2", "none"),
-                  "track3": parsed.get("track3", "none"),
-              }
-              completed = parsed.get("completed", {"track1": [], "track2": [], "track3": []})
-              stretch = parsed.get("stretch", [])
-          except Exception as e:
-              print(f"Challenges parse error: {e}\nRaw: {raw_challenges[:500]}")
-              tracks = {"track1": "none", "track2": "none", "track3": "none"}
-              completed = {"track1": [], "track2": [], "track3": []}
-              stretch = []
+          ch_r.raise_for_status()
+          ch_pages = ch_r.json().get("results", [])
+
+          def prop_text(page, name):
+              p = page.get("properties", {}).get(name, {})
+              pt = p.get("type", "")
+              if pt == "title":   return " ".join(t.get("plain_text","") for t in p.get("title",[]))
+              if pt == "rich_text": return " ".join(t.get("plain_text","") for t in p.get("rich_text",[]))
+              if pt == "select":  return (p.get("select") or {}).get("name", "")
+              if pt == "date":    return (p.get("date") or {}).get("start", "")
+              if pt == "number":  return p.get("number")
+              return ""
+
+          challenges_list = []
+          grace_total = 0
+          for pg in ch_pages:
+              grace_val = prop_text(pg, "Grace Earned")
+              if grace_val:
+                  try: grace_total += float(grace_val)
+                  except: pass
+              challenges_list.append({
+                  "service":            prop_text(pg, "Service"),
+                  "tier":               prop_text(pg, "Tier"),
+                  "mystery":            prop_text(pg, "Mystery"),
+                  "status":             prop_text(pg, "Status"),
+                  "cadence":            prop_text(pg, "Cadence"),
+                  "due_date":           prop_text(pg, "Due Date"),
+                  "trigger_condition":  prop_text(pg, "Trigger Condition"),
+                  "favour_value":       prop_text(pg, "Favour Value"),
+                  "grace_earned":       prop_text(pg, "Grace Earned"),
+              })
+
+          # Also sum grace from Completed services for the jewellery section
+          grace_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHALLENGES_DB_ID}/query",
+              headers={**notion_headers, "content-type": "application/json"},
+              json={
+                  "filter": {"and": [
+                      {"property": "God", "select": {"equals": "Himbo"}},
+                      {"property": "Status", "select": {"equals": "Complete"}},
+                  ]},
+                  "page_size": 100,
+              },
+              timeout=30,
+          )
+          if grace_r.ok:
+              for pg in grace_r.json().get("results", []):
+                  gv = prop_text(pg, "Grace Earned")
+                  if gv:
+                      try: grace_total += float(gv)
+                      except: pass
 
           with open("data/himbo_challenges.json", "w") as f:
               json.dump({
                   "updated_at": datetime.utcnow().isoformat() + "Z",
-                  "tracks": tracks,
-                  "completed": completed,
-                  "stretch": stretch,
+                  "challenges": challenges_list,
+                  "grace_total": grace_total,
               }, f, indent=2)
-          print(f"Challenges: {tracks}")
-          print(f"Completed: {completed}")
-          print(f"Stretch: {stretch}")
+          print(f"Challenges: {len(challenges_list)} active/planned, grace_total={grace_total}")
 
           print("Generating Joy Police card...")
-          import re
           saturday_blocks = re.findall(
               r'(?:Saturday\s+\d+\s+\w+\s+\d{4}.*?)(?=Saturday\s+\d+\s+\w+\s+\d{4}|$)',
               full_text, re.DOTALL | re.IGNORECASE
@@ -381,12 +413,39 @@ jobs:
               json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", **joy_data}, f, indent=2)
           print(f"Joy Police written: rounds={len(joy_data.get('rounds',''))} chars")
 
-          print("Generating sleep AI card...")
+          print("Generating sleep AI card (§4 — pre-bucketed by night)...")
           sleep_analysis = ""
           try:
               with open("data/sleep.json") as f:
                   sleep_csv = f.read()
-              sleep_sample = "\n".join(sleep_csv.strip().split("\n")[:55])
+
+              # Pre-bucket CSV rows by night: sessions starting before noon belong to the previous night
+              reader = csv.DictReader(io.StringIO(sleep_csv))
+              nights = {}
+              for row in reader:
+                  start_str = row.get("From") or row.get("Start") or row.get("from") or ""
+                  if not start_str:
+                      continue
+                  try:
+                      start_dt = datetime.strptime(start_str[:16], "%Y-%m-%d %H:%M")
+                  except ValueError:
+                      try:
+                          start_dt = datetime.strptime(start_str[:16], "%d/%m/%Y %H:%M")
+                      except ValueError:
+                          continue
+                  night_date = (start_dt - timedelta(hours=12)).date()
+                  if night_date not in nights:
+                      nights[night_date] = []
+                  nights[night_date].append(row)
+
+              # Keep last 7 nights
+              recent_nights = sorted(nights.keys())[-7:]
+              bucketed_lines = []
+              for nd in recent_nights:
+                  for row in nights[nd]:
+                      bucketed_lines.append(f"Night of {nd}: " + ", ".join(f"{k}={v}" for k, v in row.items()))
+
+              sleep_sample = "\n".join(bucketed_lines) if bucketed_lines else "\n".join(sleep_csv.strip().split("\n")[:55])
               voice_context = full_text[:1500]
 
               sleep_analysis = claude_call(
@@ -398,8 +457,9 @@ jobs:
                   "Smiling Mind nightly, magnesium + creatine taken earlier, "
                   "hot shower + cold blast, yin yoga wind-down, lavender oil, screens off early. "
                   "Celebrate wins. Name gaps without moralising. Warm, mischievous, never preachy. "
-                  "No emojis. No markdown. No bullet points. Speak directly to him.",
-                  f"Last 7 days of sleep data (CSV format):\n{sleep_sample}",
+                  "No emojis. No markdown. No bullet points. Speak directly to him. "
+                  "Return only the finished response text — no thinking, no preamble, no explanation.",
+                  f"Last 7 nights of sleep data (pre-bucketed — each row is one full night):\n{sleep_sample}",
                   model="claude-sonnet-4-6",
                   max_tokens=300,
               )
@@ -412,6 +472,86 @@ jobs:
           with open("data/himbo_sleep_ai.json", "w") as f:
               json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", "analysis": sleep_analysis}, f, indent=2)
           print(f"Sleep AI written ({len(sleep_analysis)} chars)")
+
+          # ── §2: Push Live Data Snapshot to Himbo Notion page ──────────────
+          print("Pushing live data snapshot to Notion (§2)...")
+          try:
+              snapshot_lines = [f"Last synced: {datetime.utcnow().strftime('%d %b %Y %H:%M')} UTC"]
+
+              # Weight from Withings
+              try:
+                  with open("data/withings.json") as f:
+                      w_data = json.load(f)
+                  groups = w_data.get("measures", {}).get("body", {}).get("measuregrps", [])
+                  weights = []
+                  for g in groups:
+                      for m in g.get("measures", []):
+                          if m.get("type") == 1:
+                              kg = m["value"] * (10 ** m["unit"])
+                              weights.append((g.get("date", 0), round(kg, 1)))
+                  if weights:
+                      weights.sort(key=lambda x: x[0], reverse=True)
+                      snapshot_lines.append(f"Weight: {weights[0][1]} kg")
+              except Exception as e:
+                  print(f"Snapshot weight error: {e}")
+
+              # Activity from Strava
+              try:
+                  with open("data/strava.json") as f:
+                      s_data = json.load(f)
+                  acts = s_data.get("activities", [])
+                  week_ago = datetime.utcnow() - timedelta(days=7)
+                  week_acts = [a for a in acts if datetime.strptime(a["start_date"][:19], "%Y-%m-%dT%H:%M:%S") >= week_ago]
+                  if week_acts:
+                      snapshot_lines.append(f"Activities this week: {len(week_acts)}")
+                      last = week_acts[0]
+                      sport = last.get("sport_type") or last.get("type", "")
+                      dist = last.get("distance", 0)
+                      dist_str = f"{round(dist)}m" if sport == "Swim" else f"{dist/1000:.1f}km"
+                      snapshot_lines.append(f"Last: {last['name']} — {dist_str}")
+              except Exception as e:
+                  print(f"Snapshot activity error: {e}")
+
+              # Sleep summary
+              if sleep_analysis:
+                  snapshot_lines.append(f"Sleep: {sleep_analysis[:120]}{'…' if len(sleep_analysis)>120 else ''}")
+
+              snapshot_text = "\n".join(snapshot_lines)
+
+              # Fetch existing children to find/replace the snapshot callout
+              children_r = requests.get(
+                  f"https://api.notion.com/v1/blocks/{PAGE_ID}/children?page_size=25",
+                  headers=notion_headers
+              )
+              existing_ids = []
+              if children_r.ok:
+                  for blk in children_r.json().get("results", []):
+                      if blk.get("type") == "callout":
+                          icon_emoji = (blk.get("callout",{}).get("icon") or {}).get("emoji","")
+                          if icon_emoji == "📊":
+                              existing_ids.append(blk["id"])
+
+              # Delete old snapshot callout(s)
+              for bid in existing_ids:
+                  requests.delete(f"https://api.notion.com/v1/blocks/{bid}", headers=notion_headers)
+
+              # Append new snapshot callout
+              requests.patch(
+                  f"https://api.notion.com/v1/blocks/{PAGE_ID}/children",
+                  headers={**notion_headers, "content-type": "application/json"},
+                  json={"children": [{
+                      "object": "block",
+                      "type": "callout",
+                      "callout": {
+                          "icon": {"type": "emoji", "emoji": "📊"},
+                          "color": "gray_background",
+                          "rich_text": [{"type": "text", "text": {"content": snapshot_text}}],
+                      },
+                  }]},
+              )
+              print("Notion snapshot pushed.")
+          except Exception as e:
+              print(f"Notion snapshot error (non-fatal): {e}")
           EOF
 
       - name: Generate activity summaries
@@ -524,13 +664,203 @@ jobs:
               json.dump(summaries, f, indent=2)
 
           print(f"Done. {len(summaries)} total summaries stored.")
+
+          # ── §3: Weekly activity + recovery commentary ──────────────────────
+          print("Generating weekly activity commentary (§3)...")
+          try:
+              week_ago = datetime.utcnow() - timedelta(days=7)
+              two_weeks_ago = datetime.utcnow() - timedelta(days=14)
+              this_week = [a for a in strava["activities"] if datetime.strptime(a["start_date"][:19],"%Y-%m-%dT%H:%M:%S") >= week_ago]
+              last_week = [a for a in strava["activities"] if two_weeks_ago <= datetime.strptime(a["start_date"][:19],"%Y-%m-%dT%H:%M:%S") < week_ago]
+
+              def week_summary(acts):
+                  if not acts: return "No activities recorded."
+                  lines = []
+                  for a in acts:
+                      sport = a.get("sport_type") or a.get("type","")
+                      dist = a.get("distance",0)
+                      dist_str = f"{round(dist)}m" if sport=="Swim" else f"{dist/1000:.1f}km"
+                      hr = f", avg HR {round(a['average_heartrate'])} bpm" if a.get("average_heartrate") else ""
+                      lines.append(f"  {a['start_date_local'][:10]} — {a['name']} ({sport}, {dist_str}{hr})")
+                  return "\n".join(lines)
+
+              commentary_prompt = (
+                  f"This week ({len(this_week)} activities):\n{week_summary(this_week)}\n\n"
+                  f"Last week ({len(last_week)} activities):\n{week_summary(last_week)}"
+              )
+
+              commentary_resp = requests.post(
+                  "https://api.anthropic.com/v1/messages",
+                  headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                  json={
+                      "model": "claude-sonnet-4-6",
+                      "max_tokens": 350,
+                      "system": (
+                          (voice_brief[:1200] + "\n\n" if voice_brief else "") +
+                          "Write a 3–4 sentence week-over-week activity and recovery commentary for Patroclus. "
+                          "Compare this week to last week. Celebrate improvement, call out drops, notice patterns. "
+                          "Warm, specific, mischievous. No emojis. No markdown. No bullet points. "
+                          "Return only the finished commentary text — no thinking, no preamble."
+                      ),
+                      "messages": [{"role": "user", "content": commentary_prompt}],
+                  },
+                  timeout=40,
+              )
+              commentary_resp.raise_for_status()
+              commentary_text = commentary_resp.json()["content"][0]["text"].strip()
+          except Exception as e:
+              print(f"Commentary error: {e}")
+              commentary_text = ""
+
+          with open("data/himbo_commentary.json", "w") as f:
+              json.dump({"updated_at": datetime.utcnow().isoformat()+"Z", "commentary": commentary_text}, f, indent=2)
+          print(f"Commentary written ({len(commentary_text)} chars)")
+          EOF
+
+      - name: Fetch Hevy gym data
+        env:
+          HEVY_API_KEY: ${{ secrets.HEVY_API_KEY }}
+        run: |
+          python - <<'EOF'
+          import requests, json, os
+          from datetime import datetime, timedelta
+
+          api_key = os.environ["HEVY_API_KEY"].strip()
+          if not api_key:
+              raise ValueError("HEVY_API_KEY is not set")
+
+          headers = {"api-key": api_key, "accept": "application/json"}
+          since = (datetime.utcnow() - timedelta(days=90)).strftime("%Y-%m-%dT00:00:00Z")
+
+          # Paginate workouts
+          workouts = []
+          page = 1
+          while True:
+              r = requests.get(
+                  "https://api.hevyapp.com/v1/workouts",
+                  headers=headers,
+                  params={"page": page, "pageSize": 10, "since": since},
+                  timeout=30,
+              )
+              r.raise_for_status()
+              data = r.json()
+              batch = data.get("workouts", [])
+              workouts.extend(batch)
+              if len(batch) < 10:
+                  break
+              page += 1
+          print(f"Hevy: fetched {len(workouts)} workouts")
+
+          MUSCLE_MAP = {
+              "Bench Press": "Chest", "Incline Bench Press": "Chest", "Cable Fly": "Chest",
+              "Overhead Press": "Shoulders", "Lateral Raise": "Shoulders", "Arnold Press": "Shoulders",
+              "Pull Up": "Back", "Lat Pulldown": "Back", "Barbell Row": "Back", "Cable Row": "Back",
+              "Squat": "Quad", "Leg Press": "Quad", "Hack Squat": "Quad",
+              "Romanian Deadlift": "Hinge", "Deadlift": "Hinge",
+              "Hip Thrust": "Glutes", "Cable Kickback": "Glutes",
+              "Leg Curl": "Hamstrings", "Nordic Curl": "Hamstrings",
+              "Bicep Curl": "Biceps", "Hammer Curl": "Biceps", "Preacher Curl": "Biceps",
+              "Tricep Pushdown": "Triceps", "Skull Crusher": "Triceps", "Dips": "Triceps",
+              "Calf Raise": "Calves",
+          }
+
+          def epley(weight_kg, reps):
+              return weight_kg * (1 + reps / 30) if reps > 1 else weight_kg
+
+          # Compute best e1RM per muscle per session, then best ever per muscle
+          muscle_best = {}
+          now = datetime.utcnow()
+          week_ago = now - timedelta(days=7)
+          sessions_this_week = 0
+          recent_workouts = []
+
+          for w in workouts:
+              start_str = w.get("start_time") or w.get("created_at", "")
+              try:
+                  start_dt = datetime.strptime(start_str[:19].replace("T"," "), "%Y-%m-%d %H:%M:%S")
+              except:
+                  start_dt = None
+
+              if start_dt and start_dt >= week_ago:
+                  sessions_this_week += 1
+
+              # Collect exercise names for the recent workout list
+              exercise_names = []
+              for ex in w.get("exercises", []):
+                  ex_title = ex.get("title","")
+                  exercise_names.append(ex_title)
+                  muscle = next((v for k, v in MUSCLE_MAP.items() if k.lower() in ex_title.lower()), None)
+                  if not muscle:
+                      continue
+                  for s in ex.get("sets", []):
+                      if s.get("type") == "warmup":
+                          continue
+                      wt = s.get("weight_kg") or 0
+                      reps = s.get("reps") or 0
+                      if wt and reps:
+                          e1rm = epley(wt, reps)
+                          if muscle not in muscle_best or e1rm > muscle_best[muscle]["e1rm"]:
+                              muscle_best[muscle] = {
+                                  "e1rm": round(e1rm, 1),
+                                  "exercise": ex_title,
+                                  "date": start_str[:10],
+                              }
+
+              # Recent workouts list (last 5)
+              if len(recent_workouts) < 5:
+                  duration = None
+                  end_str = w.get("end_time","")
+                  if start_dt and end_str:
+                      try:
+                          end_dt = datetime.strptime(end_str[:19].replace("T"," "), "%Y-%m-%d %H:%M:%S")
+                          duration = round((end_dt - start_dt).seconds / 60)
+                      except:
+                          pass
+                  recent_workouts.append({
+                      "title": w.get("name","Workout"),
+                      "date": start_str[:10],
+                      "duration_min": duration,
+                      "exercises": list(dict.fromkeys(exercise_names)),
+                  })
+
+          # Build exercise_history for trend data (last 90 days, best per session per exercise)
+          exercise_history = {}
+          for w in workouts:
+              start_str = w.get("start_time") or w.get("created_at","")
+              for ex in w.get("exercises", []):
+                  title = ex.get("title","")
+                  muscle = next((v for k, v in MUSCLE_MAP.items() if k.lower() in title.lower()), None)
+                  if not muscle:
+                      continue
+                  best_this_session = 0
+                  for s in ex.get("sets", []):
+                      if s.get("type") == "warmup": continue
+                      wt = s.get("weight_kg") or 0
+                      reps = s.get("reps") or 0
+                      if wt and reps:
+                          best_this_session = max(best_this_session, epley(wt, reps))
+                  if best_this_session:
+                      if title not in exercise_history:
+                          exercise_history[title] = []
+                      exercise_history[title].append({"date": start_str[:10], "e1rm": round(best_this_session, 1)})
+
+          os.makedirs("data", exist_ok=True)
+          with open("data/hevy.json", "w") as f:
+              json.dump({
+                  "updated_at": datetime.utcnow().isoformat()+"Z",
+                  "sessions_this_week": sessions_this_week,
+                  "muscle_best": muscle_best,
+                  "exercise_history": exercise_history,
+                  "recent_workouts": recent_workouts,
+              }, f, indent=2)
+          print(f"Hevy: wrote {len(muscle_best)} muscle groups, {sessions_this_week} sessions this week")
           EOF
 
       - name: Commit data files
         run: |
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
-          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_challenges.json data/himbo_joy.json data/himbo_sleep_ai.json
+          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_challenges.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
           git pull --rebase
           git push
