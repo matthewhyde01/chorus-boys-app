@@ -378,7 +378,11 @@ jobs:
 
           if recent_entries:
               voice_context = full_text[:1500]
-              track3_challenge = tracks.get("track3", "none")
+              # Find the current Internal Work mystery from Service Compendium
+              internal_challenge = next(
+                  (ch["service"] for ch in challenges_list if ch.get("mystery","").lower() == "internal work" and ch.get("status") == "Active"),
+                  next((ch["service"] for ch in challenges_list if ch.get("status") == "Active"), "none")
+              )
 
               raw_joy = claude_call(
                   f"You are Himbo. Here is your character context:\n{voice_context}\n\n"
@@ -390,7 +394,7 @@ jobs:
                   'But the black bag to Lavendra? You got that one." 2-4 sentences.\n'
                   '"pattern": ONE line on what the joy police are currently doing overall. '
                   'e.g. "They\'re loud in front of your people, quiet with strangers."\n'
-                  f'"focus": State this week\'s Track 3 challenge directly: "{track3_challenge}"\n\n'
+                  f'"focus": State this week\'s Internal Work challenge directly: "{internal_challenge}"\n\n'
                   "Himbo voice: warm, mischievous, specific, never preachy.",
                   f"Last 2 Saturday reflection log entries:\n\n{recent_entries}",
                   model="claude-sonnet-4-6",
@@ -400,13 +404,17 @@ jobs:
                   joy_data = json.loads(strip_fences(raw_joy))
               except Exception as e:
                   print(f"Joy parse error: {e}\nRaw: {raw_joy[:300]}")
-                  joy_data = {"rounds": raw_joy, "pattern": "", "focus": track3_challenge}
+                  joy_data = {"rounds": raw_joy, "pattern": "", "focus": internal_challenge}
           else:
               print("No Saturday reflection entries found in page content yet.")
+              internal_challenge = next(
+                  (ch["service"] for ch in challenges_list if ch.get("mystery","").lower() == "internal work" and ch.get("status") == "Active"),
+                  "none"
+              )
               joy_data = {
                   "rounds": "",
                   "pattern": "",
-                  "focus": tracks.get("track3", "none"),
+                  "focus": internal_challenge,
               }
 
           with open("data/himbo_joy.json", "w") as f:
