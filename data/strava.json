@@ -1,72 +1,6 @@
 {
-  "updated_at": "2026-06-19T20:03:12.947007Z",
+  "updated_at": "2026-06-20T02:00:43.182941Z",
   "activities": [
-    {
-      "resource_state": 2,
-      "athlete": {
-        "id": 7234187,
-        "resource_state": 1
-      },
-      "name": "St Leonards Run \ud83c\udfc3\ud83c\udffb\u200d\u2642\ufe0f",
-      "distance": 8588.4,
-      "moving_time": 2722,
-      "elapsed_time": 2797,
-      "total_elevation_gain": 124.4,
-      "type": "Run",
-      "sport_type": "Run",
-      "workout_type": null,
-      "device_name": "Apple Watch Series 9",
-      "id": 18802139873,
-      "start_date": "2026-06-05T21:02:03Z",
-      "start_date_local": "2026-06-06T07:02:03Z",
-      "timezone": "(GMT+10:00) Australia/Sydney",
-      "utc_offset": 36000.0,
-      "location_city": null,
-      "location_state": null,
-      "location_country": null,
-      "achievement_count": 1,
-      "kudos_count": 6,
-      "comment_count": 0,
-      "athlete_count": 3,
-      "photo_count": 0,
-      "map": {
-        "id": "a18802139873",
-        "summary_polyline": "hmnmEkc~y[CJGJOFOBu@Cu@Mo@Du@\\KHCDQrAUx@a@jBoA`EKh@KrAEz@Ip@Cp@UjAs@zHG~A?r@IjAC`BIt@Q~@Ep@GR]b@MHmBU]Ca@BGDAD@DFHZFR@^Cx@Dp@JTJ@Rc@tDC`BMzACtAGdAYxCUvCQzAYjEk@tFe@fHHqCFs@WjDERIJO?eBSm@O_AGsDg@kAGWJQ@gAY]@WAGFCJa@nFQjAE^?TA@mAAm@BWF]PWFkBCu@B[DeA\\c@DS?yAU}@?aBYcBS[G_A_@o@KCEFAH@rA^RLHR?`@Ix@Ev@@RL\\?LWvBIbAGjA@lAHLHJNDn@H`@JHLCHEFWRIJSb@Eb@?h@[zE@d@A\\U~BI~CAf@Fv@?hBHTVZ\\l@DHARIJy@n@uBtA{@d@FOZ[j@e@b@a@x@i@jAo@b@Ml@a@~@Y^GtAMz@Mt@E`BSNCVMFAx@Ez@?n@O^Ad@KbAIl@KPAPBXAJCPULKdAg@FIMi@Eu@Ik@@_ABe@ISBGDu@Ey@@UDU`@_AFS?UGq@BGZYx@e@t@m@z@g@hAmAZYTO^GZSZ[`@k@r@k@|@}@|@k@|@_@pAeAb@W^WX[HOD[CoANqCL}@P}Bh@uHv@sIDaAlAkNGG[GcAGa@GSQWKg@Ic@MyA]rH~@^BNAFKN}CViCTsDJy@J}A?SFYBw@Hq@?OGAg@AOCIGQYM[I_@C[A{ADu@P}Ah@gCJ_CTmCF_@Zw@T{@LgAJa@Xw@h@y@v@gBEe@IK[OEICS@q@AQ",
-        "resource_state": 2
-      },
-      "trainer": false,
-      "commute": false,
-      "manual": false,
-      "private": false,
-      "visibility": "followers_only",
-      "flagged": false,
-      "gear_id": null,
-      "start_latlng": [
-        -33.830125,
-        151.219905
-      ],
-      "end_latlng": [
-        -33.830075,
-        151.220222
-      ],
-      "average_speed": 3.155,
-      "max_speed": 5.34,
-      "has_heartrate": true,
-      "average_heartrate": 155.8,
-      "max_heartrate": 184.0,
-      "heartrate_opt_out": false,
-      "display_hide_heartrate_option": true,
-      "elev_high": 102.6,
-      "elev_low": 62.4,
-      "upload_id": 19912636681,
-      "upload_id_str": "19912636681",
-      "external_id": "4814301A-C706-4631-A7C9-3F84A338F0B5.fit",
-      "from_accepted_tag": false,
-      "pr_count": 0,
-      "total_photo_count": 0,
-      "has_kudoed": false,
-      "suffer_score": 98.0
-    },
     {
       "resource_state": 2,
       "athlete": {
@@ -1176,7 +1110,7 @@
         "id": 7234187,
         "resource_state": 1
       },
-      "name": "Morning Swim",
+      "name": "Balmoral Buoys \ud83d\udedf\ud83e\ude72\ud83c\udfca\ud83c\udffb\u200d\u2642\ufe0f",
       "distance": 741.9,
       "moving_time": 1210,
       "elapsed_time": 1210,
@@ -1234,6 +1168,72 @@
       "total_photo_count": 0,
       "has_kudoed": false,
       "suffer_score": 2.0
+    },
+    {
+      "resource_state": 2,
+      "athlete": {
+        "id": 7234187,
+        "resource_state": 1
+      },
+      "name": "VPT Run Club\ud83c\udfc3\ud83c\udffb\u200d\u2642\ufe0f",
+      "distance": 13055.8,
+      "moving_time": 4495,
+      "elapsed_time": 4985,
+      "total_elevation_gain": 174.2,
+      "type": "Run",
+      "sport_type": "Run",
+      "workout_type": null,
+      "device_name": "Apple Watch Series 9",
+      "id": 18989275782,
+      "start_date": "2026-06-19T20:31:06Z",
+      "start_date_local": "2026-06-20T06:31:06Z",
+      "timezone": "(GMT+10:00) Australia/Sydney",
+      "utc_offset": 36000.0,
+      "location_city": null,
+      "location_state": null,
+      "location_country": null,
+      "achievement_count": 2,
+      "kudos_count": 2,
+      "comment_count": 0,
+      "athlete_count": 1,
+      "photo_count": 0,
+      "map": {
+        "id": "a18989275782",
+        "summary_polyline": "bmnmE{c~y[O|@?b@FLj@^BJAPKZm@bAYp@kAzD[vAG`@IpBS|BAb@EPUf@Mf@MvAE|@@`@FlAHZTd@LLbAPBHEFh@RDDBn@AJQ^ObAA^SnCi@hG?n@K`@@`@HP^b@j@LLDPNFB`Db@hADzANbA`@VDt@IfBN^NLJTJTBzAZn@HhBJdAPLZAPq@rHK`@KFkC~@y@TkAMyDw@{AQyASiE[kCg@kC_@UGIGA]XcCBe@Nq@F_DDSPUFGPGV?jAPh@Nt@JhALd@@PAJECGNYBKIu@_@_B]wBSm@m@{Do@iD[qA]y@DUs@OQKo@KSOIKK]Io@Ew@?w@DiAVmBXy@Ds@R}BDs@TkBn@sBRiAf@eBf@o@LULYH]?WIK]QGS?SNiAIJETEl@?`@BDHD^@DBBFCPw@lCo@~AeA~Da@dGKx@Kj@e@jAIb@Iz@AbA?b@Fn@Hd@N\\RTLFd@FNDDH?JCj@KrAEhASxBAdAIv@IlA[nCMrAGZGBe@Ai@FUAaAQu@Io@SjCVNJPVNHXB\\HNFBHMtAAbBMzAe@pEKNK?qAOcAW~Cf@ZLBNOjCi@fG_@|Ci@pFC^BXBHFBNBl@Cp@B{Bc@lD\\XChF_DbD}BzAkAh@i@`@g@^q@VS^MbAIl@OxAi@t@_@d@C\\JP@ZCXKVOHMH_CFQHAHBHLDPMzA@PBJLBNCdAg@Ff@J~Bt@nEd@~FTvAZh@nBlCpAnBr@|AdAlBHzB?`@KvA?fABNNp@g@uACO?KD?BF@XBRTn@j@xAJNr@t@Xd@d@`@x@|@HBN@XGFOJcA`@wBHURWJc@dBeK?QCQ_@k@AQBUb@eANk@N[LIp@JNAx@e@l@OJGRmA^wAX}Ap@wB`@cBNw@LiAHe@~@uDHSDCARIZQp@O\\`@wB?QEGMIs@a@iFoDKE]CSK_ASc@Cs@L[@YCq@W]G{@JO?KGY[OIeCq@_@IaJaAaCYwAG}CSqBWcAUi@S?IHILEbAJB@?LEHQBo@UOIAUFs@@JCXEPGBsCi@kBWyHk@]EmAYOIW]GSB@FDOCABDD?BADIFQAMEWAOICUZeDFcAv@}IJaBP_BAAaAGMGS_@Qy@Go@Aq@D_BLaAj@}BXiFLeAn@eBHa@Hy@Ji@r@}Af@uADQ?KCOc@k@EQ?]Hi@",
+        "resource_state": 2
+      },
+      "trainer": false,
+      "commute": false,
+      "manual": false,
+      "private": false,
+      "visibility": "followers_only",
+      "flagged": false,
+      "gear_id": null,
+      "start_latlng": [
+        -33.830093,
+        151.219981
+      ],
+      "end_latlng": [
+        -33.830038,
+        151.220129
+      ],
+      "average_speed": 2.905,
+      "max_speed": 7.22,
+      "has_heartrate": true,
+      "average_heartrate": 150.9,
+      "max_heartrate": 184.0,
+      "heartrate_opt_out": false,
+      "display_hide_heartrate_option": true,
+      "elev_high": 100.4,
+      "elev_low": 24.2,
+      "upload_id": 20102759520,
+      "upload_id_str": "20102759520",
+      "external_id": "121DC45C-5231-46B2-B489-FEB5CE257FF3.fit",
+      "from_accepted_tag": false,
+      "pr_count": 0,
+      "total_photo_count": 0,
+      "has_kudoed": false,
+      "suffer_score": 130.0
     }
   ]
 }
