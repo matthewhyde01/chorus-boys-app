@@ -1,23 +1,248 @@
 {
-  "updated_at": "2026-06-20T07:28:12.552706Z",
-  "tracks": {
-    "track1": "none",
-    "track2": "none",
-    "track3": "none"
-  },
-  "completed": {
-    "track1": [
-      {
-        "text": "Wear the knit cardigan to Bold & Beautiful Sunday",
-        "date": "7 June 2026"
-      },
-      {
-        "text": "At one Bold & Beautiful or swim session this week \u2014 wetsuit comes off, no poncho, toes out",
-        "date": ""
-      }
-    ],
-    "track2": [],
-    "track3": []
-  },
-  "stretch": []
+  "updated_at": "2026-06-20T10:01:33.579561Z",
+  "challenges": [
+    {
+      "service": "Wednesday midweek pulse check-in",
+      "tier": "Devotion",
+      "mystery": "",
+      "status": "Active",
+      "cadence": "Weekly",
+      "due_date": "",
+      "trigger_condition": "",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Saturday full check-in",
+      "tier": "Devotion",
+      "mystery": "",
+      "status": "Active",
+      "cadence": "Weekly",
+      "due_date": "",
+      "trigger_condition": "",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Change room thong challenge",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Active",
+      "cadence": "Open-ended",
+      "due_date": "",
+      "trigger_condition": "",
+      "favour_value": 20,
+      "grace_earned": 1
+    },
+    {
+      "service": "Daily routine \u2014 choice or habit?",
+      "tier": "Trial",
+      "mystery": "Himbo: Internal Work",
+      "status": "Active",
+      "cadence": "Ad-hoc",
+      "due_date": "",
+      "trigger_condition": "Named and articulated at a Saturday or Wednesday check-in",
+      "favour_value": 10,
+      "grace_earned": 1
+    },
+    {
+      "service": "Active wear crop top at Bold & Beautiful",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Active",
+      "cadence": "Open-ended",
+      "due_date": "",
+      "trigger_condition": "",
+      "favour_value": 15,
+      "grace_earned": 1
+    },
+    {
+      "service": "Gym session (programme day)",
+      "tier": "Devotion",
+      "mystery": "Himbo: Physique",
+      "status": "Active",
+      "cadence": "Daily",
+      "due_date": "",
+      "trigger_condition": "Strava strength/gym activity logged on a scheduled programme day",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Swim session",
+      "tier": "Devotion",
+      "mystery": "Himbo: Physique",
+      "status": "Active",
+      "cadence": "Daily",
+      "due_date": "",
+      "trigger_condition": "Strava swim activity logged",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Full gym week (4/4 sessions)",
+      "tier": "Streak",
+      "mystery": "Himbo: Physique",
+      "status": "Active",
+      "cadence": "Weekly",
+      "due_date": "",
+      "trigger_condition": "4 'Gym session' Devotion completions logged within the same week",
+      "favour_value": 5,
+      "grace_earned": 0
+    },
+    {
+      "service": "Run session",
+      "tier": "Devotion",
+      "mystery": "Himbo: Physique",
+      "status": "Active",
+      "cadence": "Daily",
+      "due_date": "",
+      "trigger_condition": "Strava run activity logged",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Visibility-coded item worn",
+      "tier": "Devotion",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Active",
+      "cadence": "Daily",
+      "due_date": "",
+      "trigger_condition": "Visibility-coded item worn, surfaced via check-in or in-conversation mention",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Protein streak (180g+ daily)",
+      "tier": "Streak",
+      "mystery": "Himbo: Physique",
+      "status": "Active",
+      "cadence": "Weekly",
+      "due_date": "",
+      "trigger_condition": "Cronometer protein \u2265180g logged on all 7 days",
+      "favour_value": 5,
+      "grace_earned": 0
+    },
+    {
+      "service": "Fingers painted at work",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2027-06-01",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Skirt worn at home comfortably",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2027-03-31",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Fingers painted around friends",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2026-12-31",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Earrings at work",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2027-03-31",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Obviously gay crop top at the gym",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2027-06-01",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Wear the outfit (knit, tartan skirt, knee highs, loafers)",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Open-ended",
+      "due_date": "2027-06-01",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Ears pierced",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2026-09-01",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Active wear crop top \u2014 run club",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2027-03-31",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Active wear crop top \u2014 solo run",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2026-12-31",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Skirt shopping with Matt B",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "2026-11-30",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    },
+    {
+      "service": "Crop top in public, alone",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Planned",
+      "cadence": "Ad-hoc",
+      "due_date": "",
+      "trigger_condition": "",
+      "favour_value": null,
+      "grace_earned": null
+    }
+  ],
+  "grace_total": 5.0
 }

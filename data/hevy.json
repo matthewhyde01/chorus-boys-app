@@ -1,0 +1,188 @@
+{
+  "updated_at": "2026-06-20T10:02:02.815452Z",
+  "sessions_this_week": 4,
+  "muscle_best": {
+    "Chest": {
+      "e1rm": 76.0,
+      "exercise": "Incline Bench Press (Barbell)",
+      "date": "2026-06-17"
+    },
+    "Shoulders": {
+      "e1rm": 9.0,
+      "exercise": "Lateral Raise (Dumbbell)",
+      "date": "2026-06-17"
+    },
+    "Biceps": {
+      "e1rm": 31.5,
+      "exercise": "Bicep Curl (Barbell)",
+      "date": "2026-06-17"
+    },
+    "Back": {
+      "e1rm": 84.0,
+      "exercise": "Lat Pulldown - Reverse Grip",
+      "date": "2026-06-18"
+    },
+    "Quad": {
+      "e1rm": 154.0,
+      "exercise": "Leg Press Horizontal (Machine)",
+      "date": "2026-06-18"
+    },
+    "Hinge": {
+      "e1rm": 101.3,
+      "exercise": "Romanian Deadlift (Barbell)",
+      "date": "2026-06-18"
+    }
+  },
+  "exercise_history": {
+    "Incline Bench Press (Barbell)": [
+      {
+        "date": "2026-06-17",
+        "e1rm": 76.0
+      }
+    ],
+    "Bench Press (Dumbbell)": [
+      {
+        "date": "2026-06-17",
+        "e1rm": 28.5
+      }
+    ],
+    "Lateral Raise (Dumbbell)": [
+      {
+        "date": "2026-06-17",
+        "e1rm": 9.0
+      }
+    ],
+    "Bicep Curl (Barbell)": [
+      {
+        "date": "2026-06-17",
+        "e1rm": 31.5
+      }
+    ],
+    "Incline Bench Press (Dumbbell)": [
+      {
+        "date": "2026-06-20",
+        "e1rm": 32.0
+      },
+      {
+        "date": "2026-06-14",
+        "e1rm": 32.0
+      }
+    ],
+    "Seated Cable Row - Bar Wide Grip": [
+      {
+        "date": "2026-06-20",
+        "e1rm": 77.0
+      },
+      {
+        "date": "2026-06-14",
+        "e1rm": 77.0
+      }
+    ],
+    "Single Arm Cable Row": [
+      {
+        "date": "2026-06-20",
+        "e1rm": 28.0
+      },
+      {
+        "date": "2026-06-14",
+        "e1rm": 28.0
+      }
+    ],
+    "Hammer Curl (Dumbbell)": [
+      {
+        "date": "2026-06-20",
+        "e1rm": 16.8
+      },
+      {
+        "date": "2026-06-14",
+        "e1rm": 16.8
+      }
+    ],
+    "Lat Pulldown - Reverse Grip": [
+      {
+        "date": "2026-06-18",
+        "e1rm": 84.0
+      }
+    ],
+    "Squat (Barbell)": [
+      {
+        "date": "2026-06-18",
+        "e1rm": 114.0
+      }
+    ],
+    "Romanian Deadlift (Barbell)": [
+      {
+        "date": "2026-06-18",
+        "e1rm": 101.3
+      }
+    ],
+    "Leg Press Horizontal (Machine)": [
+      {
+        "date": "2026-06-18",
+        "e1rm": 154.0
+      }
+    ]
+  },
+  "recent_workouts": [
+    {
+      "title": "Workout",
+      "date": "2026-06-17",
+      "duration_min": 35,
+      "exercises": [
+        "Incline Bench Press (Barbell)",
+        "Bench Press (Dumbbell)",
+        "Single Arm Landmine Press (Barbell)",
+        "Cable Chest Fly",
+        "Lateral Raise (Dumbbell)",
+        "Bicep Curl (Barbell)",
+        "Push Up"
+      ]
+    },
+    {
+      "title": "Workout",
+      "date": "2026-06-20",
+      "duration_min": 55,
+      "exercises": [
+        "Incline Bench Press (Dumbbell)",
+        "Shoulder Press (Dumbbell)",
+        "Seated Cable Row - Bar Wide Grip",
+        "Single Arm Cable Row",
+        "Face Pull",
+        "Hammer Curl (Dumbbell)",
+        "Triceps Rope Pushdown",
+        "Plank",
+        "Side Plank"
+      ]
+    },
+    {
+      "title": "Workout",
+      "date": "2026-06-18",
+      "duration_min": 38,
+      "exercises": [
+        "Pull Up",
+        "Lat Pulldown - Reverse Grip",
+        "Squat (Barbell)",
+        "Romanian Deadlift (Barbell)",
+        "Leg Press Horizontal (Machine)",
+        "Walking Lunge (Dumbbell)",
+        "Hanging Knee Raise"
+      ]
+    },
+    {
+      "title": "Workout",
+      "date": "2026-06-14",
+      "duration_min": 4,
+      "exercises": [
+        "Incline Bench Press (Dumbbell)",
+        "Shoulder Press (Dumbbell)",
+        "Seated Cable Row - Bar Wide Grip",
+        "Single Arm Cable Row",
+        "Face Pull",
+        "Hammer Curl (Dumbbell)",
+        "Triceps Rope Pushdown",
+        "Plank",
+        "Side Plank"
+      ]
+    }
+  ]
+}
