@@ -289,7 +289,7 @@ jobs:
               return t.strip()
 
           print("Querying Service Compendium challenges (§6)...")
-          CHALLENGES_DB_ID = "dc3f975b-7f4d-4361-b859-079936ccdd10"
+          CHALLENGES_DB_ID = "1345c915-686b-4efd-939c-363c53c5315d"
           challenges_payload = {
               "filter": {
                   "and": [
