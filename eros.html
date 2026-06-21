@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eros — Chorus Boys</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose: #fb7185;
+      --rose-mid: #e85d75;
+      --rose-light: #fda4af;
+      --rose-pale: rgba(251,113,133,0.08);
+      --bg: #0D0A14;
+      --bg-card: rgba(255,255,255,0.04);
+      --bg-card-hover: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.08);
+      --border-rose: rgba(251,113,133,0.3);
+      --text-primary: rgba(255,255,255,0.92);
+      --text-secondary: rgba(255,255,255,0.45);
+      --text-muted: rgba(255,255,255,0.25);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 4rem;
+    }
+
+    /* NAV */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(13,10,20,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    .nav-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      color: var(--rose-light);
+      text-transform: uppercase;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-god {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--rose-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* HERO */
+    .hero {
+      padding: 3rem 2rem 2rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at top left, rgba(251,113,133,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+    .hero-label {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      color: var(--rose);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(36px, 6vw, 52px);
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-sub {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 560px;
+      line-height: 1.7;
+      border-left: 2px solid var(--rose);
+      padding-left: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* MILESTONE STRIP */
+    .milestone-strip {
+      margin-top: 1.5rem;
+    }
+
+    .milestone-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .milestone-label span:last-child {
+      color: var(--rose);
+    }
+
+    .milestone-bar-outer {
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      height: 5px;
+      overflow: hidden;
+    }
+
+    .milestone-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose-mid), var(--rose-light));
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    .milestone-sub {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* MAIN LAYOUT */
+    .main { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+    .section { margin-bottom: 2.5rem; }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--rose);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: var(--border-rose);
+    }
+
+    /* CARDS */
+    .metric-card {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+    }
+
+    .metric-card.rose-border { border-color: var(--border-rose); }
+
+    .metric-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      line-height: 1;
+    }
+
+    /* TRIAL LIST */
+    .trial-item {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .trial-item.active { border-color: var(--border-rose); }
+
+    .t-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+      background: var(--rose);
+    }
+
+    .t-dot.planned {
+      background: transparent;
+      border: 1.5px solid var(--rose);
+    }
+
+    .t-text { font-size: 13px; color: var(--text-primary); line-height: 1.5; }
+    .t-meta { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+    .pill {
+      display: inline-block;
+      font-size: 10px;
+      color: var(--text-muted);
+      border: 0.5px solid var(--border);
+      border-radius: 99px;
+      padding: 2px 8px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .pill.planned { border-color: var(--border-rose); color: var(--rose-light); }
+
+    /* GRACE BAR */
+    .grace-bar-outer {
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      height: 6px;
+      margin: 10px 0 6px;
+      overflow: hidden;
+    }
+
+    .grace-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose), var(--rose-light));
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    .grace-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* REFLECTION */
+    .reflection-card {
+      background: rgba(251,113,133,0.04);
+      border: 0.5px solid var(--border-rose);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .reflection-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .reflection-updated {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* DIVIDER */
+    hr { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .nav { padding: 1rem; }
+      .hero { padding: 2rem 1rem 1.5rem; }
+      .main { padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="home.html" class="nav-brand" aria-label="Back to Chorus Boys">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Chorus Boys
+    </a>
+    <div class="nav-god">
+      <!-- Padlock symbol -->
+      <svg width="13" height="15" viewBox="0 0 13 15" fill="none" aria-hidden="true">
+        <rect x="1.5" y="6.5" width="10" height="8" rx="1.5" stroke="#fda4af" stroke-width="1.2"/>
+        <path d="M4 6.5V4.5a2.5 2.5 0 0 1 5 0v2" stroke="#fda4af" stroke-width="1.2" stroke-linecap="round"/>
+        <circle cx="6.5" cy="10.5" r="1" fill="#fda4af"/>
+        <line x1="6.5" y1="11.5" x2="6.5" y2="13" stroke="#fda4af" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+      Eros
+    </div>
+    <div class="nav-date" id="nav-date"></div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-label">God of Desire &amp; Expression</div>
+      <h1 class="hero-title">Eros</h1>
+      <p class="hero-sub">Desire · Mystery · Expression</p>
+      <blockquote class="hero-quote" id="hero-quote">
+        <!-- Patroclus quote (31 May 2026) — update this text -->
+        "He is desire made visible. Everything he wants, he becomes."
+      </blockquote>
+
+      <div class="milestone-strip">
+        <div class="milestone-label">
+          <span>12-Month Milestone — from 1 June 2026</span>
+          <span id="milestone-countdown">— days remaining</span>
+        </div>
+        <div class="milestone-bar-outer">
+          <div class="milestone-bar-fill" id="milestone-bar" style="width:0%"></div>
+        </div>
+        <div class="milestone-sub">
+          <span>1 June 2026</span>
+          <span>Target: 1 June 2027</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="main">
+
+    <section class="section" aria-label="Active Trials">
+      <div class="section-title">Active Trials</div>
+      <div id="trials-container">
+        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading trials from Notion…</div>
+      </div>
+    </section>
+
+    <hr>
+
+    <section class="section" aria-label="Grace and The Demand">
+      <div class="section-title">Grace &amp; The Demand</div>
+      <div class="metric-card rose-border">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:500;color:white;margin-bottom:3px;">Gold body chain + anklet, lock &amp; pink ribbon charms</div>
+            <div style="font-size:11px;color:var(--text-muted);">Worthiness threshold: 12 Grace</div>
+          </div>
+        </div>
+        <div class="grace-bar-outer">
+          <div class="grace-bar-fill" id="grace-bar" style="width:0%"></div>
+        </div>
+        <div class="grace-labels">
+          <span id="grace-label">Grace earned: — / 12</span>
+          <span id="grace-pct" style="color:var(--rose-light);"></span>
+        </div>
+        <div id="demand-status" style="font-size:12px;color:var(--text-muted);margin-top:10px;font-style:italic;">
+          Not yet revealed.
+        </div>
+      </div>
+    </section>
+
+    <hr>
+
+    <section class="section" aria-label="Reflection Log">
+      <div class="section-title">Reflection Log</div>
+      <div class="reflection-card" id="reflection-card">
+        <div class="reflection-text" id="reflection-text" style="color:var(--text-muted);">Loading…</div>
+        <div class="reflection-updated" id="reflection-updated"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Nav date
+    document.getElementById('nav-date').textContent = new Date().toLocaleDateString('en-AU', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    });
+
+    // Milestone strip
+    (function () {
+      const start  = new Date('2026-06-01');
+      const target = new Date('2027-06-01');
+      const now    = new Date();
+      const total  = target - start;
+      const elapsed = now - start;
+      const pct = Math.max(0, Math.min(100, (elapsed / total) * 100));
+      const remaining = Math.max(0, Math.ceil((target - now) / 86400000));
+      document.getElementById('milestone-bar').style.width = pct.toFixed(1) + '%';
+      document.getElementById('milestone-countdown').textContent = remaining.toLocaleString() + ' days remaining';
+    })();
+  </script>
+
+  <script>
+  (async function () {
+
+    // ── Trials ────────────────────────────────────────────────────────────────
+
+    try {
+      const res = await fetch('data/eros_trials.json');
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      const trials = data.trials || [];
+      const container = document.getElementById('trials-container');
+
+      if (trials.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active or planned Trials right now.</div>';
+      } else {
+        container.innerHTML = trials.map(t => {
+          const isPlanned = t.status === 'Planned';
+          const metaParts = [
+            t.tier     ? `<span>${t.tier}</span>` : '',
+            t.mystery  ? `<span style="color:var(--rose-light);">${t.mystery}</span>` : '',
+            t.due_date ? `<span>Due ${t.due_date}</span>` : '',
+          ].filter(Boolean).join(' · ');
+          const trigger = t.trigger_condition
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Trigger: ${t.trigger_condition}</div>`
+            : '';
+          const plannedPill = isPlanned
+            ? '<span class="pill planned">Planned</span>'
+            : '';
+          return `<div class="trial-item ${isPlanned ? '' : 'active'}">
+            <span class="t-dot ${isPlanned ? 'planned' : ''}"></span>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:baseline;flex-wrap:wrap;">
+                <div class="t-text">${t.service || 'Unnamed Trial'}</div>${plannedPill}
+              </div>
+              ${metaParts ? `<div class="t-meta" style="margin-top:3px;">${metaParts}</div>` : ''}
+              ${trigger}
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      if (data.updated_at) {
+        container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(data.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
+      }
+
+      // ── Grace & The Demand ────────────────────────────────────────────────
+      const THRESHOLD = 12;
+      const grace = data.grace_total ?? 0;
+      const pct = Math.min(100, (grace / THRESHOLD) * 100);
+      document.getElementById('grace-bar').style.width = pct.toFixed(1) + '%';
+      document.getElementById('grace-label').textContent = `Grace earned: ${grace} / ${THRESHOLD}`;
+      document.getElementById('grace-pct').textContent = pct.toFixed(0) + '%';
+      if (grace >= THRESHOLD) {
+        document.getElementById('demand-status').textContent = 'Threshold reached. The Demand may now be revealed.';
+        document.getElementById('demand-status').style.color = 'var(--rose-light)';
+      }
+    } catch (e) {
+      console.error('Trials:', e);
+      document.getElementById('trials-container').innerHTML =
+        '<div style="color:var(--text-muted);font-size:12px;">Could not load trials — check back after next sync.</div>';
+    }
+
+    // ── Reflection Log ────────────────────────────────────────────────────────
+
+    try {
+      const res = await fetch('data/eros_reflection.json');
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      const el = document.getElementById('reflection-text');
+      const updatedEl = document.getElementById('reflection-updated');
+      if (data.entry && data.entry.trim()) {
+        el.textContent = data.entry;
+        el.style.color = 'var(--text-secondary)';
+      } else {
+        el.textContent = 'No reflection entry found yet.';
+      }
+      if (data.updated_at) {
+        updatedEl.textContent = 'Synced ' + new Date(data.updated_at).toLocaleDateString('en-AU', {
+          day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+        });
+      }
+    } catch (e) {
+      console.error('Reflection:', e);
+      document.getElementById('reflection-text').textContent = 'Could not load reflection — check back after next sync.';
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
