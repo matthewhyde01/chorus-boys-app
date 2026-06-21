@@ -1,11 +1,60 @@
 {
-  "updated_at": "2026-06-20T23:40:26.534565Z",
+  "updated_at": "2026-06-21T00:20:28.958836Z",
   "measures": {
     "status": 0,
     "body": {
-      "updatetime": 1781897942,
+      "updatetime": 1782000641,
       "timezone": "Australia/Sydney",
       "measuregrps": [
+        {
+          "grpid": 7893563108,
+          "attrib": 0,
+          "date": 1781985534,
+          "created": 1782000641,
+          "modified": 1782000641,
+          "category": 1,
+          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "measures": [
+            {
+              "value": 80072006,
+              "type": 1,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9
+            },
+            {
+              "value": 16909780,
+              "type": 6,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128
+            },
+            {
+              "value": 63189998,
+              "type": 76,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9,
+              "position": 6
+            },
+            {
+              "value": 44419998,
+              "type": 77,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9,
+              "position": 6
+            }
+          ],
+          "modelid": 16,
+          "model": "Body Smart",
+          "comment": null,
+          "timezone": "Australia/Sydney"
+        },
         {
           "grpid": 7889415536,
           "attrib": 0,
