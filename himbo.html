@@ -591,10 +591,10 @@
 
     <hr>
 
-    <section class="section" aria-label="Active challenges">
-      <div class="section-title">Challenges</div>
-      <div id="challenges-container">
-        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading challenges from Notion…</div>
+    <section class="section" aria-label="Active Trials">
+      <div class="section-title">Trials</div>
+      <div id="trials-container">
+        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading Trials from Notion…</div>
       </div>
     </section>
 
@@ -810,7 +810,7 @@
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, challengesRes, joyRes, sleepAiRes, commentaryRes, hevyRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
@@ -818,7 +818,7 @@
       fetch('data/activity.json').then(r => r.text()),
       fetch('data/himbo_voice.json').then(r => r.json()),
       fetch('data/activity_summaries.json').then(r => r.json()),
-      fetch('data/himbo_challenges.json').then(r => r.json()),
+      fetch('data/himbo_trials.json').then(r => r.json()),
       fetch('data/himbo_joy.json').then(r => r.json()),
       fetch('data/himbo_sleep_ai.json').then(r => r.json()),
       fetch('data/himbo_commentary.json').then(r => r.json()),
@@ -1341,19 +1341,19 @@
       }
     } catch(e) { console.error('Commentary:', e); }
 
-    // ── Challenges — Service Compendium (§6 + §8) ─────────────────────────────
+    // ── Trials (from Notion DB — §6) ───────────────────────────────────────
 
-    if (challengesRes.status === 'fulfilled') try {
-      const c = challengesRes.value;
-      const challenges = c.challenges || [];
-      const container = document.getElementById('challenges-container');
+    if (trialsRes.status === 'fulfilled') try {
+      const c = trialsRes.value;
+      const trials = c.trials || [];
+      const container = document.getElementById('trials-container');
       if (!container) throw new Error('no container');
 
-      if (challenges.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active or planned challenges right now.</div>';
+      if (trials.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active or planned Trials right now.</div>';
       } else {
         const dotClass = tier => tier === 'Trial' ? 'active' : tier === 'Devotion' ? 'stretch' : 'done';
-        container.innerHTML = challenges.map(ch => {
+        container.innerHTML = trials.map(ch => {
           const statusPill = ch.status === 'Planned'
             ? '<span style="font-size:10px;color:var(--text-muted);border:0.5px solid var(--border);border-radius:99px;padding:2px 8px;margin-left:6px;">Planned</span>'
             : '';

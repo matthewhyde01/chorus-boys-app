@@ -360,13 +360,13 @@ jobs:
                       try: grace_total += float(gv)
                       except: pass
 
-          with open("data/himbo_challenges.json", "w") as f:
+          with open("data/himbo_trials.json", "w") as f:
               json.dump({
                   "updated_at": datetime.utcnow().isoformat() + "Z",
-                  "challenges": challenges_list,
+                  "trials": challenges_list,
                   "grace_total": grace_total,
               }, f, indent=2)
-          print(f"Challenges: {len(challenges_list)} active/planned, grace_total={grace_total}")
+          print(f"Trials: {len(challenges_list)} active, grace_total={grace_total}")
 
           print("Generating Joy Police card...")
           # Extract all dated Saturday entries, parse dates, sort, take most recent 2
@@ -948,7 +948,7 @@ jobs:
         run: |
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
-          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_challenges.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json
+          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_trials.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
           git pull --rebase
           git push
