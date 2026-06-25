@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-25T02:01:24.692504Z",
+  "updated_at": "2026-06-25T09:16:04.486388Z",
   "sessions_this_week": 3,
   "muscle_best": {
     "Chest": {
@@ -60,6 +60,10 @@
       {
         "date": "2026-06-20",
         "e1rm": 77.0
+      },
+      {
+        "date": "2026-06-25",
+        "e1rm": 84.0
       }
     ],
     "Biceps": [
@@ -90,6 +94,10 @@
       {
         "date": "2026-06-21",
         "e1rm": 21.3
+      },
+      {
+        "date": "2026-06-25",
+        "e1rm": 154.0
       }
     ],
     "Hinge": [
@@ -100,6 +108,10 @@
       {
         "date": "2026-06-21",
         "e1rm": 107.9
+      },
+      {
+        "date": "2026-06-25",
+        "e1rm": 101.3
       }
     ]
   },
@@ -112,9 +124,27 @@
     {
       "week_of": "2026-06-15",
       "volume_kg": 22062
+    },
+    {
+      "week_of": "2026-06-22",
+      "volume_kg": 9860
     }
   ],
   "recent_workouts": [
+    {
+      "title": "Workout",
+      "date": "2026-06-25",
+      "duration_min": 51,
+      "exercises": [
+        "Pull Up",
+        "Lat Pulldown - Reverse Grip",
+        "Squat (Barbell)",
+        "Romanian Deadlift (Barbell)",
+        "Leg Press Horizontal (Machine)",
+        "Walking Lunge (Dumbbell)",
+        "Hanging Knee Raise"
+      ]
+    },
     {
       "title": "Workout",
       "date": "2026-06-21",
@@ -170,22 +200,6 @@
         "Lateral Raise (Dumbbell)",
         "Bicep Curl (Barbell)",
         "Push Up"
-      ]
-    },
-    {
-      "title": "Workout",
-      "date": "2026-06-14",
-      "duration_min": 40,
-      "exercises": [
-        "Incline Bench Press (Dumbbell)",
-        "Shoulder Press (Dumbbell)",
-        "Seated Cable Row - Bar Wide Grip",
-        "Single Arm Cable Row",
-        "Face Pull",
-        "Hammer Curl (Dumbbell)",
-        "Triceps Rope Pushdown",
-        "Plank",
-        "Side Plank"
       ]
     }
   ],
