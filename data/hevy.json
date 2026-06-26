@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-06-26T02:01:19.133016Z",
-  "sessions_this_week": 3,
+  "updated_at": "2026-06-26T14:01:50.369477Z",
+  "sessions_this_week": 5,
   "muscle_best": {
     "Chest": {
       "e1rm": 76.0,
@@ -46,6 +46,14 @@
       {
         "date": "2026-06-20",
         "e1rm": 32.0
+      },
+      {
+        "date": "2026-06-22",
+        "e1rm": 76.0
+      },
+      {
+        "date": "2026-06-26",
+        "e1rm": 32.0
       }
     ],
     "Back": [
@@ -64,6 +72,10 @@
       {
         "date": "2026-06-25",
         "e1rm": 84.0
+      },
+      {
+        "date": "2026-06-26",
+        "e1rm": 77.0
       }
     ],
     "Biceps": [
@@ -78,11 +90,23 @@
       {
         "date": "2026-06-20",
         "e1rm": 16.8
+      },
+      {
+        "date": "2026-06-22",
+        "e1rm": 31.5
+      },
+      {
+        "date": "2026-06-26",
+        "e1rm": 16.8
       }
     ],
     "Shoulders": [
       {
         "date": "2026-06-17",
+        "e1rm": 9.0
+      },
+      {
+        "date": "2026-06-22",
         "e1rm": 9.0
       }
     ],
@@ -127,10 +151,26 @@
     },
     {
       "week_of": "2026-06-22",
-      "volume_kg": 9860
+      "volume_kg": 19484
     }
   ],
   "recent_workouts": [
+    {
+      "title": "Workout",
+      "date": "2026-06-26",
+      "duration_min": 52,
+      "exercises": [
+        "Incline Bench Press (Dumbbell)",
+        "Shoulder Press (Dumbbell)",
+        "Seated Cable Row - Bar Wide Grip",
+        "Single Arm Cable Row",
+        "Face Pull",
+        "Hammer Curl (Dumbbell)",
+        "Triceps Rope Pushdown",
+        "Plank",
+        "Side Plank"
+      ]
+    },
     {
       "title": "Workout",
       "date": "2026-06-25",
@@ -143,6 +183,20 @@
         "Leg Press Horizontal (Machine)",
         "Walking Lunge (Dumbbell)",
         "Hanging Knee Raise"
+      ]
+    },
+    {
+      "title": "Workout",
+      "date": "2026-06-22",
+      "duration_min": 42,
+      "exercises": [
+        "Incline Bench Press (Barbell)",
+        "Bench Press (Dumbbell)",
+        "Single Arm Landmine Press (Barbell)",
+        "Cable Chest Fly",
+        "Lateral Raise (Dumbbell)",
+        "Bicep Curl (Barbell)",
+        "Push Up"
       ]
     },
     {
@@ -173,35 +227,14 @@
         "Plank",
         "Side Plank"
       ]
-    },
-    {
-      "title": "Workout",
-      "date": "2026-06-18",
-      "duration_min": 38,
-      "exercises": [
-        "Pull Up",
-        "Lat Pulldown - Reverse Grip",
-        "Squat (Barbell)",
-        "Romanian Deadlift (Barbell)",
-        "Leg Press Horizontal (Machine)",
-        "Walking Lunge (Dumbbell)",
-        "Hanging Knee Raise"
-      ]
-    },
-    {
-      "title": "Workout",
-      "date": "2026-06-17",
-      "duration_min": 35,
-      "exercises": [
-        "Incline Bench Press (Barbell)",
-        "Bench Press (Dumbbell)",
-        "Single Arm Landmine Press (Barbell)",
-        "Cable Chest Fly",
-        "Lateral Raise (Dumbbell)",
-        "Bicep Curl (Barbell)",
-        "Push Up"
-      ]
     }
   ],
-  "recent_prs": []
+  "recent_prs": [
+    {
+      "exercise": "Bench Press (Dumbbell)",
+      "e1rm": 31.7,
+      "prev": 28.5,
+      "date": "2026-06-22"
+    }
+  ]
 }
