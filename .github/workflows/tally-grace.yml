@@ -1,0 +1,417 @@
+name: Grace Tally
+
+on:
+  workflow_dispatch:
+
+# Triggered by iOS Shortcut "Grace Tally" on demand.
+# Typically run Saturday morning before check-in, but any time is valid.
+
+jobs:
+  tally:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run grace tally
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          python - <<'EOF'
+          import requests, json, os, sqlite3, subprocess, csv, io, re
+          from datetime import datetime, timedelta
+          from zoneinfo import ZoneInfo
+
+          SYDNEY = ZoneInfo("Australia/Sydney")
+          CHALLENGES_DB = "1345c915-686b-4efd-939c-363c53c5315d"
+          CHECKINS_DB   = "79579bf4d6ea49f692e793e8773b1811"
+
+          notion_key = os.environ["NOTION_API_KEY"].strip()
+          notion_headers = {
+              "Authorization": f"Bearer {notion_key}",
+              "Notion-Version": "2022-06-28",
+              "content-type": "application/json",
+          }
+
+          # ── Week window: Monday 00:00 → Sunday 23:59 Sydney ─────────────────
+          now_syd = datetime.now(SYDNEY)
+          days_since_monday = now_syd.weekday()  # Mon=0 … Sun=6
+          week_start_syd = (now_syd - timedelta(days=days_since_monday)).replace(
+              hour=0, minute=0, second=0, microsecond=0
+          )
+          week_end_syd = week_start_syd + timedelta(days=6, hours=23, minutes=59, seconds=59)
+          week_start_date = week_start_syd.date().isoformat()
+          week_end_date   = week_end_syd.date().isoformat()
+          print(f"Week window: {week_start_date} → {week_end_date} (Sydney)")
+
+          # ── Strava token refresh ─────────────────────────────────────────────
+          r = requests.post("https://www.strava.com/oauth/token", data={
+              "client_id":     os.environ["STRAVA_CLIENT_ID"].strip(),
+              "client_secret": os.environ["STRAVA_CLIENT_SECRET"].strip(),
+              "refresh_token": os.environ["STRAVA_REFRESH_TOKEN"].strip(),
+              "grant_type":    "refresh_token",
+          })
+          r.raise_for_status()
+          token_data = r.json()
+          access_token = token_data["access_token"]
+          new_refresh = token_data.get("refresh_token", os.environ["STRAVA_REFRESH_TOKEN"])
+          if new_refresh != os.environ["STRAVA_REFRESH_TOKEN"]:
+              subprocess.run(
+                  ["gh", "secret", "set", "STRAVA_REFRESH_TOKEN", "--body", new_refresh,
+                   "--repo", os.environ["REPO"]],
+                  env={**os.environ, "GH_TOKEN": os.environ["GH_TOKEN"]},
+                  check=True,
+              )
+              print("Strava: refresh token rotated")
+
+          # ── Strava: fetch activities since Monday ────────────────────────────
+          since_ts = int(week_start_syd.timestamp())
+          acts_r = requests.get(
+              "https://www.strava.com/api/v3/athlete/activities",
+              headers={"Authorization": f"Bearer {access_token}"},
+              params={"after": since_ts, "per_page": 100},
+          )
+          acts_r.raise_for_status()
+          strava_activities = acts_r.json()
+          print(f"Strava: {len(strava_activities)} activities this week")
+
+          def strava_date(a):
+              """Return YYYY-MM-DD of activity in Sydney time.
+              start_date_local is stored with Z suffix but IS Sydney local time."""
+              return a["start_date_local"][:10]
+
+          GYM_TYPES  = {"WeightTraining", "Workout", "CrossFit"}
+          RUN_TYPES  = {"Run", "TrailRun", "VirtualRun"}
+          SWIM_TYPES = {"Swim"}
+
+          gym_dates  = sorted({strava_date(a) for a in strava_activities if a.get("sport_type") in GYM_TYPES})
+          run_dates  = sorted({strava_date(a) for a in strava_activities if a.get("sport_type") in RUN_TYPES})
+          swim_dates = sorted({strava_date(a) for a in strava_activities if a.get("sport_type") in SWIM_TYPES})
+          gym_count  = len([a for a in strava_activities if a.get("sport_type") in GYM_TYPES])
+          print(f"Gym days: {gym_dates}, Run days: {run_dates}, Swim days: {swim_dates}")
+          print(f"Gym session count: {gym_count}")
+
+          # ── Notion check-ins for this week ───────────────────────────────────
+          ci_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHECKINS_DB}/query",
+              headers=notion_headers,
+              json={
+                  "filter": {
+                      "and": [
+                          {"property": "Date", "date": {"on_or_after":  week_start_date}},
+                          {"property": "Date", "date": {"on_or_before": week_end_date}},
+                      ]
+                  },
+                  "page_size": 50,
+              },
+              timeout=30,
+          )
+          ci_r.raise_for_status()
+
+          def prop_text(page, name):
+              p = page.get("properties", {}).get(name, {})
+              pt = p.get("type", "")
+              if pt == "title":     return " ".join(t.get("plain_text","") for t in p.get("title",[]))
+              if pt == "rich_text": return " ".join(t.get("plain_text","") for t in p.get("rich_text",[]))
+              if pt == "select":    return (p.get("select") or {}).get("name","")
+              if pt == "date":      return (p.get("date") or {}).get("start","")
+              if pt == "number":    return p.get("number")
+              return ""
+
+          saturday_date   = None
+          wednesday_date  = None
+          for page in ci_r.json().get("results", []):
+              entry_type = prop_text(page, "Type")
+              entry_date = prop_text(page, "Date")
+              if entry_type == "Saturday Full Check-In" and not saturday_date:
+                  saturday_date = entry_date[:10] if entry_date else None
+              if entry_type == "Wednesday Midweek Pulse" and not wednesday_date:
+                  wednesday_date = entry_date[:10] if entry_date else None
+          print(f"Check-ins: Saturday={saturday_date}, Wednesday={wednesday_date}")
+
+          # ── Nutrition CSV (from repo) ─────────────────────────────────────────
+          MONTHS = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,
+                    "Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
+
+          def parse_nutrition_date(s):
+              m = re.match(r"(\d+)\s+(\w+)\s+(\d{4})", s.strip())
+              if not m: return None
+              return f"{m.group(3)}-{MONTHS.get(m.group(2),0):02d}-{int(m.group(1)):02d}"
+
+          protein_by_date = {}
+          try:
+              with open("data/nutrition.json") as f:
+                  reader = csv.DictReader(f)
+                  for row in reader:
+                      if row.get("type","").strip() == "Protein":
+                          d = parse_nutrition_date(row.get("date",""))
+                          if d and week_start_date <= d <= week_end_date:
+                              try:
+                                  protein_by_date[d] = float(row["value"])
+                              except (ValueError, KeyError):
+                                  pass
+              print(f"Protein data this week: {protein_by_date}")
+          except FileNotFoundError:
+              print("nutrition.json not found — skipping protein streak")
+
+          # ── Fetch Service Compendium page metadata ───────────────────────────
+          # Page IDs from design doc (32-char hex → UUID with dashes)
+          SERVICE_PAGES = {
+              "gym_devotion":    "384db486-2bcd-8100-9d1d-f2eb0a2d2545",
+              "run_devotion":    "384db486-2bcd-81a0-bd4e-f2f45d072662",
+              "swim_devotion":   "384db486-2bcd-8120-a2f1-c748f8b1e635",
+              "gym_streak":      "384db486-2bcd-8173-a5f9-fbe626069889",
+              "protein_streak":  "384db486-2bcd-81cb-8dea-fb9053662cef",
+              "saturday_checkin":"385db486-2bcd-81e9-9ccd-d7e4a959109e",
+              "wednesday_pulse": "385db486-2bcd-8186-ba9e-ccbb6c90fdaf",
+          }
+
+          def fetch_service_meta(page_id):
+              r = requests.get(
+                  f"https://api.notion.com/v1/pages/{page_id}",
+                  headers=notion_headers,
+                  timeout=30,
+              )
+              if not r.ok:
+                  print(f"Page fetch failed {page_id}: {r.status_code} {r.text[:200]}")
+                  return None
+              page = r.json()
+
+              def pprop(name):
+                  return prop_text(page, name)
+
+              name = pprop("Service") or pprop("Name") or pprop("Title") or page_id
+              god  = pprop("God")
+              tier = pprop("Tier")
+              fav  = page.get("properties",{}).get("Favour Value",{}).get("number") or 0
+              grc  = page.get("properties",{}).get("Grace Earned",{}).get("number") or 0
+              # Remove UUID dashes to store as compact page ID
+              compact_id = page_id.replace("-","")
+              return {
+                  "service_name":    name,
+                  "god":             god,
+                  "tier":            tier,
+                  "favour_value":    float(fav),
+                  "grace_earned":    float(grc),
+                  "notion_service_id": compact_id,
+              }
+
+          service_meta = {}
+          for key, pid in SERVICE_PAGES.items():
+              meta = fetch_service_meta(pid)
+              if meta:
+                  service_meta[key] = meta
+                  print(f"  {key}: {meta['service_name']} | {meta['god']} | grace={meta['grace_earned']}")
+              else:
+                  print(f"  WARNING: could not fetch metadata for {key}")
+
+          # ── SQLite setup ─────────────────────────────────────────────────────
+          os.makedirs("data", exist_ok=True)
+          conn = sqlite3.connect("data/grace.db")
+          conn.execute("""
+              CREATE TABLE IF NOT EXISTS completion_log (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  service_name TEXT NOT NULL,
+                  notion_service_id TEXT NOT NULL,
+                  date_completed TEXT NOT NULL,
+                  god TEXT NOT NULL,
+                  tier TEXT NOT NULL,
+                  favour_value REAL DEFAULT 0,
+                  grace_earned REAL DEFAULT 0,
+                  source TEXT NOT NULL,
+                  notes TEXT,
+                  created_at TEXT DEFAULT (datetime('now'))
+              )
+          """)
+          conn.commit()
+
+          def already_logged(notion_service_id, date_completed):
+              row = conn.execute(
+                  "SELECT id FROM completion_log WHERE notion_service_id=? AND date_completed=?",
+                  (notion_service_id, date_completed),
+              ).fetchone()
+              return row is not None
+
+          def log_completion(meta, date_completed, notes=None):
+              if already_logged(meta["notion_service_id"], date_completed):
+                  print(f"  SKIP (duplicate): {meta['service_name']} on {date_completed}")
+                  return False
+              conn.execute(
+                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes) VALUES (?,?,?,?,?,?,?,?,?)",
+                  (meta["service_name"], meta["notion_service_id"], date_completed,
+                   meta["god"], meta["tier"], meta["favour_value"], meta["grace_earned"],
+                   "Automated", notes),
+              )
+              conn.commit()
+              print(f"  LOGGED: {meta['service_name']} on {date_completed}")
+              return True
+
+          # ── Evaluate and log ─────────────────────────────────────────────────
+          new_completions = 0
+
+          # Gym devotions — one per day in week
+          if "gym_devotion" in service_meta:
+              for d in gym_dates:
+                  if log_completion(service_meta["gym_devotion"], d):
+                      new_completions += 1
+
+          # Run devotions — one per day in week
+          if "run_devotion" in service_meta:
+              for d in run_dates:
+                  if log_completion(service_meta["run_devotion"], d):
+                      new_completions += 1
+
+          # Swim devotions — one per day in week
+          if "swim_devotion" in service_meta:
+              for d in swim_dates:
+                  if log_completion(service_meta["swim_devotion"], d):
+                      new_completions += 1
+
+          # Full gym week streak (4+ sessions) — date = week end Sunday
+          if "gym_streak" in service_meta and gym_count >= 4:
+              if log_completion(service_meta["gym_streak"], week_end_date):
+                  new_completions += 1
+
+          # Protein streak (180g+ every day, 7/7) — date = week end Sunday
+          if "protein_streak" in service_meta:
+              week_days = [(week_start_syd + timedelta(days=i)).date().isoformat() for i in range(7)]
+              days_with_data = [d for d in week_days if d in protein_by_date]
+              days_on_target = [d for d in days_with_data if protein_by_date[d] >= 180]
+              if len(days_with_data) == 7 and len(days_on_target) == 7:
+                  if log_completion(service_meta["protein_streak"], week_end_date):
+                      new_completions += 1
+              else:
+                  print(f"Protein streak: {len(days_on_target)}/{len(days_with_data)} days on target — not yet complete")
+
+          # Saturday check-in devotion
+          if "saturday_checkin" in service_meta and saturday_date:
+              if log_completion(service_meta["saturday_checkin"], saturday_date):
+                  new_completions += 1
+
+          # Wednesday midweek pulse devotion
+          if "wednesday_pulse" in service_meta and wednesday_date:
+              if log_completion(service_meta["wednesday_pulse"], wednesday_date):
+                  new_completions += 1
+
+          print(f"Tally complete: {new_completions} new completions logged")
+
+          # ── Export grace.json ────────────────────────────────────────────────
+          rows = conn.execute(
+              "SELECT god, SUM(grace_earned), SUM(favour_value) FROM completion_log GROUP BY god"
+          ).fetchall()
+          totals_by_god = {row[0]: {"grace": round(row[1], 2), "favour": round(row[2], 2)} for row in rows}
+
+          grand_grace  = round(sum(v["grace"]  for v in totals_by_god.values()), 2)
+          grand_favour = round(sum(v["favour"] for v in totals_by_god.values()), 2)
+
+          recent = conn.execute(
+              "SELECT service_name, notion_service_id, date_completed, god, tier, grace_earned, favour_value, source, notes FROM completion_log ORDER BY date_completed DESC, id DESC LIMIT 50"
+          ).fetchall()
+          recent_list = [
+              {
+                  "service_name":    r[0],
+                  "notion_service_id": r[1],
+                  "date_completed":  r[2],
+                  "god":             r[3],
+                  "tier":            r[4],
+                  "grace_earned":    r[5],
+                  "favour_value":    r[6],
+                  "source":          r[7],
+                  "notes":           r[8],
+              }
+              for r in recent
+          ]
+
+          # This week's completions
+          week_rows = conn.execute(
+              "SELECT service_name, notion_service_id, date_completed, god, tier, grace_earned, favour_value, source FROM completion_log WHERE date_completed >= ? AND date_completed <= ? ORDER BY date_completed",
+              (week_start_date, week_end_date),
+          ).fetchall()
+          this_week = [
+              {
+                  "service_name":    r[0],
+                  "notion_service_id": r[1],
+                  "date_completed":  r[2],
+                  "god":             r[3],
+                  "tier":            r[4],
+                  "grace_earned":    r[5],
+                  "favour_value":    r[6],
+                  "source":          r[7],
+              }
+              for r in week_rows
+          ]
+
+          with open("data/grace.json", "w") as f:
+              json.dump({
+                  "updated_at":     datetime.utcnow().isoformat() + "Z",
+                  "week":           {"start": week_start_date, "end": week_end_date},
+                  "totals_by_god":  totals_by_god,
+                  "grand_totals":   {"grace": grand_grace, "favour": grand_favour},
+                  "this_week":      this_week,
+                  "recent_completions": recent_list,
+              }, f, indent=2)
+          print(f"grace.json written — grand grace={grand_grace}, favour={grand_favour}")
+
+          # ── Export active_trials.json (for the complete-trial form) ──────────
+          trials_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHALLENGES_DB}/query",
+              headers=notion_headers,
+              json={
+                  "filter": {
+                      "and": [
+                          {"property": "Tier",   "select": {"equals": "Trial"}},
+                          {"property": "Status", "select": {"equals": "Active"}},
+                      ]
+                  },
+                  "sorts": [{"property": "God", "direction": "ascending"}],
+                  "page_size": 100,
+              },
+              timeout=30,
+          )
+          trials_r.raise_for_status()
+          active_trials = []
+          for pg in trials_r.json().get("results", []):
+              pid = pg["id"].replace("-", "")
+              active_trials.append({
+                  "notion_service_id": pid,
+                  "service_name":  prop_text(pg, "Service") or prop_text(pg, "Name"),
+                  "god":           prop_text(pg, "God"),
+                  "favour_value":  pg.get("properties",{}).get("Favour Value",{}).get("number") or 0,
+                  "grace_earned":  pg.get("properties",{}).get("Grace Earned",{}).get("number") or 0,
+                  "due_date":      prop_text(pg, "Due Date"),
+              })
+
+          with open("data/active_trials.json", "w") as f:
+              json.dump({
+                  "updated_at": datetime.utcnow().isoformat() + "Z",
+                  "trials":     active_trials,
+              }, f, indent=2)
+          print(f"active_trials.json written — {len(active_trials)} trials")
+
+          conn.close()
+          EOF
+
+      - name: Commit data files
+        run: |
+          git config user.name "Dante"
+          git config user.email "dante@chorus-boys"
+          git add data/grace.db data/grace.json data/active_trials.json
+          git diff --staged --quiet || git commit -m "chore: grace tally [$(date -u '+%Y-%m-%d %H:%M')] UTC"
+          git pull --rebase
+          git push

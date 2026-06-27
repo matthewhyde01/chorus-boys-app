@@ -1,0 +1,195 @@
+name: Complete Trial
+
+on:
+  workflow_dispatch:
+    inputs:
+      notion_service_id:
+        description: 'Notion page ID of the Trial (32-char hex, no dashes)'
+        required: true
+        type: string
+      date_completed:
+        description: 'Date completed (YYYY-MM-DD)'
+        required: true
+        type: string
+      notes:
+        description: 'Optional notes'
+        required: false
+        type: string
+
+jobs:
+  complete-trial:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Write completion and update Notion
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_SERVICE_ID: ${{ inputs.notion_service_id }}
+          DATE_COMPLETED: ${{ inputs.date_completed }}
+          NOTES: ${{ inputs.notes }}
+        run: |
+          python - <<'EOF'
+          import requests, json, os, sqlite3
+          from datetime import datetime
+
+          notion_key = os.environ["NOTION_API_KEY"].strip()
+          page_id_compact = os.environ["NOTION_SERVICE_ID"].strip()
+          date_completed  = os.environ["DATE_COMPLETED"].strip()
+          notes           = os.environ.get("NOTES", "").strip() or None
+
+          notion_headers = {
+              "Authorization": f"Bearer {notion_key}",
+              "Notion-Version": "2022-06-28",
+              "content-type": "application/json",
+          }
+
+          # Format compact ID as UUID
+          pid = page_id_compact
+          if len(pid) == 32 and "-" not in pid:
+              pid = f"{pid[:8]}-{pid[8:12]}-{pid[12:16]}-{pid[16:20]}-{pid[20:]}"
+
+          # ── 1. Fetch Trial metadata from Notion ──────────────────────────────
+          r = requests.get(
+              f"https://api.notion.com/v1/pages/{pid}",
+              headers=notion_headers,
+              timeout=30,
+          )
+          if not r.ok:
+              raise RuntimeError(f"Failed to fetch page {pid}: {r.status_code} {r.text[:300]}")
+          page = r.json()
+
+          def prop_text(name):
+              p = page.get("properties", {}).get(name, {})
+              pt = p.get("type", "")
+              if pt == "title":     return " ".join(t.get("plain_text","") for t in p.get("title",[]))
+              if pt == "rich_text": return " ".join(t.get("plain_text","") for t in p.get("rich_text",[]))
+              if pt == "select":    return (p.get("select") or {}).get("name","")
+              if pt == "date":      return (p.get("date") or {}).get("start","")
+              if pt == "number":    return p.get("number")
+              return ""
+
+          service_name  = prop_text("Service") or prop_text("Name") or prop_text("Title") or page_id_compact
+          god           = prop_text("God")
+          tier          = prop_text("Tier")
+          favour_value  = float(page.get("properties",{}).get("Favour Value",{}).get("number") or 0)
+          grace_earned  = float(page.get("properties",{}).get("Grace Earned",{}).get("number") or 0)
+
+          print(f"Trial: {service_name} | {god} | grace={grace_earned} | favour={favour_value}")
+
+          # ── 2. Write completion to SQLite ────────────────────────────────────
+          os.makedirs("data", exist_ok=True)
+          conn = sqlite3.connect("data/grace.db")
+          conn.execute("""
+              CREATE TABLE IF NOT EXISTS completion_log (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  service_name TEXT NOT NULL,
+                  notion_service_id TEXT NOT NULL,
+                  date_completed TEXT NOT NULL,
+                  god TEXT NOT NULL,
+                  tier TEXT NOT NULL,
+                  favour_value REAL DEFAULT 0,
+                  grace_earned REAL DEFAULT 0,
+                  source TEXT NOT NULL,
+                  notes TEXT,
+                  created_at TEXT DEFAULT (datetime('now'))
+              )
+          """)
+          conn.commit()
+
+          existing = conn.execute(
+              "SELECT id FROM completion_log WHERE notion_service_id=? AND date_completed=?",
+              (page_id_compact, date_completed),
+          ).fetchone()
+          if existing:
+              print(f"Already logged — skipping SQLite write (id={existing[0]})")
+          else:
+              conn.execute(
+                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes) VALUES (?,?,?,?,?,?,?,?,?)",
+                  (service_name, page_id_compact, date_completed, god, tier, favour_value, grace_earned, "Manual", notes),
+              )
+              conn.commit()
+              print(f"SQLite: logged {service_name} on {date_completed}")
+
+          # ── 3. Recalculate and export grace.json ─────────────────────────────
+          rows = conn.execute(
+              "SELECT god, SUM(grace_earned), SUM(favour_value) FROM completion_log GROUP BY god"
+          ).fetchall()
+          totals_by_god = {row[0]: {"grace": round(row[1], 2), "favour": round(row[2], 2)} for row in rows}
+          grand_grace  = round(sum(v["grace"]  for v in totals_by_god.values()), 2)
+          grand_favour = round(sum(v["favour"] for v in totals_by_god.values()), 2)
+
+          recent = conn.execute(
+              "SELECT service_name, notion_service_id, date_completed, god, tier, grace_earned, favour_value, source, notes FROM completion_log ORDER BY date_completed DESC, id DESC LIMIT 50"
+          ).fetchall()
+          recent_list = [
+              {"service_name": r[0], "notion_service_id": r[1], "date_completed": r[2],
+               "god": r[3], "tier": r[4], "grace_earned": r[5], "favour_value": r[6],
+               "source": r[7], "notes": r[8]}
+              for r in recent
+          ]
+
+          try:
+              with open("data/grace.json") as f:
+                  existing_grace = json.load(f)
+              week_info = existing_grace.get("week", {"start": "", "end": ""})
+              this_week = existing_grace.get("this_week", [])
+              # Add this completion to this_week if in window
+              ws, we = week_info.get("start",""), week_info.get("end","")
+              if ws and we and ws <= date_completed <= we:
+                  already_in = any(c["notion_service_id"] == page_id_compact and c["date_completed"] == date_completed for c in this_week)
+                  if not already_in:
+                      this_week.append({
+                          "service_name": service_name, "notion_service_id": page_id_compact,
+                          "date_completed": date_completed, "god": god, "tier": tier,
+                          "grace_earned": grace_earned, "favour_value": favour_value, "source": "Manual",
+                      })
+          except (FileNotFoundError, KeyError):
+              week_info = {"start": "", "end": ""}
+              this_week = []
+
+          with open("data/grace.json", "w") as f:
+              json.dump({
+                  "updated_at":         datetime.utcnow().isoformat() + "Z",
+                  "week":               week_info,
+                  "totals_by_god":      totals_by_god,
+                  "grand_totals":       {"grace": grand_grace, "favour": grand_favour},
+                  "this_week":          this_week,
+                  "recent_completions": recent_list,
+              }, f, indent=2)
+          print(f"grace.json updated — grand grace={grand_grace}")
+          conn.close()
+
+          # ── 4. Mark Notion Service Compendium row as Complete ────────────────
+          update_r = requests.patch(
+              f"https://api.notion.com/v1/pages/{pid}",
+              headers=notion_headers,
+              json={"properties": {"Status": {"select": {"name": "Complete"}}}},
+              timeout=30,
+          )
+          if update_r.ok:
+              print(f"Notion: {service_name} marked Complete")
+          else:
+              print(f"Notion update failed: {update_r.status_code} {update_r.text[:200]}")
+          EOF
+
+      - name: Commit data files
+        run: |
+          git config user.name "Dante"
+          git config user.email "dante@chorus-boys"
+          git add data/grace.db data/grace.json
+          git diff --staged --quiet || git commit -m "chore: trial complete — ${{ inputs.notion_service_id }} on ${{ inputs.date_completed }}"
+          git pull --rebase
+          git push

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Trial — Chorus Boys</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9963A;
+      --gold-light: #E8C96A;
+      --bg: #0D0A14;
+      --bg-card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --border-gold: rgba(201,150,58,0.3);
+      --text-primary: rgba(255,255,255,0.92);
+      --text-secondary: rgba(255,255,255,0.45);
+      --text-muted: rgba(255,255,255,0.25);
+      --green: #7BAE7F;
+      --red: #E8458B;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 4rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(13,10,20,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    .nav-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      text-transform: uppercase;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-brand svg { opacity: 0.7; }
+
+    .hero {
+      padding: 3rem 2rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at top left, rgba(201,150,58,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 640px; }
+
+    .hero-label {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: var(--border-gold);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card.gold-border { border-color: var(--border-gold); }
+
+    label {
+      display: block;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    select, input[type="date"], input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 0.5px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--border-gold);
+    }
+
+    select option {
+      background: #1a1525;
+      color: var(--text-primary);
+    }
+
+    select optgroup {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .form-group { margin-bottom: 1.2rem; }
+
+    .pat-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(201,150,58,0.15), rgba(201,150,58,0.08));
+      border: 0.5px solid var(--border-gold);
+      border-radius: 8px;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      background: linear-gradient(135deg, rgba(201,150,58,0.25), rgba(201,150,58,0.12));
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .trial-preview {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: rgba(201,150,58,0.05);
+      border: 0.5px solid rgba(201,150,58,0.15);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: none;
+      line-height: 1.7;
+    }
+
+    .trial-preview span { color: var(--gold-light); font-weight: 500; }
+
+    #status {
+      margin-top: 1rem;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      display: none;
+    }
+
+    #status.success {
+      background: rgba(123,174,127,0.1);
+      border: 0.5px solid rgba(123,174,127,0.3);
+      color: var(--green);
+      display: block;
+    }
+
+    #status.error {
+      background: rgba(232,69,139,0.08);
+      border: 0.5px solid rgba(232,69,139,0.25);
+      color: var(--red);
+      display: block;
+    }
+
+    #status.loading {
+      background: rgba(255,255,255,0.03);
+      border: 0.5px solid var(--border);
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    .loading-dots::after {
+      content: '';
+      animation: dots 1.5s steps(3, end) infinite;
+    }
+
+    @keyframes dots {
+      0%   { content: '.'; }
+      33%  { content: '..'; }
+      66%  { content: '...'; }
+      100% { content: ''; }
+    }
+
+    .success-icon { font-size: 20px; margin-bottom: 6px; }
+
+    .grace-pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border: 0.5px solid var(--border-gold);
+      border-radius: 99px;
+      font-size: 10px;
+      color: var(--gold-light);
+      margin-top: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .nav { padding: 1rem; }
+      .hero { padding: 2rem 1rem 1.5rem; }
+      .main { padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-brand" aria-label="Back to Chorus Boys">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M9 2L4 7L9 12" stroke="#C9963A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Chorus Boys
+    </a>
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;color:var(--gold-light);">Complete Trial</div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-label">Grace &amp; Favour</div>
+      <h1 class="hero-title">Complete a Trial</h1>
+      <p class="hero-sub">Record what you've done. Let the gods know.</p>
+    </div>
+  </div>
+
+  <main class="main">
+
+    <div class="section-title">Trial</div>
+
+    <div class="card gold-border">
+      <div class="form-group">
+        <label for="trial-select">Which Trial</label>
+        <select id="trial-select" required>
+          <option value="">Loading trials…</option>
+        </select>
+        <div class="trial-preview" id="trial-preview"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="date-input">Date Completed</label>
+        <input type="date" id="date-input" required>
+      </div>
+
+      <div class="form-group">
+        <label for="notes-input">Notes <span style="color:var(--text-muted);font-size:9px;">(optional)</span></label>
+        <textarea id="notes-input" rows="3" placeholder="Any notes on how it went…" style="resize:vertical;"></textarea>
+      </div>
+    </div>
+
+    <div class="section-title">GitHub Token</div>
+
+    <div class="card" id="pat-card">
+      <div class="form-group">
+        <label for="pat-input">Personal Access Token</label>
+        <input type="password" id="pat-input" placeholder="ghp_…" autocomplete="off">
+        <div class="pat-hint">Needs <code>workflow</code> scope. Saved locally — only entered once.</div>
+      </div>
+    </div>
+
+    <button type="submit" id="submit-btn" onclick="submitForm()" disabled>
+      Submit Trial
+    </button>
+
+    <div id="status"></div>
+
+  </main>
+
+  <script>
+    const REPO = 'matthewhyde01/chorus-boys-app';
+    const WORKFLOW = 'complete-trial.yml';
+
+    // ── Date default ─────────────────────────────────────────────────────────
+    const dateInput = document.getElementById('date-input');
+    const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+    dateInput.value = today;
+    dateInput.max   = today;
+
+    // ── PAT persistence ───────────────────────────────────────────────────────
+    const patInput = document.getElementById('pat-input');
+    const saved = localStorage.getItem('gh_pat');
+    if (saved) {
+      patInput.value = saved;
+      document.getElementById('pat-card').style.display = 'none';
+    }
+    patInput.addEventListener('input', () => {
+      if (patInput.value.trim()) localStorage.setItem('gh_pat', patInput.value.trim());
+      updateSubmitState();
+    });
+
+    // ── Load active trials ────────────────────────────────────────────────────
+    const trialSelect = document.getElementById('trial-select');
+    const trialPreview = document.getElementById('trial-preview');
+    let trialsData = [];
+
+    async function loadTrials() {
+      try {
+        const r = await fetch('data/active_trials.json');
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        trialsData = data.trials || [];
+
+        if (trialsData.length === 0) {
+          trialSelect.innerHTML = '<option value="">No active trials found — run Grace Tally first</option>';
+          return;
+        }
+
+        // Group by god
+        const byGod = {};
+        for (const t of trialsData) {
+          const g = t.god || 'Unknown';
+          if (!byGod[g]) byGod[g] = [];
+          byGod[g].push(t);
+        }
+
+        const gods = Object.keys(byGod).sort();
+        let html = '<option value="">— Select a Trial —</option>';
+        for (const god of gods) {
+          html += `<optgroup label="${god}">`;
+          for (const t of byGod[god]) {
+            html += `<option value="${t.notion_service_id}" data-grace="${t.grace_earned}" data-favour="${t.favour_value}" data-god="${t.god}">${t.service_name}</option>`;
+          }
+          html += '</optgroup>';
+        }
+        trialSelect.innerHTML = html;
+
+        const updatedAt = data.updated_at ? new Date(data.updated_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+        if (updatedAt) {
+          const hint = document.createElement('div');
+          hint.style.cssText = 'font-size:10px;color:var(--text-muted);margin-top:6px;';
+          hint.textContent = `Last synced: ${updatedAt}`;
+          trialSelect.parentNode.appendChild(hint);
+        }
+      } catch (e) {
+        trialSelect.innerHTML = `<option value="">Could not load trials — ${e.message}</option>`;
+      }
+      updateSubmitState();
+    }
+
+    trialSelect.addEventListener('change', () => {
+      const opt = trialSelect.options[trialSelect.selectedIndex];
+      const grace  = opt.dataset.grace;
+      const favour = opt.dataset.favour;
+      const god    = opt.dataset.god;
+      if (opt.value && grace !== undefined) {
+        trialPreview.style.display = 'block';
+        trialPreview.innerHTML = `<span>${god}</span> · Grace <span>+${grace}</span> · Favour <span>+${favour}</span>`;
+      } else {
+        trialPreview.style.display = 'none';
+      }
+      updateSubmitState();
+    });
+
+    function updateSubmitState() {
+      const btn = document.getElementById('submit-btn');
+      const hasToken  = (patInput.value.trim() || localStorage.getItem('gh_pat') || '').length > 0;
+      const hasTrial  = trialSelect.value !== '';
+      const hasDate   = dateInput.value !== '';
+      btn.disabled = !(hasToken && hasTrial && hasDate);
+    }
+
+    dateInput.addEventListener('input', updateSubmitState);
+
+    async function submitForm() {
+      const notion_service_id = trialSelect.value;
+      const date_completed    = dateInput.value;
+      const notes             = document.getElementById('notes-input').value.trim();
+      const pat               = (patInput.value.trim() || localStorage.getItem('gh_pat') || '').trim();
+      const trialName         = trialSelect.options[trialSelect.selectedIndex].text;
+      const god               = trialSelect.options[trialSelect.selectedIndex].dataset.god || '';
+      const grace             = trialSelect.options[trialSelect.selectedIndex].dataset.grace || '0';
+
+      if (!notion_service_id || !date_completed || !pat) return;
+
+      const btn    = document.getElementById('submit-btn');
+      const status = document.getElementById('status');
+      btn.disabled = true;
+      status.className = 'loading';
+      status.innerHTML = '<span class="loading-dots">Dispatching workflow</span>';
+
+      try {
+        const body = {
+          ref: 'main',
+          inputs: { notion_service_id, date_completed, notes },
+        };
+
+        const r = await fetch(
+          `https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${pat}`,
+              'Accept': 'application/vnd.github+json',
+              'Content-Type': 'application/json',
+              'X-GitHub-Api-Version': '2022-11-28',
+            },
+            body: JSON.stringify(body),
+          }
+        );
+
+        if (r.status === 204) {
+          // Save PAT on first successful use
+          localStorage.setItem('gh_pat', pat);
+          document.getElementById('pat-card').style.display = 'none';
+
+          status.className = 'success';
+          status.innerHTML = `
+            <div class="success-icon">✓</div>
+            <strong>${trialName}</strong> submitted for <strong>${god}</strong><br>
+            Date: ${new Date(date_completed + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+            <div class="grace-pill">+${grace} Grace incoming</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text-secondary);">Workflow running — data/grace.json will update in ~30 seconds.</div>
+          `;
+          trialSelect.value = '';
+          trialPreview.style.display = 'none';
+          document.getElementById('notes-input').value = '';
+        } else {
+          const errText = await r.text();
+          let msg = `GitHub returned ${r.status}`;
+          try { msg = JSON.parse(errText).message || msg; } catch {}
+          if (r.status === 401) msg = 'Invalid token — check your PAT has the workflow scope.';
+          if (r.status === 422) msg = 'Validation error — check the workflow file exists and inputs are correct.';
+          throw new Error(msg);
+        }
+      } catch (e) {
+        status.className = 'error';
+        status.innerHTML = `<strong>Error:</strong> ${e.message}`;
+        btn.disabled = false;
+      }
+    }
+
+    loadTrials();
+    updateSubmitState();
+  </script>
+
+</body>
+</html>
