@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-27T10:40:20.773298Z",
+  "updated_at": "2026-06-27T10:52:07.872160Z",
   "trials": [
     {
       "notion_service_id": "38cdb4862bcd819385d2f3fb2b39a531",
@@ -34,26 +34,10 @@
       "due_date": ""
     },
     {
-      "notion_service_id": "385db4862bcd816498e4c71af4b6e345",
-      "service_name": "Wetsuit off, no poncho, toes out",
-      "god": "Himbo",
-      "favour_value": 15,
-      "grace_earned": 1,
-      "due_date": ""
-    },
-    {
       "notion_service_id": "385db4862bcd8176b517d8530617cf8e",
       "service_name": "Active wear crop top at Bold & Beautiful",
       "god": "Himbo",
       "favour_value": 15,
-      "grace_earned": 1,
-      "due_date": ""
-    },
-    {
-      "notion_service_id": "385db4862bcd81d49c52fd8a1233dd9f",
-      "service_name": "Knit cardigan to Bold & Beautiful",
-      "god": "Himbo",
-      "favour_value": 10,
       "grace_earned": 1,
       "due_date": ""
     },
@@ -80,22 +64,6 @@
       "favour_value": 15,
       "grace_earned": 1,
       "due_date": "2026-06-30"
-    },
-    {
-      "notion_service_id": "385db4862bcd81599067e718f62d5517",
-      "service_name": "The Honest Inventory",
-      "god": "Eros",
-      "favour_value": 10,
-      "grace_earned": 1,
-      "due_date": ""
-    },
-    {
-      "notion_service_id": "385db4862bcd81ed8dfafbdea3ca4ffb",
-      "service_name": "Say It Out Loud",
-      "god": "Eros",
-      "favour_value": 20,
-      "grace_earned": 1,
-      "due_date": ""
     },
     {
       "notion_service_id": "385db4862bcd81fa9ee0d8ab55175ea1",
