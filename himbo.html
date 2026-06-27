@@ -413,20 +413,20 @@
       <div class="section-title">Body this week</div>
       <div class="grid-4">
         <div class="metric-card pink-border">
-          <div class="metric-label">Weight</div>
+          <div class="metric-label">Weight <span style="color:var(--text-muted);font-size:9px;">· Latest</span></div>
           <div class="metric-value" id="d-weight">79.9<span class="metric-unit">kg</span></div>
           <div class="metric-delta delta-flat" id="d-weight-delta">— flat</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Fat mass</div>
+          <div class="metric-label">Fat mass <span style="color:var(--text-muted);font-size:9px;">· Latest</span></div>
           <div class="metric-value" id="d-fat">13.7<span class="metric-unit">kg</span></div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Muscle mass</div>
+          <div class="metric-label">Muscle mass <span style="color:var(--text-muted);font-size:9px;">· Latest</span></div>
           <div class="metric-value" id="d-muscle">62.9<span class="metric-unit">kg</span></div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Hydration</div>
+          <div class="metric-label">Hydration <span style="color:var(--text-muted);font-size:9px;">· Latest</span></div>
           <div class="metric-value" id="d-hydration">44.1<span class="metric-unit">kg</span></div>
         </div>
       </div>
@@ -576,12 +576,18 @@
       </div>
       <div id="hevy-trend-legend" class="chart-legend" style="flex-wrap:wrap;gap:8px 16px;margin-bottom:16px;"></div>
       <div class="section-title" style="margin-top:1.5rem;">Estimated 1RM by muscle group</div>
+      <p style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;">Your estimated one-rep max — the heaviest weight you could lift once for each movement, calculated from your recent working sets. A useful proxy for strength progress over time.</p>
       <div id="hevy-muscle-grid" class="grid-2" style="margin-bottom:12px;">
         <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading from Hevy…</div>
       </div>
       <div class="section-title" style="margin-top:1.5rem;">Weekly volume</div>
       <div class="chart-wrap" style="height:160px;margin-bottom:16px;">
         <canvas id="hevyVolumeChart" role="img" aria-label="Total kg lifted per week"></canvas>
+      </div>
+      <div class="section-title" style="margin-top:1.5rem;">Himbo on Gym Programme</div>
+      <div class="metric-card pink-border" id="gym-programme-card" style="margin-bottom:16px;">
+        <div class="metric-label" style="margin-bottom:8px;">The training read</div>
+        <div id="gym-programme-text" style="font-size:13px;line-height:1.7;color:var(--text-secondary);font-style:italic;">Loading…</div>
       </div>
       <div class="section-title" style="margin-top:1.5rem;">Recent workouts</div>
       <div id="hevy-recent-workouts">
@@ -616,9 +622,9 @@
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
           <div>
             <div style="font-size:14px;font-weight:500;color:white;margin-bottom:3px;">Pastel rainbow candy bracelet</div>
-            <div style="font-size:11px;color:var(--text-muted);">Etsy · pastel gemstone or Miyuki seed beads · next pay</div>
+            <div style="font-size:11px;color:var(--text-muted);">Etsy · pastel gemstone or Miyuki seed beads · earned through Grace</div>
           </div>
-          <span style="font-size:10px;color:var(--gold-light);border:0.5px solid var(--border-gold);border-radius:99px;padding:3px 10px;white-space:nowrap;">Saving</span>
+          <span style="font-size:10px;color:var(--gold-light);border:0.5px solid var(--border-gold);border-radius:99px;padding:3px 10px;white-space:nowrap;">Accumulating Grace</span>
         </div>
         <div id="jewel-grace" style="font-size:12px;color:var(--text-muted);margin-top:8px;">Grace earned: —</div>
         <div class="jewel-bar" style="margin-top:8px;">
@@ -788,6 +794,28 @@
       return date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
     }
 
+    // Parse Strava start_date_local: stored with Z suffix but is actually AEST local time
+    function parseStravaDate(str) {
+      return new Date((str || '').replace(/Z$/, ''));
+    }
+
+    // Parse YYYY-MM-DD as local date (not UTC midnight)
+    function parseLocalDate(str) {
+      if (!str) return new Date(NaN);
+      const [y, m, d] = str.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    // Get most recent Sunday 00:00 AEST as a UTC Date object
+    function getWeekStartAEST() {
+      const aestOffset = 10 * 60 * 60 * 1000;
+      const nowAEST = new Date(Date.now() + aestOffset);
+      const dayOfWeek = nowAEST.getUTCDay();
+      const sundayAEST = new Date(nowAEST.getTime() - dayOfWeek * 86400000);
+      sundayAEST.setUTCHours(0, 0, 0, 0);
+      return new Date(sundayAEST.getTime() - aestOffset);
+    }
+
     function renderTrend(elId, curr, prev, unit, higherGood, decimals = 1) {
       const el = document.getElementById(elId);
       if (!el) return;
@@ -810,7 +838,7 @@
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, gymAiRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
@@ -823,6 +851,7 @@
       fetch('data/himbo_sleep_ai.json').then(r => r.json()),
       fetch('data/himbo_commentary.json').then(r => r.json()),
       fetch('data/hevy.json').then(r => r.json()),
+      fetch('data/himbo_gym_ai.json').then(r => r.json()),
     ]);
 
     let sufferScore3d = 0;
@@ -853,9 +882,18 @@
       const fatPctCalc = (fatKg != null && weight != null && weight > 0) ? fatKg / weight * 100 : null;
 
       if (weight    != null) document.getElementById('d-weight').innerHTML    = weight.toFixed(1)    + '<span class="metric-unit">kg</span>';
-      if (muscle    != null) document.getElementById('d-muscle').innerHTML    = muscle.toFixed(1)    + '<span class="metric-unit">kg</span>';
       if (hydration != null) document.getElementById('d-hydration').innerHTML = hydration.toFixed(1) + '<span class="metric-unit">kg</span>';
-      if (fatKg     != null) document.getElementById('d-fat').innerHTML       = fatKg.toFixed(1)     + '<span class="metric-unit">kg</span>';
+      if (fatKg     != null) {
+        const fatPct = fatPctCalc != null ? ` <span style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--text-secondary);">(${fatPctCalc.toFixed(1)}%)</span>` : '';
+        document.getElementById('d-fat').innerHTML = fatKg.toFixed(1) + '<span class="metric-unit">kg</span>' + fatPct;
+      }
+      if (muscle != null && weight != null) {
+        const musclePct = (muscle / weight * 100);
+        document.getElementById('d-muscle').innerHTML = muscle.toFixed(1) + '<span class="metric-unit">kg</span>'
+          + ` <span style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--text-secondary);">(${musclePct.toFixed(1)}%)</span>`;
+      } else if (muscle != null) {
+        document.getElementById('d-muscle').innerHTML = muscle.toFixed(1) + '<span class="metric-unit">kg</span>';
+      }
 
       // 7-day vs previous 7-day averages
       const sevenAgoTs    = now / 1000 - 7  * 86400;
@@ -899,18 +937,14 @@
         wDeltaEl.textContent = `${sign}${kgDiff.toFixed(2)} kg vs prev 7d avg`;
       }
 
-      // Fat % for main fat card
-      if (fatPctCalc != null) {
-        const fatEl = document.getElementById('d-fat');
-        if (fatEl) fatEl.innerHTML = fatKg.toFixed(1) + '<span class="metric-unit">kg</span><span style="font-size:12px;color:var(--text-muted);margin-left:8px;">' + fatPctCalc.toFixed(1) + '%</span>';
-      }
-
       // Body detail cards
       const detailEl = document.getElementById('body-detail-cards');
       if (detailEl) {
-        function detailCard(label, currAvg, prevAvg, unit, higherGood, extraLine) {
+        function detailCard(label, currAvg, prevAvg, unit, higherGood, currPct, prevPct) {
           if (currAvg == null) return '';
           const hasPrev = prevAvg != null && prevAvg !== 0;
+          const pctStr     = currPct != null ? ` (${currPct.toFixed(1)}%)` : '';
+          const prevPctStr = prevPct != null ? ` (${prevPct.toFixed(1)}%)` : '';
           let deltaHtml = '';
           if (hasPrev) {
             const kgDiff = currAvg - prevAvg;
@@ -921,22 +955,22 @@
           }
           return `<div class="metric-card" style="padding:12px 14px;">
             <div class="metric-label" style="margin-bottom:6px;">${label}</div>
-            <div style="font-size:13px;color:var(--text-primary);">This 7d avg <strong>${currAvg.toFixed(1)} ${unit}</strong></div>
-            ${hasPrev ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Prev 7d avg ${prevAvg.toFixed(1)} ${unit}</div>` : ''}
+            <div style="font-size:13px;color:var(--text-primary);">7-day avg <strong>${currAvg.toFixed(1)} ${unit}${pctStr}</strong></div>
+            ${hasPrev ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Prev 7d avg ${prevAvg.toFixed(1)} ${unit}${prevPctStr}</div>` : ''}
             ${deltaHtml}
-            ${extraLine || ''}
           </div>`;
         }
 
-        // Fat % for detail card
-        const fatPctCurrDetail = (thisFatAvg != null && thisWeightAvg != null && thisWeightAvg > 0) ? (thisFatAvg / thisWeightAvg * 100).toFixed(1) + '%' : null;
-        const fatExtra = fatPctCurrDetail ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Body fat ${fatPctCurrDetail}</div>` : '';
+        const fatPctCurr    = (thisFatAvg    && thisWeightAvg) ? thisFatAvg    / thisWeightAvg * 100 : null;
+        const fatPctPrev    = (prevFatAvg    && prevWeightAvg) ? prevFatAvg    / prevWeightAvg * 100 : null;
+        const musclePctCurr = (thisMuscleAvg && thisWeightAvg) ? thisMuscleAvg / thisWeightAvg * 100 : null;
+        const musclePctPrev = (prevMuscleAvg && prevWeightAvg) ? prevMuscleAvg / prevWeightAvg * 100 : null;
 
         detailEl.innerHTML =
-          detailCard('Weight — detail', thisWeightAvg, prevWeightAvg, 'kg', false) +
-          detailCard('Fat mass — detail', thisFatAvg, prevFatAvg, 'kg', false, fatExtra) +
-          detailCard('Muscle — detail', thisMuscleAvg, prevMuscleAvg, 'kg', true) +
-          detailCard('Hydration — detail', thisHydrationAvg, prevHydrationAvg, 'kg', true);
+          detailCard('Weight — 7-day avg', thisWeightAvg, prevWeightAvg, 'kg', false) +
+          detailCard('Fat mass — 7-day avg', thisFatAvg, prevFatAvg, 'kg', false, fatPctCurr, fatPctPrev) +
+          detailCard('Muscle — 7-day avg', thisMuscleAvg, prevMuscleAvg, 'kg', true, musclePctCurr, musclePctPrev) +
+          detailCard('Hydration — 7-day avg', thisHydrationAvg, prevHydrationAvg, 'kg', true);
       }
 
       // Weight trend chart — real data + linear regression
@@ -970,10 +1004,10 @@
     if (sRes.status === 'fulfilled') try {
       const s = sRes.value;
       const recent = s.activities
-        .filter(a => new Date(a.start_date_local) >= sevenDaysAgo)
-        .sort((a, b) => new Date(b.start_date_local) - new Date(a.start_date_local));
+        .filter(a => parseStravaDate(a.start_date_local) >= sevenDaysAgo)
+        .sort((a, b) => parseStravaDate(b.start_date_local) - parseStravaDate(a.start_date_local));
       const prevWeekActs = s.activities
-        .filter(a => { const d = new Date(a.start_date_local); return d >= fourteenDaysAgo && d < sevenDaysAgo; });
+        .filter(a => { const d = parseStravaDate(a.start_date_local); return d >= fourteenDaysAgo && d < sevenDaysAgo; });
 
       let runKm = 0, swimM = 0;
       let runKmPrev = 0, swimMPrev = 0;
@@ -981,7 +1015,7 @@
       for (const a of recent) {
         if (['Run','Walk','TrailRun','Hike'].includes(a.sport_type)) runKm += a.distance / 1000;
         if (a.sport_type === 'Swim') swimM += a.distance;
-        const age = (now - new Date(a.start_date_local)) / 86400000;
+        const age = (now - parseStravaDate(a.start_date_local)) / 86400000;
         if (age <= 3 && a.suffer_score) sufferScore3d += a.suffer_score;
       }
       for (const a of prevWeekActs) {
@@ -989,7 +1023,12 @@
         if (a.sport_type === 'Swim') swimMPrev += a.distance;
       }
 
-      const gymSessions = recent.filter(a => ['WeightTraining','Workout','CrossFit'].includes(a.sport_type)).length;
+      // Gym sessions counted Sunday–Saturday AEST (not rolling 7 days)
+      const weekStart = getWeekStartAEST();
+      const gymSessions = s.activities.filter(a =>
+        ['WeightTraining','Workout','CrossFit'].includes(a.sport_type) &&
+        parseStravaDate(a.start_date_local) >= weekStart
+      ).length;
       if (runKm > 0) document.getElementById('d-run').innerHTML  = runKm.toFixed(1) + '<span class="metric-unit">km</span>';
       if (swimM > 0) document.getElementById('d-swim').innerHTML = Math.round(swimM).toLocaleString() + '<span class="metric-unit">m</span>';
       document.getElementById('d-gym-sessions').textContent = gymSessions > 0 ? gymSessions : '—';
@@ -1004,7 +1043,7 @@
         feed.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No activities in the last 7 days.</div>';
       } else {
         feed.innerHTML = recent.map((a, i) => {
-          const date = new Date(a.start_date_local).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          const date = parseStravaDate(a.start_date_local).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
           const summary = activitySummaries[String(a.id)] || 'No summary available yet — check back after the next sync.';
           return `<div class="metric-card" style="margin-bottom:8px;padding:10px 14px;" id="act-card-${i}">
             <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="toggleActivity(${i})">
@@ -1180,10 +1219,16 @@
     if (sleepAiRes.status === 'fulfilled') try {
       const ai = sleepAiRes.value;
       const el = document.getElementById('sleep-ai-text');
-      if (el && ai.analysis) {
+      const rawPhrases = ['I need to clarify', 'Could you provide', 'Let me work with', "I don't have", 'the instructions say', 'data provided appears', 'Looking at the data'];
+      const isRaw = ai.analysis && rawPhrases.some(p => ai.analysis.includes(p));
+      if (el && ai.analysis && !isRaw) {
         el.textContent = ai.analysis;
         el.style.fontStyle = 'normal';
         el.style.color = 'var(--text-primary)';
+      } else if (el) {
+        el.textContent = 'Sleep commentary is refreshing — check back after the next data sync.';
+        el.style.fontStyle = 'italic';
+        el.style.color = 'var(--text-muted)';
       }
     } catch(e) { console.error('Sleep AI:', e); }
 
@@ -1341,7 +1386,23 @@
       }
     } catch(e) { console.error('Commentary:', e); }
 
-    // ── Trials (from Notion DB — §6) ───────────────────────────────────────
+    // ── Trials (from Notion DB) ────────────────────────────────────────────
+
+    window.markVisibilityDone = function(key, btnEl) {
+      localStorage.setItem(key, 'true');
+      const item = btnEl.closest('.challenge-item');
+      if (item) {
+        item.classList.remove('active');
+        item.classList.add('done');
+        const dot = item.querySelector('.c-dot');
+        if (dot) { dot.className = 'c-dot done'; }
+        const textDiv = item.querySelector('.c-text');
+        if (textDiv && !item.querySelector('.complete-label')) {
+          textDiv.insertAdjacentHTML('afterend', '<span class="complete-label" style="font-size:10px;color:var(--pink);font-weight:600;margin-left:8px;">COMPLETE</span>');
+        }
+      }
+      btnEl.remove();
+    };
 
     if (trialsRes.status === 'fulfilled') try {
       const c = trialsRes.value;
@@ -1349,48 +1410,95 @@
       const container = document.getElementById('trials-container');
       if (!container) throw new Error('no container');
 
-      if (trials.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active or planned Trials right now.</div>';
-      } else {
-        const dotClass = tier => tier === 'Trial' ? 'active' : tier === 'Devotion' ? 'stretch' : 'done';
-        container.innerHTML = trials.map(ch => {
-          const statusPill = ch.status === 'Planned'
-            ? '<span style="font-size:10px;color:var(--text-muted);border:0.5px solid var(--border);border-radius:99px;padding:2px 8px;margin-left:6px;">Planned</span>'
+      // Compute this-week activity completions from Strava (Sunday–Saturday AEST)
+      const wkStart = getWeekStartAEST();
+      const wkKey = wkStart.toISOString().slice(0, 10);
+      let gymThisWeek = 0, swimThisWeek = 0, runThisWeek = 0;
+      if (sRes.status === 'fulfilled') {
+        for (const a of sRes.value.activities || []) {
+          const d = parseStravaDate(a.start_date_local);
+          if (d < wkStart) continue;
+          if (['WeightTraining','Workout','CrossFit'].includes(a.sport_type)) gymThisWeek++;
+          if (a.sport_type === 'Swim') swimThisWeek++;
+          if (['Run','TrailRun'].includes(a.sport_type)) runThisWeek++;
+        }
+      }
+      const visKey = 'himbo-visibility-' + wkKey;
+      const visibilityDone = localStorage.getItem(visKey) === 'true';
+
+      function isTrialComplete(trial) {
+        const svc = trial.service;
+        if (svc === 'Gym session (programme day)') return gymThisWeek > 0;
+        if (svc === 'Swim session')                 return swimThisWeek > 0;
+        if (svc === 'Run session')                  return runThisWeek > 0;
+        if (svc === 'Full gym week (4/4 sessions)') return gymThisWeek >= 4;
+        if (svc === 'Visibility-coded item worn')   return visibilityDone;
+        return false;
+      }
+
+      function renderTrialGroup(items, groupTitle) {
+        if (items.length === 0) return '';
+        const itemsHtml = items.map(ch => {
+          const done = isTrialComplete(ch);
+          const completePill = done
+            ? `<span class="complete-label" style="font-size:10px;color:var(--pink);font-weight:600;margin-left:8px;">COMPLETE</span>`
+            : '';
+          const isVisibility = ch.service === 'Visibility-coded item worn';
+          const toggleBtn = isVisibility && !done
+            ? `<button onclick="markVisibilityDone('${visKey}', this)" style="margin-top:6px;font-size:10px;color:var(--pink);background:none;border:0.5px solid var(--border-pink);border-radius:6px;padding:3px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;">Mark complete for this week</button>`
             : '';
           const meta = [
-            ch.tier    ? `<span style="color:var(--text-muted);">${ch.tier}</span>` : '',
-            ch.mystery ? `<span style="color:var(--gold-light);">${ch.mystery}</span>` : '',
-            ch.due_date ? `<span style="color:var(--text-muted);">Due ${ch.due_date}</span>` : '',
+            ch.mystery  ? `<span style="color:var(--gold-light);">${ch.mystery}</span>`         : '',
+            ch.due_date ? `<span style="color:var(--text-muted);">Due ${ch.due_date}</span>`    : '',
           ].filter(Boolean).join(' · ');
           const trigger = ch.trigger_condition
-            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Trigger: ${ch.trigger_condition}</div>`
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${ch.trigger_condition}</div>`
             : '';
-          return `<div class="challenge-item active" style="margin-bottom:8px;">
-            <span class="c-dot ${dotClass(ch.tier)}"></span>
+          const dotCls = done ? 'done' : ch.tier === 'Trial' ? 'active' : 'stretch';
+          return `<div class="challenge-item ${done ? 'done' : 'active'}" style="margin-bottom:6px;">
+            <span class="c-dot ${dotCls}"></span>
             <div style="flex:1;">
               <div style="display:flex;align-items:baseline;flex-wrap:wrap;">
-                <div class="c-text">${ch.service || 'Unnamed challenge'}</div>${statusPill}
+                <div class="c-text">${ch.service || 'Unnamed'}</div>${completePill}
               </div>
               ${meta ? `<div style="font-size:10px;margin-top:3px;">${meta}</div>` : ''}
               ${trigger}
+              ${toggleBtn}
             </div>
           </div>`;
         }).join('');
+
+        return `<div style="background:var(--bg-card);border:0.5px solid var(--border-pink);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.3em;color:var(--pink);text-transform:uppercase;margin-bottom:10px;">${groupTitle}</div>
+          ${itemsHtml}
+        </div>`;
+      }
+
+      if (trials.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active Trials right now.</div>';
+      } else {
+        const devotions = trials.filter(t => t.tier === 'Devotion');
+        const streaks   = trials.filter(t => t.tier === 'Streak');
+        const trialList = trials.filter(t => !['Devotion','Streak'].includes(t.tier));
+        container.innerHTML =
+          renderTrialGroup(devotions, 'Devotions') +
+          renderTrialGroup(streaks,   'Streaks') +
+          renderTrialGroup(trialList, 'Trials');
       }
 
       if (c.updated_at) {
-        container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
+        container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
       }
 
-      // Grace total → jewellery section (§8, threshold=12)
+      // Grace total → jewellery section (threshold=12)
       const GRACE_THRESHOLD = 12;
-      const graceEl = document.getElementById('jewel-grace');
-      const graceFill = document.getElementById('jewel-fill');
+      const graceEl    = document.getElementById('jewel-grace');
+      const graceFill  = document.getElementById('jewel-fill');
       const graceLabel = document.getElementById('jewel-grace-label');
       if (c.grace_total != null) {
         const g = c.grace_total;
-        if (graceEl) graceEl.textContent = `Grace earned: ${g}`;
-        if (graceFill) graceFill.style.width = Math.min(100, (g / GRACE_THRESHOLD) * 100) + '%';
+        if (graceEl)    graceEl.textContent    = `Grace earned: ${g}`;
+        if (graceFill)  graceFill.style.width  = Math.min(100, (g / GRACE_THRESHOLD) * 100) + '%';
         if (graceLabel) graceLabel.textContent = `${g} / ${GRACE_THRESHOLD} Grace`;
       }
     } catch(e) { console.error('Challenges:', e); }
@@ -1434,9 +1542,11 @@
     if (hevyRes.status === 'fulfilled') try {
       const h = hevyRes.value;
 
-      // Sessions this week
+      // Sessions this week — only use Hevy fallback if Strava didn't set it
       const sessEl = document.getElementById('d-gym-sessions');
-      if (sessEl && h.sessions_this_week != null) sessEl.textContent = h.sessions_this_week;
+      if (sessEl && h.sessions_this_week != null && sessEl.textContent === '—') {
+        sessEl.textContent = h.sessions_this_week;
+      }
 
       // §5d: PR callout
       const prEl = document.getElementById('hevy-pr-callout');
@@ -1447,7 +1557,7 @@
             <span style="font-size:16px;">🏆</span>
             <div>
               <div style="font-size:13px;font-weight:500;color:var(--gold-light);">New PR — ${pr.exercise}</div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${pr.e1rm} kg e1RM · was ${pr.prev} kg · ${new Date(pr.date).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${pr.e1rm} kg e1RM · was ${pr.prev} kg · ${parseLocalDate(pr.date).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</div>
             </div>
           </div>`
         ).join('');
@@ -1459,28 +1569,45 @@
       const muscleHistory = h.muscle_history || {};
       const trendCtx = document.getElementById('hevyTrendChart')?.getContext('2d');
       if (trendCtx) {
-        // Collect all dates across tracked muscles, sort
-        const allDates = [...new Set(
-          CHART_MUSCLES.flatMap(m => (muscleHistory[m] || []).map(e => e.date))
+        // Get Sunday of the week for a YYYY-MM-DD date string
+        function muscleWeekKey(dateStr) {
+          const d = parseLocalDate(dateStr);
+          d.setDate(d.getDate() - d.getDay());
+          return d.toISOString().slice(0, 10);
+        }
+
+        // Aggregate muscle history by week (take last e1rm in each week)
+        const weeklyHistory = {};
+        for (const muscle of CHART_MUSCLES) {
+          const entries = muscleHistory[muscle] || [];
+          const byWeek = {};
+          for (const e of entries) byWeek[muscleWeekKey(e.date)] = e.e1rm;
+          weeklyHistory[muscle] = Object.entries(byWeek)
+            .sort(([a],[b]) => a.localeCompare(b))
+            .map(([week, e1rm]) => ({ week, e1rm }));
+        }
+
+        const allWeeks = [...new Set(
+          CHART_MUSCLES.flatMap(m => (weeklyHistory[m] || []).map(e => e.week))
         )].sort();
 
         const datasets = CHART_MUSCLES.map((muscle, i) => {
-          const entries = muscleHistory[muscle] || [];
+          const entries = weeklyHistory[muscle] || [];
           if (entries.length === 0) return null;
           const baseline = entries[0].e1rm;
-          const byDate = Object.fromEntries(entries.map(e => [e.date, e.e1rm]));
+          const byWeek = Object.fromEntries(entries.map(e => [e.week, e.e1rm]));
           let last = baseline;
-          const data = allDates.map(d => {
-            if (byDate[d] !== undefined) last = byDate[d];
+          const data = allWeeks.map(w => {
+            if (byWeek[w] !== undefined) last = byWeek[w];
             return baseline > 0 ? parseFloat(((last - baseline) / baseline * 100).toFixed(1)) : null;
           });
           return { label: muscle, data, borderColor: MUSCLE_COLOURS[i], backgroundColor: 'transparent',
-            pointRadius: 2, pointHoverRadius: 4, borderWidth: 1.8, tension: 0.3, fill: false };
+            pointRadius: 3, pointHoverRadius: 5, borderWidth: 1.8, tension: 0.3, fill: false };
         }).filter(Boolean);
 
         new Chart(trendCtx, {
           type: 'line',
-          data: { labels: allDates.map(d => new Date(d).toLocaleDateString('en-AU',{day:'numeric',month:'short'})), datasets },
+          data: { labels: allWeeks.map(w => parseLocalDate(w).toLocaleDateString('en-AU',{day:'numeric',month:'short'})), datasets },
           options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
@@ -1510,7 +1637,7 @@
           <div class="metric-card">
             <div class="metric-label">${muscle}</div>
             <div class="metric-value" style="font-size:20px;">${Math.round(best.e1rm)} kg</div>
-            <div class="metric-delta" style="color:var(--text-muted);font-size:11px;">${best.exercise} · ${new Date(best.date).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</div>
+            <div class="metric-delta" style="color:var(--text-muted);font-size:11px;">${best.exercise} · ${parseLocalDate(best.date).toLocaleDateString('en-AU',{day:'numeric',month:'short'})}</div>
           </div>`).join('');
       } else if (muscleGrid) {
         muscleGrid.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No gym data yet — sync needed.</div>';
@@ -1523,7 +1650,7 @@
         new Chart(volCtx, {
           type: 'bar',
           data: {
-            labels: volData.map(v => new Date(v.week_of).toLocaleDateString('en-AU',{day:'numeric',month:'short'})),
+            labels: volData.map(v => parseLocalDate(v.week_of).toLocaleDateString('en-AU',{day:'numeric',month:'short'})),
             datasets: [{
               label: 'Volume (kg)',
               data: volData.map(v => v.volume_kg),
@@ -1550,7 +1677,7 @@
           const exerciseList = (w.exercises || []).slice(0, 4).join(', ') + (w.exercises?.length > 4 ? ` +${w.exercises.length - 4} more` : '');
           return `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);">
             <div style="font-size:13px;font-weight:500;color:var(--text-primary);">${w.title || 'Workout'}</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${new Date(w.date).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})}${w.duration_min ? ' · ' + w.duration_min + ' min' : ''}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${parseLocalDate(w.date).toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})}${w.duration_min ? ' · ' + w.duration_min + ' min' : ''}</div>
             ${exerciseList ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">${exerciseList}</div>` : ''}
           </div>`;
         }).join('');
@@ -1558,6 +1685,59 @@
         recentEl.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No recent workouts found.</div>';
       }
     } catch(e) { console.error('Hevy:', e); }
+
+    // ── Gym Programme commentary (§13) ───────────────────────────────────────
+
+    const gymTextEl = document.getElementById('gym-programme-text');
+    if (gymTextEl) {
+      if (gymAiRes.status === 'fulfilled' && gymAiRes.value?.commentary) {
+        gymTextEl.textContent = gymAiRes.value.commentary;
+        gymTextEl.style.fontStyle = 'normal';
+        gymTextEl.style.color = 'var(--text-primary)';
+      } else if (hevyRes.status === 'fulfilled') {
+        // Build a data-grounded summary from hevy.json until AI commentary is synced
+        const h = hevyRes.value;
+        const wkStart2 = getWeekStartAEST();
+        let gymCntStr = '—';
+        if (sRes.status === 'fulfilled') {
+          const gymCnt = sRes.value.activities.filter(a =>
+            ['WeightTraining','Workout','CrossFit'].includes(a.sport_type) &&
+            parseStravaDate(a.start_date_local) >= wkStart2
+          ).length;
+          gymCntStr = gymCnt;
+        }
+        const latestVol = h.weekly_volume?.slice(-1)[0];
+        const prCount = h.recent_prs?.length || 0;
+        const parts = [
+          `${gymCntStr} gym session${gymCntStr !== 1 ? 's' : ''} this week (target: 4).`,
+          prCount > 0 ? `${prCount} new PR${prCount > 1 ? 's' : ''} logged.` : null,
+          latestVol ? `${latestVol.volume_kg.toLocaleString()} kg total volume this week.` : null,
+        ].filter(Boolean).join(' ');
+        gymTextEl.textContent = parts + ' Full Himbo commentary will appear here after the next data sync.';
+        gymTextEl.style.color = 'var(--text-muted)';
+      } else {
+        gymTextEl.textContent = 'Gym programme commentary will appear here after the next data sync.';
+        gymTextEl.style.color = 'var(--text-muted)';
+      }
+    }
+
+    // ── Activity metrics commentary (§7) ─────────────────────────────────────
+
+    if (commentaryRes.status === 'fulfilled') try {
+      const c = commentaryRes.value;
+      if (c.metrics_commentary) {
+        const wrap = document.getElementById('activity-commentary-text')?.closest('.metric-card');
+        if (wrap) {
+          const metricsCard = document.createElement('div');
+          metricsCard.className = 'metric-card';
+          metricsCard.style.marginTop = '12px';
+          metricsCard.innerHTML = `
+            <div class="metric-label" style="margin-bottom:8px;">Himbo on the numbers</div>
+            <div style="font-size:13px;line-height:1.7;color:var(--text-primary);">${c.metrics_commentary}</div>`;
+          wrap.insertAdjacentElement('afterend', metricsCard);
+        }
+      }
+    } catch(e) { console.error('Metrics commentary:', e); }
 
   })();
   </script>
