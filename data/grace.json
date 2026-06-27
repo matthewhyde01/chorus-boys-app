@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-27T10:48:15.469327Z",
+  "updated_at": "2026-06-27T10:48:52.733411Z",
   "week": {
     "start": "2026-06-22",
     "end": "2026-06-28"
@@ -10,13 +10,13 @@
       "favour": 30.0
     },
     "Himbo": {
-      "grace": 1.0,
-      "favour": 19.0
+      "grace": 2.0,
+      "favour": 34.0
     }
   },
   "grand_totals": {
-    "grace": 3.0,
-    "favour": 49.0
+    "grace": 4.0,
+    "favour": 64.0
   },
   "this_week": [
     {
@@ -208,6 +208,17 @@
       "grace_earned": 0.0,
       "favour_value": 1.0,
       "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Wetsuit off, no poncho, toes out",
+      "notion_service_id": "385db4862bcd816498e4c71af4b6e345",
+      "date_completed": "2026-06-14",
+      "god": "Himbo",
+      "tier": "Trial",
+      "grace_earned": 1.0,
+      "favour_value": 15.0,
+      "source": "Manual",
       "notes": null
     },
     {
