@@ -1,6 +1,28 @@
 {
-  "updated_at": "2026-06-27T05:09:10.769641Z",
+  "updated_at": "2026-06-27T07:02:04.535887Z",
   "trials": [
+    {
+      "service": "Triniful Trial \u2014 wear the best-fitting piece for Matt",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Active",
+      "cadence": "Ad-hoc",
+      "due_date": "",
+      "trigger_condition": "Triniful order arrives",
+      "favour_value": 3,
+      "grace_earned": 1
+    },
+    {
+      "service": "Apollo ring + necklace \u2014 every in-office day this week",
+      "tier": "Trial",
+      "mystery": "Himbo: Visibility & Self-Expression",
+      "status": "Active",
+      "cadence": "Ad-hoc",
+      "due_date": "2026-07-04",
+      "trigger_condition": "Each in-office day w/c 28 June 2026",
+      "favour_value": 3,
+      "grace_earned": 1
+    },
     {
       "service": "Wednesday midweek pulse check-in",
       "tier": "Devotion",
@@ -123,5 +145,5 @@
       "grace_earned": 0
     }
   ],
-  "grace_total": 5.0
+  "grace_total": 7.0
 }
