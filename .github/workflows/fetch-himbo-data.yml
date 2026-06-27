@@ -754,7 +754,13 @@ jobs:
                       dist = a.get("distance",0)
                       dist_str = f"{round(dist)}m" if sport=="Swim" else f"{dist/1000:.1f}km"
                       hr = f", avg HR {round(a['average_heartrate'])} bpm" if a.get("average_heartrate") else ""
-                      lines.append(f"  {a['start_date_local'][:10]} — {a['name']} ({sport}, {dist_str}{hr})")
+                      # Format weekday explicitly so the model doesn't compute it from the year
+                      try:
+                          local_dt = datetime.strptime(a["start_date_local"][:10], "%Y-%m-%d")
+                          day_str = local_dt.strftime("%a %d %b %Y")  # e.g. "Fri 26 Jun 2026"
+                      except Exception:
+                          day_str = a["start_date_local"][:10]
+                      lines.append(f"  {day_str} — {a['name']} ({sport}, {dist_str}{hr})")
                   return "\n".join(lines)
 
               commentary_prompt = (
