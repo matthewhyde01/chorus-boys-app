@@ -7,6 +7,10 @@ on:
         description: 'Notion page ID of the Trial (32-char hex, no dashes)'
         required: true
         type: string
+      service_name:
+        description: 'Trial name (passed from Shortcut, used in commit message)'
+        required: true
+        type: string
       date_completed:
         description: 'Date completed (YYYY-MM-DD)'
         required: true
@@ -190,6 +194,6 @@ jobs:
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
           git add data/grace.db data/grace.json
-          git diff --staged --quiet || git commit -m "chore: trial complete — ${{ inputs.notion_service_id }} on ${{ inputs.date_completed }}"
+          git diff --staged --quiet || git commit -m "chore: trial complete — ${{ inputs.service_name }} on ${{ inputs.date_completed }}"
           git pull --rebase
           git push

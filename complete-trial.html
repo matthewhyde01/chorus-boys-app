@@ -21,7 +21,6 @@
       --text-secondary: rgba(255,255,255,0.45);
       --text-muted: rgba(255,255,255,0.25);
       --green: #7BAE7F;
-      --red: #E8458B;
     }
 
     body {
@@ -56,8 +55,6 @@
       align-items: center;
       gap: 10px;
     }
-
-    .nav-brand svg { opacity: 0.7; }
 
     .hero {
       padding: 3rem 2rem 2rem;
@@ -100,40 +97,15 @@
       color: var(--text-secondary);
     }
 
-    .main {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    .section-title {
-      font-family: 'Cinzel', serif;
-      font-size: 10px;
-      letter-spacing: 0.3em;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 0.5px;
-      background: var(--border-gold);
-    }
+    .main { max-width: 640px; margin: 0 auto; padding: 2rem; }
 
     .card {
       background: var(--bg-card);
-      border: 0.5px solid var(--border);
+      border: 0.5px solid var(--border-gold);
       border-radius: 12px;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
     }
-
-    .card.gold-border { border-color: var(--border-gold); }
 
     label {
       display: block;
@@ -144,7 +116,7 @@
       margin-bottom: 8px;
     }
 
-    select, input[type="date"], input[type="text"], input[type="password"], textarea {
+    select, input[type="date"], textarea {
       width: 100%;
       background: rgba(255,255,255,0.05);
       border: 0.5px solid rgba(255,255,255,0.12);
@@ -159,52 +131,12 @@
       -webkit-appearance: none;
     }
 
-    select:focus, input:focus, textarea:focus {
-      border-color: var(--border-gold);
-    }
-
-    select option {
-      background: #1a1525;
-      color: var(--text-primary);
-    }
-
-    select optgroup {
-      color: var(--gold);
-      font-weight: 600;
-    }
+    select:focus, input:focus, textarea:focus { border-color: var(--border-gold); }
+    select option { background: #1a1525; color: var(--text-primary); }
+    select optgroup { color: var(--gold); font-weight: 600; }
 
     .form-group { margin-bottom: 1.2rem; }
-
-    .pat-hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 6px;
-      line-height: 1.5;
-    }
-
-    button[type="submit"] {
-      width: 100%;
-      background: linear-gradient(135deg, rgba(201,150,58,0.15), rgba(201,150,58,0.08));
-      border: 0.5px solid var(--border-gold);
-      border-radius: 8px;
-      color: var(--gold-light);
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    button[type="submit"]:hover {
-      background: linear-gradient(135deg, rgba(201,150,58,0.25), rgba(201,150,58,0.12));
-    }
-
-    button[type="submit"]:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
+    .form-group:last-child { margin-bottom: 0; }
 
     .trial-preview {
       margin-top: 10px;
@@ -218,60 +150,55 @@
       line-height: 1.7;
     }
 
-    .trial-preview span { color: var(--gold-light); font-weight: 500; }
+    .trial-preview strong { color: var(--gold-light); font-weight: 500; }
 
-    #status {
-      margin-top: 1rem;
-      padding: 14px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      line-height: 1.6;
-      display: none;
-    }
-
-    #status.success {
-      background: rgba(123,174,127,0.1);
-      border: 0.5px solid rgba(123,174,127,0.3);
-      color: var(--green);
-      display: block;
-    }
-
-    #status.error {
-      background: rgba(232,69,139,0.08);
-      border: 0.5px solid rgba(232,69,139,0.25);
-      color: var(--red);
-      display: block;
-    }
-
-    #status.loading {
-      background: rgba(255,255,255,0.03);
-      border: 0.5px solid var(--border);
-      color: var(--text-secondary);
-      display: block;
-    }
-
-    .loading-dots::after {
-      content: '';
-      animation: dots 1.5s steps(3, end) infinite;
-    }
-
-    @keyframes dots {
-      0%   { content: '.'; }
-      33%  { content: '..'; }
-      66%  { content: '...'; }
-      100% { content: ''; }
-    }
-
-    .success-icon { font-size: 20px; margin-bottom: 6px; }
-
-    .grace-pill {
-      display: inline-block;
-      padding: 2px 10px;
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(201,150,58,0.15), rgba(201,150,58,0.08));
       border: 0.5px solid var(--border-gold);
-      border-radius: 99px;
-      font-size: 10px;
+      border-radius: 8px;
       color: var(--gold-light);
-      margin-top: 6px;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+    }
+
+    .submit-btn:hover { background: linear-gradient(135deg, rgba(201,150,58,0.25), rgba(201,150,58,0.12)); }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #handoff {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      background: rgba(123,174,127,0.06);
+      border: 0.5px solid rgba(123,174,127,0.2);
+      border-radius: 12px;
+    }
+
+    #handoff .handoff-icon {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      color: var(--green);
+      margin-bottom: 10px;
+    }
+
+    #handoff p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    #handoff strong { color: var(--text-primary); }
+
+    .handoff-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
     }
 
     @media (max-width: 600px) {
@@ -304,207 +231,126 @@
 
   <main class="main">
 
-    <div class="section-title">Trial</div>
+    <div id="form-area">
+      <div class="card">
+        <div class="form-group">
+          <label for="trial-select">Which Trial</label>
+          <select id="trial-select" required>
+            <option value="">Loading trials…</option>
+          </select>
+          <div class="trial-preview" id="trial-preview"></div>
+        </div>
 
-    <div class="card gold-border">
-      <div class="form-group">
-        <label for="trial-select">Which Trial</label>
-        <select id="trial-select" required>
-          <option value="">Loading trials…</option>
-        </select>
-        <div class="trial-preview" id="trial-preview"></div>
+        <div class="form-group">
+          <label for="date-input">Date Completed</label>
+          <input type="date" id="date-input" required>
+        </div>
+
+        <div class="form-group">
+          <label for="notes-input">Notes <span style="color:var(--text-muted);font-size:9px;">(optional)</span></label>
+          <textarea id="notes-input" rows="3" placeholder="Any notes on how it went…" style="resize:vertical;"></textarea>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="date-input">Date Completed</label>
-        <input type="date" id="date-input" required>
-      </div>
-
-      <div class="form-group">
-        <label for="notes-input">Notes <span style="color:var(--text-muted);font-size:9px;">(optional)</span></label>
-        <textarea id="notes-input" rows="3" placeholder="Any notes on how it went…" style="resize:vertical;"></textarea>
-      </div>
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()" disabled>
+        Submit Trial
+      </button>
     </div>
 
-    <div class="section-title">GitHub Token</div>
-
-    <div class="card" id="pat-card">
-      <div class="form-group">
-        <label for="pat-input">Personal Access Token</label>
-        <input type="password" id="pat-input" placeholder="ghp_…" autocomplete="off">
-        <div class="pat-hint">Needs <code>workflow</code> scope. Saved locally — only entered once.</div>
-      </div>
+    <div id="handoff">
+      <div class="handoff-icon">✓</div>
+      <p><strong id="handoff-trial"></strong><br>handed off to the Complete Trial shortcut.</p>
+      <p class="handoff-sub">The workflow will run in the background and update grace.json shortly.</p>
     </div>
-
-    <button type="submit" id="submit-btn" onclick="submitForm()" disabled>
-      Submit Trial
-    </button>
-
-    <div id="status"></div>
 
   </main>
 
   <script>
-    const REPO = 'matthewhyde01/chorus-boys-app';
-    const WORKFLOW = 'complete-trial.yml';
+    const SHORTCUT_NAME = 'Complete Trial';
 
-    // ── Date default ─────────────────────────────────────────────────────────
+    // ── Date default ──────────────────────────────────────────────────────────
     const dateInput = document.getElementById('date-input');
-    const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
-    dateInput.value = today;
-    dateInput.max   = today;
+    dateInput.value = new Date().toLocaleDateString('en-CA');
+    dateInput.max   = dateInput.value;
 
-    // ── PAT persistence ───────────────────────────────────────────────────────
-    const patInput = document.getElementById('pat-input');
-    const saved = localStorage.getItem('gh_pat');
-    if (saved) {
-      patInput.value = saved;
-      document.getElementById('pat-card').style.display = 'none';
-    }
-    patInput.addEventListener('input', () => {
-      if (patInput.value.trim()) localStorage.setItem('gh_pat', patInput.value.trim());
-      updateSubmitState();
-    });
-
-    // ── Load active trials ────────────────────────────────────────────────────
-    const trialSelect = document.getElementById('trial-select');
+    // ── Load trials from active_trials.json ───────────────────────────────────
+    const trialSelect  = document.getElementById('trial-select');
     const trialPreview = document.getElementById('trial-preview');
-    let trialsData = [];
 
     async function loadTrials() {
       try {
         const r = await fetch('data/active_trials.json');
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const data = await r.json();
-        trialsData = data.trials || [];
+        const trials = data.trials || [];
 
-        if (trialsData.length === 0) {
-          trialSelect.innerHTML = '<option value="">No active trials found — run Grace Tally first</option>';
-          return;
+        if (trials.length === 0) {
+          trialSelect.innerHTML = '<option value="">No active trials — run Grace Tally first</option>';
+          updateSubmitState(); return;
         }
 
-        // Group by god
         const byGod = {};
-        for (const t of trialsData) {
+        for (const t of trials) {
           const g = t.god || 'Unknown';
-          if (!byGod[g]) byGod[g] = [];
-          byGod[g].push(t);
+          (byGod[g] = byGod[g] || []).push(t);
         }
 
-        const gods = Object.keys(byGod).sort();
         let html = '<option value="">— Select a Trial —</option>';
-        for (const god of gods) {
+        for (const god of Object.keys(byGod).sort()) {
           html += `<optgroup label="${god}">`;
           for (const t of byGod[god]) {
-            html += `<option value="${t.notion_service_id}" data-grace="${t.grace_earned}" data-favour="${t.favour_value}" data-god="${t.god}">${t.service_name}</option>`;
+            html += `<option value="${t.notion_service_id}"
+              data-name="${t.service_name.replace(/"/g, '&quot;')}"
+              data-grace="${t.grace_earned}"
+              data-favour="${t.favour_value}"
+              data-god="${t.god}">${t.service_name}</option>`;
           }
           html += '</optgroup>';
         }
         trialSelect.innerHTML = html;
-
-        const updatedAt = data.updated_at ? new Date(data.updated_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
-        if (updatedAt) {
-          const hint = document.createElement('div');
-          hint.style.cssText = 'font-size:10px;color:var(--text-muted);margin-top:6px;';
-          hint.textContent = `Last synced: ${updatedAt}`;
-          trialSelect.parentNode.appendChild(hint);
-        }
-      } catch (e) {
-        trialSelect.innerHTML = `<option value="">Could not load trials — ${e.message}</option>`;
+      } catch {
+        trialSelect.innerHTML = '<option value="">Could not load trials — run Grace Tally first</option>';
       }
       updateSubmitState();
     }
 
     trialSelect.addEventListener('change', () => {
       const opt = trialSelect.options[trialSelect.selectedIndex];
-      const grace  = opt.dataset.grace;
-      const favour = opt.dataset.favour;
-      const god    = opt.dataset.god;
-      if (opt.value && grace !== undefined) {
+      if (opt.value) {
         trialPreview.style.display = 'block';
-        trialPreview.innerHTML = `<span>${god}</span> · Grace <span>+${grace}</span> · Favour <span>+${favour}</span>`;
+        trialPreview.innerHTML = `<strong>${opt.dataset.god}</strong> &nbsp;·&nbsp; Grace <strong>+${opt.dataset.grace}</strong> &nbsp;·&nbsp; Favour <strong>+${opt.dataset.favour}</strong>`;
       } else {
         trialPreview.style.display = 'none';
       }
       updateSubmitState();
     });
 
-    function updateSubmitState() {
-      const btn = document.getElementById('submit-btn');
-      const hasToken  = (patInput.value.trim() || localStorage.getItem('gh_pat') || '').length > 0;
-      const hasTrial  = trialSelect.value !== '';
-      const hasDate   = dateInput.value !== '';
-      btn.disabled = !(hasToken && hasTrial && hasDate);
-    }
-
     dateInput.addEventListener('input', updateSubmitState);
 
-    async function submitForm() {
+    function updateSubmitState() {
+      document.getElementById('submit-btn').disabled = !(trialSelect.value && dateInput.value);
+    }
+
+    // ── Submit — open iOS Shortcut via URL scheme ─────────────────────────────
+    function submitForm() {
+      const opt            = trialSelect.options[trialSelect.selectedIndex];
       const notion_service_id = trialSelect.value;
-      const date_completed    = dateInput.value;
-      const notes             = document.getElementById('notes-input').value.trim();
-      const pat               = (patInput.value.trim() || localStorage.getItem('gh_pat') || '').trim();
-      const trialName         = trialSelect.options[trialSelect.selectedIndex].text;
-      const god               = trialSelect.options[trialSelect.selectedIndex].dataset.god || '';
-      const grace             = trialSelect.options[trialSelect.selectedIndex].dataset.grace || '0';
+      const service_name   = opt.dataset.name || opt.text;
+      const date_completed = dateInput.value;
+      const notes          = document.getElementById('notes-input').value.trim();
 
-      if (!notion_service_id || !date_completed || !pat) return;
+      if (!notion_service_id || !date_completed) return;
 
-      const btn    = document.getElementById('submit-btn');
-      const status = document.getElementById('status');
-      btn.disabled = true;
-      status.className = 'loading';
-      status.innerHTML = '<span class="loading-dots">Dispatching workflow</span>';
+      // Pass all fields as a JSON string — Shortcut receives via input text
+      const payload = JSON.stringify({ notion_service_id, service_name, date_completed, notes });
+      const url = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT_NAME)}&input=text&text=${encodeURIComponent(payload)}`;
 
-      try {
-        const body = {
-          ref: 'main',
-          inputs: { notion_service_id, date_completed, notes },
-        };
+      window.location.href = url;
 
-        const r = await fetch(
-          `https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${pat}`,
-              'Accept': 'application/vnd.github+json',
-              'Content-Type': 'application/json',
-              'X-GitHub-Api-Version': '2022-11-28',
-            },
-            body: JSON.stringify(body),
-          }
-        );
-
-        if (r.status === 204) {
-          // Save PAT on first successful use
-          localStorage.setItem('gh_pat', pat);
-          document.getElementById('pat-card').style.display = 'none';
-
-          status.className = 'success';
-          status.innerHTML = `
-            <div class="success-icon">✓</div>
-            <strong>${trialName}</strong> submitted for <strong>${god}</strong><br>
-            Date: ${new Date(date_completed + 'T00:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-            <div class="grace-pill">+${grace} Grace incoming</div>
-            <div style="margin-top:8px;font-size:11px;color:var(--text-secondary);">Workflow running — data/grace.json will update in ~30 seconds.</div>
-          `;
-          trialSelect.value = '';
-          trialPreview.style.display = 'none';
-          document.getElementById('notes-input').value = '';
-        } else {
-          const errText = await r.text();
-          let msg = `GitHub returned ${r.status}`;
-          try { msg = JSON.parse(errText).message || msg; } catch {}
-          if (r.status === 401) msg = 'Invalid token — check your PAT has the workflow scope.';
-          if (r.status === 422) msg = 'Validation error — check the workflow file exists and inputs are correct.';
-          throw new Error(msg);
-        }
-      } catch (e) {
-        status.className = 'error';
-        status.innerHTML = `<strong>Error:</strong> ${e.message}`;
-        btn.disabled = false;
-      }
+      // Show handoff confirmation
+      document.getElementById('form-area').style.display = 'none';
+      document.getElementById('handoff-trial').textContent = service_name;
+      document.getElementById('handoff').style.display = 'block';
     }
 
     loadTrials();
