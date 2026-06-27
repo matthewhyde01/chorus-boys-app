@@ -606,6 +606,26 @@
 
     <hr>
 
+    <section class="section" aria-label="Grace">
+      <div class="section-title">Grace</div>
+      <div class="metric-card pink-border" style="padding:16px 18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+          <div class="metric-label" style="margin:0;">Himbo</div>
+          <div style="font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--pink);line-height:1;" id="grace-fraction-display">—</div>
+        </div>
+        <div class="jewel-bar" style="margin-bottom:6px;">
+          <div class="jewel-fill" id="grace-progress-fill" style="width:0%;"></div>
+        </div>
+        <div class="jewel-labels" style="margin-bottom:14px;">
+          <span id="grace-progress-label" style="color:var(--text-muted);font-size:11px;">— / — Grace</span>
+          <span id="grace-threshold-note" style="color:var(--text-muted);font-size:11px;"></span>
+        </div>
+        <div id="grace-mysteries" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;"></div>
+      </div>
+    </section>
+
+    <hr>
+
     <section class="section" aria-label="Joy police log">
       <div class="section-title">Joy police</div>
       <div class="metric-card pink-border">
@@ -838,7 +858,7 @@
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, gymAiRes, checkinsRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, gymAiRes, checkinsRes, graceRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
@@ -853,6 +873,7 @@
       fetch('data/hevy.json').then(r => r.json()),
       fetch('data/himbo_gym_ai.json').then(r => r.json()),
       fetch('data/himbo_checkins.json').then(r => r.json()),
+      fetch('data/grace.json').then(r => r.json()),
     ]);
 
     let sufferScore3d = 0;
@@ -1513,18 +1534,50 @@
         container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Synced from Notion ${new Date(c.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
       }
 
-      // Grace total → jewellery section (threshold=12)
-      const GRACE_THRESHOLD = 12;
-      const graceEl    = document.getElementById('jewel-grace');
-      const graceFill  = document.getElementById('jewel-fill');
-      const graceLabel = document.getElementById('jewel-grace-label');
-      if (c.grace_total != null) {
-        const g = c.grace_total;
-        if (graceEl)    graceEl.textContent    = `Grace earned: ${g}`;
-        if (graceFill)  graceFill.style.width  = Math.min(100, (g / GRACE_THRESHOLD) * 100) + '%';
-        if (graceLabel) graceLabel.textContent = `${g} / ${GRACE_THRESHOLD} Grace`;
-      }
     } catch(e) { console.error('Challenges:', e); }
+
+    // ── Grace section & Devotional Jewellery (from grace.json) ───────────────
+
+    if (graceRes.status === 'fulfilled') try {
+      const grace = graceRes.value;
+      const himbo = grace.gods?.Himbo || grace.gods?.himbo;
+
+      if (himbo) {
+        const gt        = himbo.grace_total     ?? 0;
+        const threshold = himbo.grace_threshold ?? 12;
+        const pct       = threshold > 0 ? Math.min(100, (gt / threshold) * 100) : 0;
+
+        // Grace section
+        const fractionEl = document.getElementById('grace-fraction-display');
+        const fillEl     = document.getElementById('grace-progress-fill');
+        const labelEl    = document.getElementById('grace-progress-label');
+        const noteEl     = document.getElementById('grace-threshold-note');
+        const mysteriesEl = document.getElementById('grace-mysteries');
+
+        if (fractionEl) fractionEl.textContent = `${gt} / ${threshold}`;
+        if (fillEl)     fillEl.style.width     = pct + '%';
+        if (labelEl)    labelEl.textContent    = `${gt} / ${threshold} Grace`;
+        if (noteEl)     noteEl.textContent     = `Worthiness threshold: ${threshold}`;
+
+        if (mysteriesEl && himbo.completions_by_mystery) {
+          mysteriesEl.innerHTML = Object.entries(himbo.completions_by_mystery)
+            .sort(([a],[b]) => a.localeCompare(b))
+            .map(([mystery, count]) => `
+              <div style="background:rgba(232,69,139,0.06);border:0.5px solid rgba(232,69,139,0.15);border-radius:10px;padding:10px 12px;">
+                <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,69,139,0.6);font-family:'Cinzel',serif;margin-bottom:4px;">${mystery}</div>
+                <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--pink);line-height:1;">${count}</div>
+              </div>`).join('');
+        }
+
+        // Devotional jewellery section (still reads same values)
+        const graceEl    = document.getElementById('jewel-grace');
+        const graceFill  = document.getElementById('jewel-fill');
+        const graceLabel = document.getElementById('jewel-grace-label');
+        if (graceEl)    graceEl.textContent    = `Grace earned: ${gt}`;
+        if (graceFill)  graceFill.style.width  = pct + '%';
+        if (graceLabel) graceLabel.textContent = `${gt} / ${threshold} Grace`;
+      }
+    } catch(e) { console.error('Grace:', e); }
 
     // ── Joy Police (structured Himbo breakdown) ───────────────────────────────
 

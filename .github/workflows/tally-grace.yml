@@ -196,19 +196,20 @@ jobs:
               def pprop(name):
                   return prop_text(page, name)
 
-              name = pprop("Service") or pprop("Name") or pprop("Title") or page_id
-              god  = pprop("God")
-              tier = pprop("Tier")
-              fav  = page.get("properties",{}).get("Favour Value",{}).get("number") or 0
-              grc  = page.get("properties",{}).get("Grace Earned",{}).get("number") or 0
-              # Remove UUID dashes to store as compact page ID
+              name    = pprop("Service") or pprop("Name") or pprop("Title") or page_id
+              god     = pprop("God")
+              tier    = pprop("Tier")
+              mystery = pprop("Mystery")
+              fav     = page.get("properties",{}).get("Favour Value",{}).get("number") or 0
+              grc     = page.get("properties",{}).get("Grace Earned",{}).get("number") or 0
               compact_id = page_id.replace("-","")
               return {
-                  "service_name":    name,
-                  "god":             god,
-                  "tier":            tier,
-                  "favour_value":    float(fav),
-                  "grace_earned":    float(grc),
+                  "service_name":      name,
+                  "god":               god,
+                  "tier":              tier,
+                  "mystery":           mystery,
+                  "favour_value":      float(fav),
+                  "grace_earned":      float(grc),
                   "notion_service_id": compact_id,
               }
 
@@ -236,10 +237,16 @@ jobs:
                   grace_earned REAL DEFAULT 0,
                   source TEXT NOT NULL,
                   notes TEXT,
+                  mystery TEXT DEFAULT '',
                   created_at TEXT DEFAULT (datetime('now'))
               )
           """)
           conn.commit()
+          try:
+              conn.execute("ALTER TABLE completion_log ADD COLUMN mystery TEXT DEFAULT ''")
+              conn.commit()
+          except Exception:
+              pass  # column already exists
 
           def already_logged(notion_service_id, date_completed):
               row = conn.execute(
@@ -253,10 +260,10 @@ jobs:
                   print(f"  SKIP (duplicate): {meta['service_name']} on {date_completed}")
                   return False
               conn.execute(
-                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes) VALUES (?,?,?,?,?,?,?,?,?)",
+                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes, mystery) VALUES (?,?,?,?,?,?,?,?,?,?)",
                   (meta["service_name"], meta["notion_service_id"], date_completed,
                    meta["god"], meta["tier"], meta["favour_value"], meta["grace_earned"],
-                   "Automated", notes),
+                   "Automated", notes, meta.get("mystery", "")),
               )
               conn.commit()
               print(f"  LOGGED: {meta['service_name']} on {date_completed}")
@@ -312,61 +319,57 @@ jobs:
           print(f"Tally complete: {new_completions} new completions logged")
 
           # ── Export grace.json ────────────────────────────────────────────────
-          rows = conn.execute(
-              "SELECT god, SUM(grace_earned), SUM(favour_value) FROM completion_log GROUP BY god"
-          ).fetchall()
-          totals_by_god = {row[0]: {"grace": round(row[1], 2), "favour": round(row[2], 2)} for row in rows}
+          # Query Service Compendium for ALL services to collect every mystery per god
+          all_svc_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHALLENGES_DB}/query",
+              headers=notion_headers,
+              json={"page_size": 100},
+              timeout=30,
+          )
+          all_mysteries = {}  # {god: set of mystery strings}
+          if all_svc_r.ok:
+              for pg in all_svc_r.json().get("results", []):
+                  g = prop_text(pg, "God")
+                  m = prop_text(pg, "Mystery")
+                  if g and m:
+                      all_mysteries.setdefault(g, set()).add(m)
 
-          grand_grace  = round(sum(v["grace"]  for v in totals_by_god.values()), 2)
-          grand_favour = round(sum(v["favour"] for v in totals_by_god.values()), 2)
+          GRACE_THRESHOLDS = {"Himbo": 12}
 
-          recent = conn.execute(
-              "SELECT service_name, notion_service_id, date_completed, god, tier, grace_earned, favour_value, source, notes FROM completion_log ORDER BY date_completed DESC, id DESC LIMIT 50"
-          ).fetchall()
-          recent_list = [
-              {
-                  "service_name":    r[0],
-                  "notion_service_id": r[1],
-                  "date_completed":  r[2],
-                  "god":             r[3],
-                  "tier":            r[4],
-                  "grace_earned":    r[5],
-                  "favour_value":    r[6],
-                  "source":          r[7],
-                  "notes":           r[8],
+          gods_in_log = [r[0] for r in conn.execute(
+              "SELECT DISTINCT god FROM completion_log WHERE god IS NOT NULL AND god != ''"
+          ).fetchall()]
+
+          gods_data = {}
+          for god in gods_in_log:
+              grace_total  = conn.execute(
+                  "SELECT COALESCE(SUM(grace_earned),0) FROM completion_log WHERE god=?", (god,)
+              ).fetchone()[0]
+              favour_total = conn.execute(
+                  "SELECT COALESCE(SUM(favour_value),0) FROM completion_log WHERE god=?", (god,)
+              ).fetchone()[0]
+              mystery_counts = {m: 0 for m in all_mysteries.get(god, set())}
+              for m, cnt in conn.execute(
+                  "SELECT mystery, COUNT(*) FROM completion_log WHERE god=? AND COALESCE(mystery,'')!='' GROUP BY mystery",
+                  (god,)
+              ).fetchall():
+                  mystery_counts[m] = cnt
+              gods_data[god] = {
+                  "grace_total":            round(grace_total, 2),
+                  "grace_threshold":        GRACE_THRESHOLDS.get(god, 0),
+                  "favour_earned":          round(favour_total, 2),
+                  "completions_by_mystery": mystery_counts,
               }
-              for r in recent
-          ]
 
-          # This week's completions
-          week_rows = conn.execute(
-              "SELECT service_name, notion_service_id, date_completed, god, tier, grace_earned, favour_value, source FROM completion_log WHERE date_completed >= ? AND date_completed <= ? ORDER BY date_completed",
-              (week_start_date, week_end_date),
-          ).fetchall()
-          this_week = [
-              {
-                  "service_name":    r[0],
-                  "notion_service_id": r[1],
-                  "date_completed":  r[2],
-                  "god":             r[3],
-                  "tier":            r[4],
-                  "grace_earned":    r[5],
-                  "favour_value":    r[6],
-                  "source":          r[7],
-              }
-              for r in week_rows
-          ]
+          favour_grand_total = round(sum(g["favour_earned"] for g in gods_data.values()), 2)
 
           with open("data/grace.json", "w") as f:
               json.dump({
-                  "updated_at":     datetime.utcnow().isoformat() + "Z",
-                  "week":           {"start": week_start_date, "end": week_end_date},
-                  "totals_by_god":  totals_by_god,
-                  "grand_totals":   {"grace": grand_grace, "favour": grand_favour},
-                  "this_week":      this_week,
-                  "recent_completions": recent_list,
+                  "updated_at":   datetime.utcnow().isoformat() + "Z",
+                  "favour_total": favour_grand_total,
+                  "gods":         gods_data,
               }, f, indent=2)
-          print(f"grace.json written — grand grace={grand_grace}, favour={grand_favour}")
+          print(f"grace.json written — favour_total={favour_grand_total}, gods={list(gods_data.keys())}")
 
           # ── Export active_trials.json (for the complete-trial form) ──────────
           trials_r = requests.post(

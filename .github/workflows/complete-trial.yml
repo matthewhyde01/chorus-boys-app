@@ -88,10 +88,11 @@ jobs:
           service_name  = prop_text("Service") or prop_text("Name") or prop_text("Title") or page_id_compact
           god           = prop_text("God")
           tier          = prop_text("Tier")
+          mystery       = prop_text("Mystery")
           favour_value  = float(page.get("properties",{}).get("Favour Value",{}).get("number") or 0)
           grace_earned  = float(page.get("properties",{}).get("Grace Earned",{}).get("number") or 0)
 
-          print(f"Trial: {service_name} | {god} | grace={grace_earned} | favour={favour_value}")
+          print(f"Trial: {service_name} | {god} | mystery={mystery} | grace={grace_earned} | favour={favour_value}")
 
           # ── 2. Write completion to SQLite ────────────────────────────────────
           os.makedirs("data", exist_ok=True)
@@ -108,10 +109,16 @@ jobs:
                   grace_earned REAL DEFAULT 0,
                   source TEXT NOT NULL,
                   notes TEXT,
+                  mystery TEXT DEFAULT '',
                   created_at TEXT DEFAULT (datetime('now'))
               )
           """)
           conn.commit()
+          try:
+              conn.execute("ALTER TABLE completion_log ADD COLUMN mystery TEXT DEFAULT ''")
+              conn.commit()
+          except Exception:
+              pass  # column already exists
 
           existing = conn.execute(
               "SELECT id FROM completion_log WHERE notion_service_id=? AND date_completed=?",
@@ -121,59 +128,73 @@ jobs:
               print(f"Already logged — skipping SQLite write (id={existing[0]})")
           else:
               conn.execute(
-                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes) VALUES (?,?,?,?,?,?,?,?,?)",
-                  (service_name, page_id_compact, date_completed, god, tier, favour_value, grace_earned, "Manual", notes),
+                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes, mystery) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                  (service_name, page_id_compact, date_completed, god, tier, favour_value, grace_earned, "Manual", notes, mystery),
               )
               conn.commit()
               print(f"SQLite: logged {service_name} on {date_completed}")
 
           # ── 3. Recalculate and export grace.json ─────────────────────────────
-          rows = conn.execute(
-              "SELECT god, SUM(grace_earned), SUM(favour_value) FROM completion_log GROUP BY god"
-          ).fetchall()
-          totals_by_god = {row[0]: {"grace": round(row[1], 2), "favour": round(row[2], 2)} for row in rows}
-          grand_grace  = round(sum(v["grace"]  for v in totals_by_god.values()), 2)
-          grand_favour = round(sum(v["favour"] for v in totals_by_god.values()), 2)
+          CHALLENGES_DB = "1345c915-686b-4efd-939c-363c53c5315d"
+          all_svc_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHALLENGES_DB}/query",
+              headers=notion_headers,
+              json={"page_size": 100},
+              timeout=30,
+          )
 
-          recent = conn.execute(
-              "SELECT service_name, notion_service_id, date_completed, god, tier, grace_earned, favour_value, source, notes FROM completion_log ORDER BY date_completed DESC, id DESC LIMIT 50"
-          ).fetchall()
-          recent_list = [
-              {"service_name": r[0], "notion_service_id": r[1], "date_completed": r[2],
-               "god": r[3], "tier": r[4], "grace_earned": r[5], "favour_value": r[6],
-               "source": r[7], "notes": r[8]}
-              for r in recent
-          ]
+          def sc_prop_text(pg, name):
+              p = pg.get("properties", {}).get(name, {})
+              pt = p.get("type", "")
+              if pt == "title":     return " ".join(t.get("plain_text","") for t in p.get("title",[]))
+              if pt == "rich_text": return " ".join(t.get("plain_text","") for t in p.get("rich_text",[]))
+              if pt == "select":    return (p.get("select") or {}).get("name","")
+              return ""
 
-          try:
-              with open("data/grace.json") as f:
-                  existing_grace = json.load(f)
-              week_info = existing_grace.get("week", {"start": "", "end": ""})
-              this_week = existing_grace.get("this_week", [])
-              # Add this completion to this_week if in window
-              ws, we = week_info.get("start",""), week_info.get("end","")
-              if ws and we and ws <= date_completed <= we:
-                  already_in = any(c["notion_service_id"] == page_id_compact and c["date_completed"] == date_completed for c in this_week)
-                  if not already_in:
-                      this_week.append({
-                          "service_name": service_name, "notion_service_id": page_id_compact,
-                          "date_completed": date_completed, "god": god, "tier": tier,
-                          "grace_earned": grace_earned, "favour_value": favour_value, "source": "Manual",
-                      })
-          except (FileNotFoundError, KeyError):
-              week_info = {"start": "", "end": ""}
-              this_week = []
+          all_mysteries = {}
+          if all_svc_r.ok:
+              for pg in all_svc_r.json().get("results", []):
+                  g = sc_prop_text(pg, "God")
+                  m = sc_prop_text(pg, "Mystery")
+                  if g and m:
+                      all_mysteries.setdefault(g, set()).add(m)
+
+          GRACE_THRESHOLDS = {"Himbo": 12}
+
+          gods_in_log = [r[0] for r in conn.execute(
+              "SELECT DISTINCT god FROM completion_log WHERE god IS NOT NULL AND god != ''"
+          ).fetchall()]
+
+          gods_data = {}
+          for g in gods_in_log:
+              grace_total  = conn.execute(
+                  "SELECT COALESCE(SUM(grace_earned),0) FROM completion_log WHERE god=?", (g,)
+              ).fetchone()[0]
+              favour_total = conn.execute(
+                  "SELECT COALESCE(SUM(favour_value),0) FROM completion_log WHERE god=?", (g,)
+              ).fetchone()[0]
+              mystery_counts = {m: 0 for m in all_mysteries.get(g, set())}
+              for m, cnt in conn.execute(
+                  "SELECT mystery, COUNT(*) FROM completion_log WHERE god=? AND COALESCE(mystery,'')!='' GROUP BY mystery",
+                  (g,)
+              ).fetchall():
+                  mystery_counts[m] = cnt
+              gods_data[g] = {
+                  "grace_total":            round(grace_total, 2),
+                  "grace_threshold":        GRACE_THRESHOLDS.get(g, 0),
+                  "favour_earned":          round(favour_total, 2),
+                  "completions_by_mystery": mystery_counts,
+              }
+
+          favour_grand_total = round(sum(g["favour_earned"] for g in gods_data.values()), 2)
 
           with open("data/grace.json", "w") as f:
               json.dump({
-                  "updated_at":         datetime.utcnow().isoformat() + "Z",
-                  "week":               week_info,
-                  "totals_by_god":      totals_by_god,
-                  "grand_totals":       {"grace": grand_grace, "favour": grand_favour},
-                  "this_week":          this_week,
-                  "recent_completions": recent_list,
+                  "updated_at":   datetime.utcnow().isoformat() + "Z",
+                  "favour_total": favour_grand_total,
+                  "gods":         gods_data,
               }, f, indent=2)
-          print(f"grace.json updated — grand grace={grand_grace}")
+          print(f"grace.json updated — favour_total={favour_grand_total}")
           conn.close()
 
           # ── 4. Mark Notion Service Compendium row as Complete ────────────────

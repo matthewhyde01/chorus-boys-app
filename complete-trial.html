@@ -508,7 +508,7 @@
         document.getElementById('success-screen').style.display = 'block';
         document.getElementById('success-name').textContent    = trial.service_name;
         document.getElementById('success-god').textContent     = trial.god;
-        document.getElementById('success-grace').textContent   = `+${trial.grace_earned} Grace`;
+        document.getElementById('success-grace').textContent   = `+${trial.grace_earned} Grace · +${trial.favour_value} Favour`;
 
       } catch (e) {
         status.className   = 'error';
