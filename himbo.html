@@ -1235,6 +1235,7 @@
 
     // ── Nutrition ────────────────────────────────────────────────────────────
 
+    let proteinAvg7d = null;
     if (nutRes.status === 'fulfilled') try {
       const rows = parseCSV(nutRes.value);
 
@@ -1261,6 +1262,7 @@
         };
         const kj    = avg('Dietary Calories');
         const pr    = avg('Protein');
+        proteinAvg7d = pr;
         const carbs = avg('Carbohydrates');
         const fat   = avg('Total Fat');
 
@@ -1438,6 +1440,7 @@
         if (trial.service === 'Run session')                  return runThisWeek > 0;
         if (trial.service === 'Full gym week (4/4 sessions)') return gymThisWeek >= 4;
         if (trial.service === 'Visibility-coded item worn')   return visibilityDone;
+        if (svc.includes('protein'))                          return proteinAvg7d != null && proteinAvg7d >= 180;
         return false;
       }
 
