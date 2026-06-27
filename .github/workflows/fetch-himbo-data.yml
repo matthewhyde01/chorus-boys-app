@@ -870,6 +870,7 @@ jobs:
       - name: Fetch Hevy gym data
         env:
           HEVY_API_KEY: ${{ secrets.HEVY_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python - <<'EOF'
           import requests, json, os
@@ -1038,6 +1039,74 @@ jobs:
                   "recent_prs": recent_prs,
               }, f, indent=2)
           print(f"Hevy: {len(muscle_best)} muscle groups, {sessions_this_week} sessions this week, {len(recent_prs)} PRs")
+
+          # ── Gym Programme commentary ──────────────────────────────────────
+          print("Generating Himbo on Gym Programme commentary...")
+          gym_commentary = ""
+          try:
+              anthropic_key = os.environ.get("ANTHROPIC_API_KEY","").strip()
+              if not anthropic_key:
+                  raise ValueError("ANTHROPIC_API_KEY not set")
+
+              voice_brief = ""
+              try:
+                  with open("data/himbo_voice.json") as f:
+                      voice_brief = json.load(f).get("voice_brief","")
+              except Exception: pass
+
+              pr_lines = [f"  New PR: {p['exercise']} — {p['e1rm']} kg e1RM (was {p['prev']} kg)" for p in recent_prs]
+              top_muscles = sorted(muscle_best.items(), key=lambda x: x[1]["e1rm"], reverse=True)[:4]
+              muscle_lines = [f"  {m}: {v['e1rm']} kg e1RM ({v['exercise']})" for m, v in top_muscles]
+              latest_vol = weekly_volume_list[-1] if weekly_volume_list else None
+              prev_vol = weekly_volume_list[-2] if len(weekly_volume_list) >= 2 else None
+              vol_line = f"Weekly volume: {latest_vol['volume_kg']:,} kg" if latest_vol else ""
+              if prev_vol:
+                  vol_line += f" (prev week: {prev_vol['volume_kg']:,} kg)"
+
+              gym_prompt = "\n".join(filter(None, [
+                  f"Gym sessions this week: {sessions_this_week} (Scott's programme target: 4).",
+                  "\n".join(pr_lines) if pr_lines else "No new PRs this week.",
+                  vol_line,
+                  "Top estimated 1RMs:",
+                  "\n".join(muscle_lines),
+                  f"Most recent workout: {recent_workouts[0]['title']} ({recent_workouts[0]['date']}, {recent_workouts[0]['duration_min']} min)" if recent_workouts else "",
+              ]))
+
+              gym_resp = requests.post(
+                  "https://api.anthropic.com/v1/messages",
+                  headers={"x-api-key": anthropic_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                  json={
+                      "model": "claude-sonnet-4-6",
+                      "max_tokens": 400,
+                      "system": (
+                          (voice_brief[:1200] + "\n\n" if voice_brief else "") +
+                          "Write a 3–4 sentence commentary on Matt's gym programme this week. "
+                          "Cover sessions completed vs the 4-session target, any PRs, strength trend direction, and weekly volume. "
+                          "Be specific to the numbers. Celebrate wins. Be honest about gaps. "
+                          "Warm, mischievous, specific — tracking the becoming, not just the metrics. "
+                          "No emojis. No markdown. No bullet points. Return only the finished text."
+                      ),
+                      "messages": [{"role": "user", "content": gym_prompt}],
+                  },
+                  timeout=40,
+              )
+              gym_resp.raise_for_status()
+              text_blocks = [b["text"] for b in gym_resp.json()["content"] if b.get("type") == "text"]
+              gym_commentary = "".join(text_blocks).strip()
+              print(f"Gym commentary generated ({len(gym_commentary)} chars)")
+          except Exception as e:
+              print(f"Gym commentary error (non-fatal): {e}")
+
+          # Append gym_commentary to existing himbo_commentary.json
+          try:
+              with open("data/himbo_commentary.json") as f:
+                  commentary_data = json.load(f)
+          except Exception:
+              commentary_data = {"updated_at": datetime.utcnow().isoformat()+"Z"}
+          commentary_data["gym_commentary"] = gym_commentary
+          with open("data/himbo_commentary.json", "w") as f:
+              json.dump(commentary_data, f, indent=2)
+          print("Gym commentary written to himbo_commentary.json")
           EOF
 
       - name: Commit data files

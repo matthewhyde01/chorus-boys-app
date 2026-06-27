@@ -1690,8 +1690,9 @@
 
     const gymTextEl = document.getElementById('gym-programme-text');
     if (gymTextEl) {
-      if (gymAiRes.status === 'fulfilled' && gymAiRes.value?.commentary) {
-        gymTextEl.textContent = gymAiRes.value.commentary;
+      const gymCommentary = commentaryRes.status === 'fulfilled' ? commentaryRes.value?.gym_commentary : null;
+      if (gymCommentary) {
+        gymTextEl.textContent = gymCommentary;
         gymTextEl.style.fontStyle = 'normal';
         gymTextEl.style.color = 'var(--text-primary)';
       } else if (hevyRes.status === 'fulfilled') {
