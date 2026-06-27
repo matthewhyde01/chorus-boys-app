@@ -1,0 +1,210 @@
+{
+  "updated_at": "2026-06-27T09:12:41.335680Z",
+  "week": {
+    "start": "2026-06-22",
+    "end": "2026-06-28"
+  },
+  "totals_by_god": {
+    "Himbo": {
+      "grace": 0.0,
+      "favour": 9.0
+    }
+  },
+  "grand_totals": {
+    "grace": 0.0,
+    "favour": 9.0
+  },
+  "this_week": [
+    {
+      "service_name": "Gym session (programme day)",
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "date_completed": "2026-06-22",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    },
+    {
+      "service_name": "Swim session",
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "date_completed": "2026-06-22",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    },
+    {
+      "service_name": "Swim session",
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "date_completed": "2026-06-23",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    },
+    {
+      "service_name": "Gym session (programme day)",
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "date_completed": "2026-06-25",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    },
+    {
+      "service_name": "Swim session",
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "date_completed": "2026-06-25",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    },
+    {
+      "service_name": "Wednesday midweek pulse check-in",
+      "notion_service_id": "385db4862bcd8186ba9eccbb6c90fdaf",
+      "date_completed": "2026-06-25",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    },
+    {
+      "service_name": "Gym session (programme day)",
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "date_completed": "2026-06-26",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    },
+    {
+      "service_name": "Run session",
+      "notion_service_id": "384db4862bcd81a0bd4ef2f45d072662",
+      "date_completed": "2026-06-27",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    },
+    {
+      "service_name": "Saturday full check-in",
+      "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
+      "date_completed": "2026-06-27",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated"
+    }
+  ],
+  "recent_completions": [
+    {
+      "service_name": "Saturday full check-in",
+      "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
+      "date_completed": "2026-06-27",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Run session",
+      "notion_service_id": "384db4862bcd81a0bd4ef2f45d072662",
+      "date_completed": "2026-06-27",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Gym session (programme day)",
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "date_completed": "2026-06-26",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Wednesday midweek pulse check-in",
+      "notion_service_id": "385db4862bcd8186ba9eccbb6c90fdaf",
+      "date_completed": "2026-06-25",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Swim session",
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "date_completed": "2026-06-25",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Gym session (programme day)",
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "date_completed": "2026-06-25",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Swim session",
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "date_completed": "2026-06-23",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Swim session",
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "date_completed": "2026-06-22",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Gym session (programme day)",
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "date_completed": "2026-06-22",
+      "god": "Himbo",
+      "tier": "Devotion",
+      "grace_earned": 0.0,
+      "favour_value": 1.0,
+      "source": "Automated",
+      "notes": null
+    }
+  ]
+}

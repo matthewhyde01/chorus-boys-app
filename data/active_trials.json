@@ -1,0 +1,133 @@
+{
+  "updated_at": "2026-06-27T09:12:41.711810Z",
+  "trials": [
+    {
+      "notion_service_id": "38cdb4862bcd819385d2f3fb2b39a531",
+      "service_name": "Triniful Trial \u2014 wear the best-fitting piece for Matt",
+      "god": "Himbo",
+      "favour_value": 3,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "38cdb4862bcd81d6bff0d23262646225",
+      "service_name": "Apollo ring + necklace \u2014 every in-office day this week",
+      "god": "Himbo",
+      "favour_value": 3,
+      "grace_earned": 1,
+      "due_date": "2026-07-04"
+    },
+    {
+      "notion_service_id": "385db4862bcd8125b80cd8f48cec7d16",
+      "service_name": "Change room thong challenge",
+      "god": "Himbo",
+      "favour_value": 20,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd81278d4ddf1500f2a7d5",
+      "service_name": "Daily routine \u2014 choice or habit?",
+      "god": "Himbo",
+      "favour_value": 10,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd816498e4c71af4b6e345",
+      "service_name": "Wetsuit off, no poncho, toes out",
+      "god": "Himbo",
+      "favour_value": 15,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd8176b517d8530617cf8e",
+      "service_name": "Active wear crop top at Bold & Beautiful",
+      "god": "Himbo",
+      "favour_value": 15,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd81d49c52fd8a1233dd9f",
+      "service_name": "Knit cardigan to Bold & Beautiful",
+      "god": "Himbo",
+      "favour_value": 10,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd816bb802e5857782ab5e",
+      "service_name": "Return to performing",
+      "god": "Hermes",
+      "favour_value": 15,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd81a795a4da812af9378f",
+      "service_name": "The critic is not the only voice in the room",
+      "god": "Hermes",
+      "favour_value": 10,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd814d8395f0ade1334fba",
+      "service_name": "The Morning After",
+      "god": "Eros",
+      "favour_value": 15,
+      "grace_earned": 1,
+      "due_date": "2026-06-30"
+    },
+    {
+      "notion_service_id": "385db4862bcd81599067e718f62d5517",
+      "service_name": "The Honest Inventory",
+      "god": "Eros",
+      "favour_value": 10,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd81ed8dfafbdea3ca4ffb",
+      "service_name": "Say It Out Loud",
+      "god": "Eros",
+      "favour_value": 20,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd81fa9ee0d8ab55175ea1",
+      "service_name": "The Long Week",
+      "god": "Eros",
+      "favour_value": 20,
+      "grace_earned": 1,
+      "due_date": "2026-06-23"
+    },
+    {
+      "notion_service_id": "385db4862bcd812fa9aefeae576f246e",
+      "service_name": "Reconnect with a WAAPA friend",
+      "god": "Hestio",
+      "favour_value": 15,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd81c8b5d8f1ff91b3daea",
+      "service_name": "Call George \u2014 hernia recovery check-in",
+      "god": "Hestio",
+      "favour_value": 10,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "385db4862bcd81d7be35da894290cd73",
+      "service_name": "A table Matt cooked for",
+      "god": "Hestio",
+      "favour_value": 15,
+      "grace_earned": 1,
+      "due_date": ""
+    }
+  ]
+}
