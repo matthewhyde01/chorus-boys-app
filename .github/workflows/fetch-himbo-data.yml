@@ -435,57 +435,76 @@ jobs:
               with open("data/sleep.json") as f:
                   sleep_csv = f.read()
 
-              # Pre-bucket by night: ≥18:00 → tonight; <11:00 → previous night; 11–17:59 → same day
+              # Pre-bucket by night: <11:00 → previous night's sleep; ≥11:00 → same night
               def sleep_night_of(start_dt):
-                  if start_dt.hour >= 18:
-                      return start_dt.date()
-                  elif start_dt.hour < 11:
+                  if start_dt.hour < 11:
                       return (start_dt - timedelta(days=1)).date()
                   else:
                       return start_dt.date()
 
+              def parse_sleep_dt(s):
+                  s = s.strip()
+                  for fmt in (
+                      "%d %b %Y at %I:%M %p",   # "20 Jun 2026 at 12:05 am"
+                      "%d %b %Y at %I:%M%p",     # without space before am/pm
+                      "%Y-%m-%d %H:%M",
+                      "%d/%m/%Y %H:%M",
+                      "%Y-%m-%dT%H:%M",
+                  ):
+                      try:
+                          return datetime.strptime(s, fmt)
+                      except ValueError:
+                          continue
+                  # Try trimming to 16 chars for iso-style strings
+                  for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M"):
+                      try:
+                          return datetime.strptime(s[:16], fmt)
+                      except ValueError:
+                          continue
+                  return None
+
               reader = csv.DictReader(io.StringIO(sleep_csv))
               nights = {}
               for row in reader:
-                  start_str = row.get("From") or row.get("Start") or row.get("from") or ""
-                  end_str   = row.get("To")   or row.get("End")   or row.get("to")   or ""
+                  # Column names in this CSV are: start, end, stage, duration
+                  start_str = row.get("start") or row.get("From") or row.get("Start") or ""
+                  end_str   = row.get("end")   or row.get("To")   or row.get("End")   or ""
+                  stage     = row.get("stage","").strip()
                   if not start_str:
                       continue
-                  for fmt in ("%Y-%m-%d %H:%M", "%d/%m/%Y %H:%M", "%Y-%m-%dT%H:%M"):
-                      try:
-                          start_dt = datetime.strptime(start_str[:16], fmt)
-                          break
-                      except ValueError:
-                          continue
-                  else:
+                  start_dt = parse_sleep_dt(start_str)
+                  if not start_dt:
                       continue
                   nd = sleep_night_of(start_dt)
                   if nd not in nights:
-                      nights[nd] = {"night_of": nd.isoformat(), "sessions": [], "total_duration_min": 0}
+                      nights[nd] = {"sessions": [], "total_duration_min": 0, "stages": {}}
                   nights[nd]["sessions"].append(row)
                   if end_str:
-                      for fmt in ("%Y-%m-%d %H:%M", "%d/%m/%Y %H:%M", "%Y-%m-%dT%H:%M"):
-                          try:
-                              end_dt = datetime.strptime(end_str[:16], fmt)
-                              nights[nd]["total_duration_min"] += int((end_dt - start_dt).total_seconds() / 60)
-                              break
-                          except ValueError:
-                              continue
+                      end_dt = parse_sleep_dt(end_str)
+                      if end_dt:
+                          nights[nd]["total_duration_min"] += int((end_dt - start_dt).total_seconds() / 60)
+                  if stage:
+                      nights[nd]["stages"][stage] = nights[nd]["stages"].get(stage, 0) + (
+                          int((parse_sleep_dt(end_str) - start_dt).total_seconds() / 60)
+                          if end_str and parse_sleep_dt(end_str) else 0
+                      )
 
-              # Last 7 nights, pre-summarised — model receives totals, not raw rows
+              # Last 7 nights, pre-summarised
               recent_nights = sorted(nights.keys())[-7:]
               bucketed_summary = []
               for nd in recent_nights:
                   n = nights[nd]
                   total_h = n["total_duration_min"] // 60
                   total_m = n["total_duration_min"] % 60
-                  session_count = len(n["sessions"])
-                  first_start = n["sessions"][0].get("From") or n["sessions"][0].get("Start","")
-                  bucketed_summary.append(
-                      f"Night of {nd}: {total_h}h {total_m}m total across {session_count} session(s). First sleep: {first_start[:16]}"
-                  )
+                  stage_parts = [f"{s} {m//60}h{m%60}m" for s, m in sorted(n["stages"].items()) if m > 0]
+                  stage_str = " | ".join(stage_parts) if stage_parts else ""
+                  line = f"Night of {nd}: {total_h}h {total_m}m total"
+                  if stage_str:
+                      line += f" ({stage_str})"
+                  bucketed_summary.append(line)
 
               sleep_sample = "\n".join(bucketed_summary) if bucketed_summary else "\n".join(sleep_csv.strip().split("\n")[:15])
+              print(f"Sleep: bucketed {len(bucketed_summary)} nights")
               voice_context = full_text[:1500]
 
               sleep_analysis = claude_call(
@@ -761,14 +780,85 @@ jobs:
                   timeout=40,
               )
               commentary_resp.raise_for_status()
-              commentary_text = commentary_resp.json()["content"][0]["text"].strip()
+              text_blocks = [b["text"] for b in commentary_resp.json()["content"] if b.get("type") == "text"]
+              commentary_text = "".join(text_blocks).strip()
           except Exception as e:
               print(f"Commentary error: {e}")
               commentary_text = ""
 
+          # ── §7: Metrics commentary (run/walk, swim, energy, HRV, VO2) ─────
+          print("Generating metrics commentary (§7)...")
+          metrics_commentary = ""
+          try:
+              week_ago2 = datetime.utcnow() - timedelta(days=7)
+              week_acts = [a for a in strava["activities"]
+                           if datetime.strptime(a["start_date"][:19], "%Y-%m-%dT%H:%M:%S") >= week_ago2]
+
+              run_km  = sum(a["distance"] / 1000 for a in week_acts if a.get("sport_type") in ("Run","Walk","TrailRun","Hike"))
+              swim_m  = sum(a["distance"] for a in week_acts if a.get("sport_type") == "Swim")
+              active_kj = sum(a.get("kilojoules", 0) for a in week_acts)
+
+              metrics_lines = [f"Run/walk this week: {run_km:.1f} km across {sum(1 for a in week_acts if a.get('sport_type') in ('Run','Walk','TrailRun','Hike'))} sessions."]
+              if swim_m > 0:
+                  metrics_lines.append(f"Swim: {round(swim_m)} m total.")
+              if active_kj > 0:
+                  metrics_lines.append(f"Active energy (Strava): {round(active_kj)} kJ.")
+
+              # Try to read HRV and VO2 from activity.json if available
+              try:
+                  import csv as csv_mod, io as io_mod
+                  with open("data/activity.json") as f:
+                      act_csv = f.read()
+                  act_reader = csv_mod.DictReader(io_mod.StringIO(act_csv))
+                  hrv_vals, vo2_vals = [], []
+                  for row in act_reader:
+                      t = row.get("type","")
+                      if t in ("Heart Rate Variability","HRV","HeartRateVariability"):
+                          try: hrv_vals.append(float(row.get("value","")))
+                          except: pass
+                      if t in ("VO2 Max","VO2Max","Cardio Fitness","CardioFitness"):
+                          try: vo2_vals.append(float(row.get("value","")))
+                          except: pass
+                  if hrv_vals:
+                      metrics_lines.append(f"HRV latest: {round(hrv_vals[0])} ms, 7d avg: {round(sum(hrv_vals[:7])/min(len(hrv_vals),7))} ms.")
+                  if vo2_vals:
+                      metrics_lines.append(f"VO2 Max: {vo2_vals[0]:.1f} mL/kg/min.")
+              except Exception as e:
+                  print(f"activity.json read (non-fatal): {e}")
+
+              metrics_prompt = "\n".join(metrics_lines)
+              metrics_resp = requests.post(
+                  "https://api.anthropic.com/v1/messages",
+                  headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                  json={
+                      "model": "claude-sonnet-4-6",
+                      "max_tokens": 400,
+                      "system": (
+                          (voice_brief[:1200] + "\n\n" if voice_brief else "") +
+                          "Write a 3–4 sentence commentary on Matt's fitness metrics this week — "
+                          "run/walk, swim, energy output, HRV, and VO2 Max. "
+                          "Be specific to the numbers. Celebrate what's strong, name what needs attention. "
+                          "Warm, mischievous, never preachy. No emojis. No markdown. No bullet points. "
+                          "Return only the finished text."
+                      ),
+                      "messages": [{"role": "user", "content": metrics_prompt}],
+                  },
+                  timeout=40,
+              )
+              metrics_resp.raise_for_status()
+              text_blocks = [b["text"] for b in metrics_resp.json()["content"] if b.get("type") == "text"]
+              metrics_commentary = "".join(text_blocks).strip()
+          except Exception as e:
+              print(f"Metrics commentary error: {e}")
+              metrics_commentary = ""
+
           with open("data/himbo_commentary.json", "w") as f:
-              json.dump({"updated_at": datetime.utcnow().isoformat()+"Z", "commentary": commentary_text}, f, indent=2)
-          print(f"Commentary written ({len(commentary_text)} chars)")
+              json.dump({
+                  "updated_at": datetime.utcnow().isoformat()+"Z",
+                  "commentary": commentary_text,
+                  "metrics_commentary": metrics_commentary,
+              }, f, indent=2)
+          print(f"Commentary written ({len(commentary_text)} chars), metrics ({len(metrics_commentary)} chars)")
           EOF
 
       - name: Fetch Hevy gym data
