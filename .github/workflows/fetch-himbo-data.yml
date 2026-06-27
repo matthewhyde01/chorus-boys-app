@@ -627,6 +627,123 @@ jobs:
               print(f"Notion snapshot error (non-fatal): {e}")
           EOF
 
+      - name: Fetch check-in completion from Notion
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+        run: |
+          python - <<'EOF'
+          import requests, json, os
+          from datetime import datetime, timedelta, timezone
+
+          notion_key = os.environ["NOTION_API_KEY"].strip()
+          DB_ID = "79579bf4d6ea49f692e793e8773b1811"
+
+          AEST = timezone(timedelta(hours=10))
+          now_aest = datetime.now(AEST)
+
+          # Sunday–Saturday week boundary in AEST
+          # weekday(): Mon=0 ... Sun=6  →  days since Sunday = (weekday+1) % 7
+          days_since_sunday = (now_aest.weekday() + 1) % 7
+          week_start_aest = (now_aest - timedelta(days=days_since_sunday)).replace(hour=0, minute=0, second=0, microsecond=0)
+          week_end_aest   = week_start_aest + timedelta(days=6, hours=23, minutes=59, seconds=59)
+
+          week_start_iso = week_start_aest.strftime("%Y-%m-%d")
+          week_end_iso   = week_end_aest.strftime("%Y-%m-%d")
+          print(f"Check-ins: week {week_start_iso} → {week_end_iso} AEST")
+
+          headers = {
+              "Authorization": f"Bearer {notion_key}",
+              "Notion-Version": "2022-06-28",
+              "content-type": "application/json",
+          }
+
+          def prop_text(page, name):
+              p = page.get("properties", {}).get(name, {})
+              pt = p.get("type", "")
+              if pt == "title":     return " ".join(t.get("plain_text","") for t in p.get("title",[]))
+              if pt == "rich_text": return " ".join(t.get("plain_text","") for t in p.get("rich_text",[]))
+              if pt == "select":    return (p.get("select") or {}).get("name","")
+              if pt == "date":      return (p.get("date") or {}).get("start","")
+              return ""
+
+          saturday_complete = False
+          wednesday_complete = False
+          last_saturday = None
+          last_wednesday = None
+          error_flag = False
+
+          try:
+              # Query this week's entries
+              r = requests.post(
+                  f"https://api.notion.com/v1/databases/{DB_ID}/query",
+                  headers=headers,
+                  json={
+                      "filter": {
+                          "and": [
+                              {"property": "Date", "date": {"on_or_after":  week_start_iso}},
+                              {"property": "Date", "date": {"on_or_before": week_end_iso}},
+                          ]
+                      },
+                      "page_size": 50,
+                  },
+                  timeout=30,
+              )
+              r.raise_for_status()
+              for page in r.json().get("results", []):
+                  entry_type = prop_text(page, "Type")
+                  entry_date = prop_text(page, "Date")
+                  if entry_type == "Saturday Full Check-In":
+                      saturday_complete = True
+                      if entry_date and (not last_saturday or entry_date > last_saturday):
+                          last_saturday = entry_date
+                  elif entry_type == "Wednesday Midweek Pulse":
+                      wednesday_complete = True
+                      if entry_date and (not last_wednesday or entry_date > last_wednesday):
+                          last_wednesday = entry_date
+
+              # Also fetch most recent of each type regardless of week (for "Last:" subtext)
+              for entry_type_filter, target in [
+                  ("Saturday Full Check-In",  "saturday"),
+                  ("Wednesday Midweek Pulse", "wednesday"),
+              ]:
+                  rr = requests.post(
+                      f"https://api.notion.com/v1/databases/{DB_ID}/query",
+                      headers=headers,
+                      json={
+                          "filter": {"property": "Type", "select": {"equals": entry_type_filter}},
+                          "sorts": [{"property": "Date", "direction": "descending"}],
+                          "page_size": 1,
+                      },
+                      timeout=30,
+                  )
+                  if rr.ok:
+                      results = rr.json().get("results", [])
+                      if results:
+                          d = prop_text(results[0], "Date")
+                          if target == "saturday"  and not last_saturday:  last_saturday  = d
+                          if target == "wednesday" and not last_wednesday: last_wednesday = d
+
+              print(f"Saturday complete: {saturday_complete}, Wednesday complete: {wednesday_complete}")
+
+          except Exception as e:
+              print(f"Check-in fetch error: {e}")
+              error_flag = True
+
+          os.makedirs("data", exist_ok=True)
+          with open("data/himbo_checkins.json", "w") as f:
+              json.dump({
+                  "updated_at": datetime.utcnow().isoformat() + "Z",
+                  "week_start": week_start_iso,
+                  "week_end":   week_end_iso,
+                  "saturday_checkin_complete":  saturday_complete,
+                  "wednesday_pulse_complete":   wednesday_complete,
+                  "last_saturday_checkin":  last_saturday,
+                  "last_wednesday_pulse":   last_wednesday,
+                  "error": error_flag,
+              }, f, indent=2)
+          print("Check-ins written.")
+          EOF
+
       - name: Generate activity summaries
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -1113,7 +1230,7 @@ jobs:
         run: |
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
-          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_trials.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json
+          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_trials.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json data/himbo_checkins.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
           git pull --rebase
           git push

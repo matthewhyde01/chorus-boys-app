@@ -838,7 +838,7 @@
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, gymAiRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, gymAiRes, checkinsRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
@@ -852,6 +852,7 @@
       fetch('data/himbo_commentary.json').then(r => r.json()),
       fetch('data/hevy.json').then(r => r.json()),
       fetch('data/himbo_gym_ai.json').then(r => r.json()),
+      fetch('data/himbo_checkins.json').then(r => r.json()),
     ]);
 
     let sufferScore3d = 0;
@@ -1426,14 +1427,28 @@
       const visKey = 'himbo-visibility-' + wkKey;
       const visibilityDone = localStorage.getItem(visKey) === 'true';
 
+      const checkins = checkinsRes.status === 'fulfilled' ? checkinsRes.value : {};
+
       function isTrialComplete(trial) {
-        const svc = trial.service;
-        if (svc === 'Gym session (programme day)') return gymThisWeek > 0;
-        if (svc === 'Swim session')                 return swimThisWeek > 0;
-        if (svc === 'Run session')                  return runThisWeek > 0;
-        if (svc === 'Full gym week (4/4 sessions)') return gymThisWeek >= 4;
-        if (svc === 'Visibility-coded item worn')   return visibilityDone;
+        const svc = trial.service.toLowerCase();
+        if (svc.includes('saturday'))               return !!checkins.saturday_checkin_complete;
+        if (svc.includes('wednesday'))              return !!checkins.wednesday_pulse_complete;
+        if (trial.service === 'Gym session (programme day)') return gymThisWeek > 0;
+        if (trial.service === 'Swim session')                 return swimThisWeek > 0;
+        if (trial.service === 'Run session')                  return runThisWeek > 0;
+        if (trial.service === 'Full gym week (4/4 sessions)') return gymThisWeek >= 4;
+        if (trial.service === 'Visibility-coded item worn')   return visibilityDone;
         return false;
+      }
+
+      function checkinLastDate(trial) {
+        const svc = trial.service.toLowerCase();
+        let iso = null;
+        if (svc.includes('saturday'))  iso = checkins.last_saturday_checkin;
+        if (svc.includes('wednesday')) iso = checkins.last_wednesday_pulse;
+        if (!iso) return '';
+        const d = new Date(iso + 'T00:00:00');
+        return `Last: ${d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long' })}`;
       }
 
       function renderTrialGroup(items, groupTitle) {
@@ -1454,6 +1469,10 @@
           const trigger = ch.trigger_condition
             ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${ch.trigger_condition}</div>`
             : '';
+          const lastDate = checkinLastDate(ch);
+          const lastDateHtml = lastDate
+            ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px;font-style:italic;">${lastDate}</div>`
+            : '';
           const dotCls = done ? 'done' : ch.tier === 'Trial' ? 'active' : 'stretch';
           return `<div class="challenge-item ${done ? 'done' : 'active'}" style="margin-bottom:6px;">
             <span class="c-dot ${dotCls}"></span>
@@ -1463,6 +1482,7 @@
               </div>
               ${meta ? `<div style="font-size:10px;margin-top:3px;">${meta}</div>` : ''}
               ${trigger}
+              ${lastDateHtml}
               ${toggleBtn}
             </div>
           </div>`;
