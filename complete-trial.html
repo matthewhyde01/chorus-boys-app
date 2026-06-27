@@ -21,6 +21,14 @@
       --text-secondary: rgba(255,255,255,0.45);
       --text-muted: rgba(255,255,255,0.25);
       --green: #7BAE7F;
+      --red: #E8458B;
+
+      /* God colours */
+      --himbo:  #E8458B;
+      --hermes: #7BAE7F;
+      --hestio: #C9963A;
+      --eros:   #C46060;
+      --apollo: #4A7ABF;
     }
 
     body {
@@ -99,6 +107,25 @@
 
     .main { max-width: 640px; margin: 0 auto; padding: 2rem; }
 
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: var(--border-gold);
+    }
+
     .card {
       background: var(--bg-card);
       border: 0.5px solid var(--border-gold);
@@ -132,25 +159,46 @@
     }
 
     select:focus, input:focus, textarea:focus { border-color: var(--border-gold); }
+
     select option { background: #1a1525; color: var(--text-primary); }
-    select optgroup { color: var(--gold); font-weight: 600; }
+
+    select optgroup {
+      font-weight: 600;
+      font-style: normal;
+    }
 
     .form-group { margin-bottom: 1.2rem; }
     .form-group:last-child { margin-bottom: 0; }
 
+    /* Trial preview strip — shows god colour + reward on selection */
     .trial-preview {
       margin-top: 10px;
-      padding: 10px 12px;
-      background: rgba(201,150,58,0.05);
-      border: 0.5px solid rgba(201,150,58,0.15);
+      padding: 10px 14px;
       border-radius: 6px;
       font-size: 12px;
       color: var(--text-secondary);
       display: none;
-      line-height: 1.7;
+      line-height: 1.6;
+      border-left: 3px solid var(--god-color, var(--gold));
+      background: rgba(255,255,255,0.02);
     }
 
-    .trial-preview strong { color: var(--gold-light); font-weight: 500; }
+    .trial-preview .god-name {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--god-color, var(--gold));
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .trial-preview .reward {
+      color: var(--text-secondary);
+    }
+
+    .trial-preview .reward strong {
+      color: var(--gold-light);
+    }
 
     .submit-btn {
       width: 100%;
@@ -168,38 +216,99 @@
       margin-bottom: 1rem;
     }
 
-    .submit-btn:hover { background: linear-gradient(135deg, rgba(201,150,58,0.25), rgba(201,150,58,0.12)); }
+    .submit-btn:hover {
+      background: linear-gradient(135deg, rgba(201,150,58,0.25), rgba(201,150,58,0.12));
+    }
+
     .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    #handoff {
+    #status {
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.7;
+      display: none;
+    }
+
+    #status.loading {
+      display: block;
+      background: rgba(255,255,255,0.03);
+      border: 0.5px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    #status.error {
+      display: block;
+      background: rgba(232,69,139,0.08);
+      border: 0.5px solid rgba(232,69,139,0.25);
+      color: var(--red);
+    }
+
+    /* Success screen */
+    #success-screen {
       display: none;
       text-align: center;
-      padding: 2rem;
-      background: rgba(123,174,127,0.06);
-      border: 0.5px solid rgba(123,174,127,0.2);
-      border-radius: 12px;
+      padding: 3rem 1rem;
     }
 
-    #handoff .handoff-icon {
+    .success-glyph {
       font-family: 'Cinzel', serif;
-      font-size: 28px;
+      font-size: 13px;
+      letter-spacing: 0.3em;
       color: var(--green);
-      margin-bottom: 10px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
     }
 
-    #handoff p {
-      font-size: 13px;
-      color: var(--text-secondary);
+    .success-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(22px, 5vw, 30px);
+      color: white;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
+    }
+
+    .success-god {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .grace-pill {
+      display: inline-block;
+      padding: 4px 14px;
+      border: 0.5px solid var(--border-gold);
+      border-radius: 99px;
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--gold-light);
+      margin-bottom: 2rem;
+    }
+
+    .success-sub {
+      font-size: 11px;
+      color: var(--text-muted);
       line-height: 1.7;
     }
 
-    #handoff strong { color: var(--text-primary); }
-
-    .handoff-sub {
-      font-size: 11px;
+    .another-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
       color: var(--text-muted);
-      margin-top: 8px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
+
+    .another-link:hover { color: var(--text-secondary); }
 
     @media (max-width: 600px) {
       .nav { padding: 1rem; }
@@ -231,14 +340,20 @@
 
   <main class="main">
 
+    <!-- Form -->
     <div id="form-area">
+      <div class="section-title">Trial</div>
+
       <div class="card">
         <div class="form-group">
           <label for="trial-select">Which Trial</label>
           <select id="trial-select" required>
             <option value="">Loading trials…</option>
           </select>
-          <div class="trial-preview" id="trial-preview"></div>
+          <div class="trial-preview" id="trial-preview">
+            <div class="god-name" id="preview-god"></div>
+            <div class="reward" id="preview-reward"></div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -255,27 +370,47 @@
       <button class="submit-btn" id="submit-btn" onclick="submitForm()" disabled>
         Submit Trial
       </button>
+
+      <div id="status"></div>
     </div>
 
-    <div id="handoff">
-      <div class="handoff-icon">✓</div>
-      <p><strong id="handoff-trial"></strong><br>handed off to the Complete Trial shortcut.</p>
-      <p class="handoff-sub">The workflow will run in the background and update grace.json shortly.</p>
+    <!-- Success -->
+    <div id="success-screen">
+      <div class="success-glyph">Trial complete</div>
+      <div class="success-title" id="success-name"></div>
+      <div class="success-god" id="success-god"></div>
+      <div class="grace-pill" id="success-grace"></div>
+      <div class="success-sub">The workflow is running in the background.<br>grace.json will update in about 30 seconds.</div>
+      <br>
+      <button class="another-link" onclick="resetForm()">Complete another trial</button>
     </div>
 
   </main>
 
   <script>
-    const SHORTCUT_NAME = 'Complete Trial';
+    const RELAY_URL = 'https://complete-trial-relay.matthewhyde01.workers.dev';
+
+    const GOD_COLOURS = {
+      himbo:  '#E8458B',
+      hermes: '#7BAE7F',
+      hestio: '#C9963A',
+      eros:   '#C46060',
+      apollo: '#4A7ABF',
+    };
+
+    function godColour(god) {
+      return GOD_COLOURS[(god || '').toLowerCase()] || '#C9963A';
+    }
 
     // ── Date default ──────────────────────────────────────────────────────────
     const dateInput = document.getElementById('date-input');
     dateInput.value = new Date().toLocaleDateString('en-CA');
     dateInput.max   = dateInput.value;
 
-    // ── Load trials from active_trials.json ───────────────────────────────────
+    // ── Load trials ───────────────────────────────────────────────────────────
     const trialSelect  = document.getElementById('trial-select');
     const trialPreview = document.getElementById('trial-preview');
+    let trialsIndex = {};
 
     async function loadTrials() {
       try {
@@ -289,6 +424,10 @@
           updateSubmitState(); return;
         }
 
+        // Index by ID for preview lookup
+        for (const t of trials) trialsIndex[t.notion_service_id] = t;
+
+        // Group by god
         const byGod = {};
         for (const t of trials) {
           const g = t.god || 'Unknown';
@@ -297,28 +436,31 @@
 
         let html = '<option value="">— Select a Trial —</option>';
         for (const god of Object.keys(byGod).sort()) {
-          html += `<optgroup label="${god}">`;
+          const colour = godColour(god);
+          html += `<optgroup label="${god}" style="color:${colour};">`;
           for (const t of byGod[god]) {
-            html += `<option value="${t.notion_service_id}"
-              data-name="${t.service_name.replace(/"/g, '&quot;')}"
-              data-grace="${t.grace_earned}"
-              data-favour="${t.favour_value}"
-              data-god="${t.god}">${t.service_name}</option>`;
+            html += `<option value="${t.notion_service_id}">${t.service_name}</option>`;
           }
           html += '</optgroup>';
         }
         trialSelect.innerHTML = html;
-      } catch {
+
+      } catch (e) {
         trialSelect.innerHTML = '<option value="">Could not load trials — run Grace Tally first</option>';
+        console.error('loadTrials:', e);
       }
       updateSubmitState();
     }
 
     trialSelect.addEventListener('change', () => {
-      const opt = trialSelect.options[trialSelect.selectedIndex];
-      if (opt.value) {
+      const t = trialsIndex[trialSelect.value];
+      if (t) {
+        const colour = godColour(t.god);
         trialPreview.style.display = 'block';
-        trialPreview.innerHTML = `<strong>${opt.dataset.god}</strong> &nbsp;·&nbsp; Grace <strong>+${opt.dataset.grace}</strong> &nbsp;·&nbsp; Favour <strong>+${opt.dataset.favour}</strong>`;
+        trialPreview.style.setProperty('--god-color', colour);
+        document.getElementById('preview-god').textContent = t.god;
+        document.getElementById('preview-reward').innerHTML =
+          `Grace <strong>+${t.grace_earned}</strong> &nbsp;·&nbsp; Favour <strong>+${t.favour_value}</strong>`;
       } else {
         trialPreview.style.display = 'none';
       }
@@ -331,26 +473,60 @@
       document.getElementById('submit-btn').disabled = !(trialSelect.value && dateInput.value);
     }
 
-    // ── Submit — open iOS Shortcut via URL scheme ─────────────────────────────
-    function submitForm() {
-      const opt            = trialSelect.options[trialSelect.selectedIndex];
-      const notion_service_id = trialSelect.value;
-      const service_name   = opt.dataset.name || opt.text;
-      const date_completed = dateInput.value;
-      const notes          = document.getElementById('notes-input').value.trim();
+    // ── Submit ────────────────────────────────────────────────────────────────
+    async function submitForm() {
+      const trial = trialsIndex[trialSelect.value];
+      if (!trial || !dateInput.value) return;
 
-      if (!notion_service_id || !date_completed) return;
+      const payload = {
+        notion_service_id: trial.notion_service_id,
+        service_name:      trial.service_name,
+        date_completed:    dateInput.value,
+        notes:             document.getElementById('notes-input').value.trim(),
+      };
 
-      // Pass all fields as a JSON string — Shortcut receives via input text
-      const payload = JSON.stringify({ notion_service_id, service_name, date_completed, notes });
-      const url = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT_NAME)}&input=text&text=${encodeURIComponent(payload)}`;
+      const btn    = document.getElementById('submit-btn');
+      const status = document.getElementById('status');
+      btn.disabled = true;
+      status.className = 'loading';
+      status.textContent = 'Submitting…';
 
-      window.location.href = url;
+      try {
+        const r = await fetch(RELAY_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload),
+        });
 
-      // Show handoff confirmation
-      document.getElementById('form-area').style.display = 'none';
-      document.getElementById('handoff-trial').textContent = service_name;
-      document.getElementById('handoff').style.display = 'block';
+        if (!r.ok) {
+          const msg = await r.text().catch(() => `HTTP ${r.status}`);
+          throw new Error(msg || `HTTP ${r.status}`);
+        }
+
+        // Show success screen
+        document.getElementById('form-area').style.display     = 'none';
+        document.getElementById('success-screen').style.display = 'block';
+        document.getElementById('success-name').textContent    = trial.service_name;
+        document.getElementById('success-god').textContent     = trial.god;
+        document.getElementById('success-grace').textContent   = `+${trial.grace_earned} Grace`;
+
+      } catch (e) {
+        status.className   = 'error';
+        status.textContent = e.message || 'Something went wrong — try again.';
+        btn.disabled       = false;
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('success-screen').style.display = 'none';
+      document.getElementById('form-area').style.display      = 'block';
+      document.getElementById('status').className             = '';
+      document.getElementById('status').style.display         = 'none';
+      trialSelect.value = '';
+      trialPreview.style.display = 'none';
+      document.getElementById('notes-input').value = '';
+      dateInput.value = new Date().toLocaleDateString('en-CA');
+      updateSubmitState();
     }
 
     loadTrials();
