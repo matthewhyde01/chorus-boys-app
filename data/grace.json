@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-27T10:46:52.205570Z",
+  "updated_at": "2026-06-27T10:47:51.501559Z",
   "week": {
     "start": "2026-06-22",
     "end": "2026-06-28"
@@ -10,13 +10,13 @@
       "favour": 10.0
     },
     "Himbo": {
-      "grace": 0.0,
-      "favour": 9.0
+      "grace": 1.0,
+      "favour": 19.0
     }
   },
   "grand_totals": {
-    "grace": 1.0,
-    "favour": 19.0
+    "grace": 2.0,
+    "favour": 29.0
   },
   "this_week": [
     {
@@ -208,6 +208,17 @@
       "grace_earned": 0.0,
       "favour_value": 1.0,
       "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "Knit cardigan to Bold & Beautiful",
+      "notion_service_id": "385db4862bcd81d49c52fd8a1233dd9f",
+      "date_completed": "2026-06-07",
+      "god": "Himbo",
+      "tier": "Trial",
+      "grace_earned": 1.0,
+      "favour_value": 10.0,
+      "source": "Manual",
       "notes": null
     },
     {
