@@ -1,18 +1,22 @@
 {
-  "updated_at": "2026-06-27T10:40:20.524698Z",
+  "updated_at": "2026-06-27T10:46:52.205570Z",
   "week": {
     "start": "2026-06-22",
     "end": "2026-06-28"
   },
   "totals_by_god": {
+    "Eros": {
+      "grace": 1.0,
+      "favour": 10.0
+    },
     "Himbo": {
       "grace": 0.0,
       "favour": 9.0
     }
   },
   "grand_totals": {
-    "grace": 0.0,
-    "favour": 9.0
+    "grace": 1.0,
+    "favour": 19.0
   },
   "this_week": [
     {
@@ -204,6 +208,17 @@
       "grace_earned": 0.0,
       "favour_value": 1.0,
       "source": "Automated",
+      "notes": null
+    },
+    {
+      "service_name": "The Honest Inventory",
+      "notion_service_id": "385db4862bcd81599067e718f62d5517",
+      "date_completed": "2026-06-01",
+      "god": "Eros",
+      "tier": "Trial",
+      "grace_earned": 1.0,
+      "favour_value": 10.0,
+      "source": "Manual",
       "notes": null
     }
   ]
