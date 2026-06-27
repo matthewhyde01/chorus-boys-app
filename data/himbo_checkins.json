@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-06-27T07:02:18.166795Z",
-  "week_start": "2026-06-21",
-  "week_end": "2026-06-27",
-  "saturday_checkin_complete": true,
-  "wednesday_pulse_complete": true,
+  "updated_at": "2026-06-27T14:01:04.768823Z",
+  "week_start": "2026-06-28",
+  "week_end": "2026-07-04",
+  "saturday_checkin_complete": false,
+  "wednesday_pulse_complete": false,
   "last_saturday_checkin": "2026-06-27",
   "last_wednesday_pulse": "2026-06-25",
   "error": false
