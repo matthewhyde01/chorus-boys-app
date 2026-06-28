@@ -121,8 +121,8 @@ jobs:
               pass  # column already exists
 
           existing = conn.execute(
-              "SELECT id FROM completion_log WHERE notion_service_id=? AND date_completed=?",
-              (page_id_compact, date_completed),
+              "SELECT id FROM completion_log WHERE notion_service_id=?",
+              (page_id_compact,),
           ).fetchone()
           if existing:
               print(f"Already logged — skipping SQLite write (id={existing[0]})")

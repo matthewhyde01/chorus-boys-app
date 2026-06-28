@@ -1,0 +1,202 @@
+name: Backfill Mystery + Remove Duplicates
+
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Backfill mystery values and remove duplicates
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+        run: |
+          python - <<'EOF'
+          import requests, json, os, sqlite3
+
+          notion_key = os.environ["NOTION_API_KEY"].strip()
+          notion_headers = {
+              "Authorization": f"Bearer {notion_key}",
+              "Notion-Version": "2022-06-28",
+              "content-type": "application/json",
+          }
+
+          conn = sqlite3.connect("data/grace.db")
+
+          # ── 1. Remove known duplicate ─────────────────────────────────────────
+          deleted = conn.execute(
+              "DELETE FROM completion_log "
+              "WHERE notion_service_id='385db4862bcd814d8395f0ade1334fba' "
+              "AND date_completed='2026-06-28'"
+          ).rowcount
+          conn.commit()
+          print(f"Deleted {deleted} duplicate row(s) for The Morning After (2026-06-28)")
+
+          # ── 2. Remove any other duplicates (same notion_service_id, keep oldest) ─
+          dupes = conn.execute("""
+              SELECT notion_service_id, COUNT(*) as cnt
+              FROM completion_log
+              GROUP BY notion_service_id
+              HAVING cnt > 1
+          """).fetchall()
+          for nsid, cnt in dupes:
+              rows = conn.execute(
+                  "SELECT id FROM completion_log WHERE notion_service_id=? ORDER BY id ASC",
+                  (nsid,)
+              ).fetchall()
+              ids_to_delete = [r[0] for r in rows[1:]]  # keep first, delete rest
+              conn.execute(
+                  f"DELETE FROM completion_log WHERE id IN ({','.join('?'*len(ids_to_delete))})",
+                  ids_to_delete
+              )
+              conn.commit()
+              print(f"Removed {len(ids_to_delete)} extra duplicate(s) for {nsid}")
+
+          # ── 3. Backfill blank mystery values ──────────────────────────────────
+          rows_needing_mystery = conn.execute(
+              "SELECT id, notion_service_id, service_name FROM completion_log "
+              "WHERE COALESCE(mystery, '') = ''"
+          ).fetchall()
+          print(f"Rows needing mystery backfill: {len(rows_needing_mystery)}")
+
+          updated = 0
+          for row_id, nsid, name in rows_needing_mystery:
+              # Format compact ID as UUID
+              pid = nsid
+              if len(pid) == 32 and "-" not in pid:
+                  pid = f"{pid[:8]}-{pid[8:12]}-{pid[12:16]}-{pid[16:20]}-{pid[20:]}"
+
+              r = requests.get(
+                  f"https://api.notion.com/v1/pages/{pid}",
+                  headers=notion_headers,
+                  timeout=30,
+              )
+              if not r.ok:
+                  print(f"  SKIP {name} ({nsid}): HTTP {r.status_code}")
+                  continue
+
+              page = r.json()
+              mystery = (page.get("properties", {}).get("Mystery", {}).get("select") or {}).get("name", "")
+              conn.execute(
+                  "UPDATE completion_log SET mystery=? WHERE id=?",
+                  (mystery, row_id)
+              )
+              conn.commit()
+              print(f"  {name}: mystery={mystery!r}")
+              updated += 1
+
+          print(f"Backfill complete: {updated} rows updated")
+
+          # ── 4. Regenerate grace.json ──────────────────────────────────────────
+          from datetime import datetime
+
+          CHALLENGES_DB = "1345c915-686b-4efd-939c-363c53c5315d"
+          all_svc_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHALLENGES_DB}/query",
+              headers=notion_headers,
+              json={"page_size": 100},
+              timeout=30,
+          )
+
+          def sc_prop_text(pg, name):
+              p = pg.get("properties", {}).get(name, {})
+              pt = p.get("type", "")
+              if pt == "title":     return " ".join(t.get("plain_text","") for t in p.get("title",[]))
+              if pt == "rich_text": return " ".join(t.get("plain_text","") for t in p.get("rich_text",[]))
+              if pt == "select":    return (p.get("select") or {}).get("name","")
+              return ""
+
+          all_mysteries = {}
+          if all_svc_r.ok:
+              for pg in all_svc_r.json().get("results", []):
+                  g = sc_prop_text(pg, "God")
+                  m = sc_prop_text(pg, "Mystery")
+                  if g and m:
+                      all_mysteries.setdefault(g, set()).add(m)
+
+          GRACE_THRESHOLDS = {
+              "Himbo":  12,
+              "Eros":   12,
+              "Hermes":  9,
+              "Hestio":  9,
+              "Apollo": 12,
+          }
+
+          gods_in_log = [r[0] for r in conn.execute(
+              "SELECT DISTINCT god FROM completion_log WHERE god IS NOT NULL AND god != ''"
+          ).fetchall()]
+
+          gods_data = {}
+          for g in gods_in_log:
+              grace_total  = conn.execute(
+                  "SELECT COALESCE(SUM(grace_earned),0) FROM completion_log WHERE god=?", (g,)
+              ).fetchone()[0]
+              favour_total = conn.execute(
+                  "SELECT COALESCE(SUM(favour_value),0) FROM completion_log WHERE god=?", (g,)
+              ).fetchone()[0]
+              mystery_counts = {m: 0 for m in all_mysteries.get(g, set())}
+              for m, grace in conn.execute(
+                  "SELECT mystery, COALESCE(SUM(grace_earned),0) FROM completion_log "
+                  "WHERE god=? AND COALESCE(mystery,'')!='' GROUP BY mystery",
+                  (g,)
+              ).fetchall():
+                  mystery_counts[m] = round(grace, 2)
+              gods_data[g] = {
+                  "grace_total":            round(grace_total, 2),
+                  "grace_threshold":        GRACE_THRESHOLDS.get(g, 0),
+                  "favour_earned":          round(favour_total, 2),
+                  "completions_by_mystery": mystery_counts,
+              }
+
+          favour_grand_total = round(sum(g["favour_earned"] for g in gods_data.values()), 2)
+
+          completed_trials = [
+              {
+                  "service_name":   row[0],
+                  "god":            row[1],
+                  "date_completed": row[2],
+                  "grace_earned":   row[3],
+                  "favour_value":   row[4],
+                  "mystery":        row[5] or "",
+                  "notes":          row[6],
+              }
+              for row in conn.execute(
+                  "SELECT service_name, god, date_completed, grace_earned, favour_value, "
+                  "COALESCE(mystery,''), notes "
+                  "FROM completion_log WHERE tier='Trial' ORDER BY date_completed DESC"
+              ).fetchall()
+          ]
+
+          with open("data/grace.json", "w") as f:
+              json.dump({
+                  "updated_at":       datetime.utcnow().isoformat() + "Z",
+                  "favour_total":     favour_grand_total,
+                  "gods":             gods_data,
+                  "completed_trials": completed_trials,
+              }, f, indent=2)
+          print(f"grace.json regenerated — {len(completed_trials)} completed trials, gods={list(gods_data.keys())}")
+          conn.close()
+          EOF
+
+      - name: Commit data files
+        run: |
+          git config user.name "Dante"
+          git config user.email "dante@chorus-boys"
+          git add data/grace.db data/grace.json
+          git diff --staged --quiet || git commit -m "chore: backfill mystery values + remove duplicate Morning After row"
+          git pull --rebase
+          git push
