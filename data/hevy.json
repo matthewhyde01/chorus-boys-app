@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-06-27T14:01:17.911504Z",
-  "sessions_this_week": 4,
+  "updated_at": "2026-06-28T00:11:57.515501Z",
+  "sessions_this_week": 5,
   "muscle_best": {
     "Chest": {
       "e1rm": 76.0,
@@ -30,7 +30,7 @@
     "Hinge": {
       "e1rm": 107.9,
       "exercise": "Deadlift (Trap bar)",
-      "date": "2026-06-21"
+      "date": "2026-06-27"
     }
   },
   "muscle_history": {
@@ -122,6 +122,10 @@
       {
         "date": "2026-06-25",
         "e1rm": 154.0
+      },
+      {
+        "date": "2026-06-27",
+        "e1rm": 21.3
       }
     ],
     "Hinge": [
@@ -136,6 +140,10 @@
       {
         "date": "2026-06-25",
         "e1rm": 101.3
+      },
+      {
+        "date": "2026-06-27",
+        "e1rm": 107.9
       }
     ]
   },
@@ -151,10 +159,23 @@
     },
     {
       "week_of": "2026-06-22",
-      "volume_kg": 19484
+      "volume_kg": 23660
     }
   ],
   "recent_workouts": [
+    {
+      "title": "Workout",
+      "date": "2026-06-27",
+      "duration_min": 47,
+      "exercises": [
+        "Deadlift (Trap bar)",
+        "Chin Up",
+        "Dumbbell Push Press",
+        "Bulgarian Split Squat",
+        "Bent Over Row (Barbell)",
+        "Farmers Walk"
+      ]
+    },
     {
       "title": "Workout",
       "date": "2026-06-26",
@@ -210,22 +231,6 @@
         "Bulgarian Split Squat",
         "Bent Over Row (Barbell)",
         "Farmers Walk"
-      ]
-    },
-    {
-      "title": "Workout",
-      "date": "2026-06-20",
-      "duration_min": 55,
-      "exercises": [
-        "Incline Bench Press (Dumbbell)",
-        "Shoulder Press (Dumbbell)",
-        "Seated Cable Row - Bar Wide Grip",
-        "Single Arm Cable Row",
-        "Face Pull",
-        "Hammer Curl (Dumbbell)",
-        "Triceps Rope Pushdown",
-        "Plank",
-        "Side Plank"
       ]
     }
   ],
