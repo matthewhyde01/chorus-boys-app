@@ -48,7 +48,7 @@ jobs:
           }
 
           EROS_PAGE_ID = "379db4862bcd810c9243fb0723538ac4"
-          SERVICE_COMPENDIUM_DB_ID = "dc3f975b-7f4d-4361-b859-079936ccdd10"
+          SERVICE_COMPENDIUM_DB_ID = "1345c915-686b-4efd-939c-363c53c5315d"
           TEXT_TYPES = {"paragraph", "heading_1", "heading_2", "heading_3",
                         "bulleted_list_item", "numbered_list_item", "quote", "callout", "toggle"}
 
@@ -131,8 +131,6 @@ jobs:
                   headers={**notion_headers, "Content-Type": "application/json"},
                   json=body,
               )
-              print(f"DEBUG Notion status: {r.status_code}")
-              print(f"DEBUG Notion body: {r.text[:500]}")
               if not r.ok:
                   print(f"Service Compendium query failed: {r.status_code} {r.text[:200]}")
                   break
