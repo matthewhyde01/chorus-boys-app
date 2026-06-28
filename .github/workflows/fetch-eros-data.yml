@@ -131,6 +131,8 @@ jobs:
                   headers={**notion_headers, "Content-Type": "application/json"},
                   json=body,
               )
+              print(f"DEBUG Notion status: {r.status_code}")
+              print(f"DEBUG Notion body: {r.text[:500]}")
               if not r.ok:
                   print(f"Service Compendium query failed: {r.status_code} {r.text[:200]}")
                   break
