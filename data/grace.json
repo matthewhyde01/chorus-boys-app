@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-06-28T04:20:14.822402Z",
-  "favour_total": 115.0,
+  "updated_at": "2026-06-28T04:32:42.378242Z",
+  "favour_total": 130.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
       "favour_earned": 40.0,
       "completions_by_mystery": {
-        "Himbo: Physique": 0.0,
+        "Himbo: Visibility & Self-Expression": 0,
         "Himbo: Internal Work": 0,
-        "Himbo: Visibility & Self-Expression": 0
+        "Himbo: Physique": 0.0
       }
     },
     "Eros": {
-      "grace_total": 4.0,
+      "grace_total": 5.0,
       "grace_threshold": 12,
-      "favour_earned": 65.0,
+      "favour_earned": 80.0,
       "completions_by_mystery": {
-        "Eros: Sexual Challenges": 1.0,
-        "Eros: Vulnerability": 0,
-        "Eros: Kink Exploration": 1.0
+        "Eros: Sexual Challenges": 2.0,
+        "Eros: Kink Exploration": 1.0,
+        "Eros: Vulnerability": 0
       }
     },
     "Hestio": {
@@ -27,13 +27,22 @@
       "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
-        "Hestio: Friends": 0,
         "Hestio: Family": 1.0,
-        "Hestio: The Hearth": 0
+        "Hestio: The Hearth": 0,
+        "Hestio: Friends": 0
       }
     }
   },
   "completed_trials": [
+    {
+      "service_name": "The Morning After",
+      "god": "Eros",
+      "date_completed": "2026-06-25",
+      "grace_earned": 1.0,
+      "favour_value": 15.0,
+      "mystery": "Eros: Sexual Challenges",
+      "notes": null
+    },
     {
       "service_name": "The Long Week",
       "god": "Eros",
