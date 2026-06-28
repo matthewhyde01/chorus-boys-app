@@ -380,8 +380,11 @@
       background: var(--rose);
     }
 
-    .c-dot.done   { background: rgba(251,113,133,0.3); }
-    .c-dot.stretch { background: transparent; border: 1.5px solid var(--rose); }
+    .c-dot.active  { background: var(--rose); }
+    .c-dot.stretch { background: var(--gold); }
+    .c-dot.done    { background: #7BAE7F; }
+
+    .challenge-item.done { opacity: 0.6; }
 
     .c-text { font-size: 13px; color: var(--text-primary); line-height: 1.5; }
 
@@ -589,8 +592,8 @@
           const trigger = t.trigger_condition
             ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${t.trigger_condition}</div>`
             : '';
-          const dotCls = done ? 'done' : t.tier === 'Trial' ? '' : 'stretch';
-          return `<div class="challenge-item">
+          const dotCls = done ? 'done' : t.tier === 'Trial' ? 'active' : 'stretch';
+          return `<div class="challenge-item ${done ? 'done' : 'active'}" style="margin-bottom:6px;">
             <span class="c-dot ${dotCls}"></span>
             <div style="flex:1;">
               <div style="display:flex;align-items:baseline;flex-wrap:wrap;">
@@ -607,12 +610,13 @@
         </div>`;
       }
 
-      if (trials.length === 0) {
+      const activeTrials = trials.filter(t => t.status === 'Active');
+      if (activeTrials.length === 0) {
         container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active Trials right now.</div>';
       } else {
-        const devotions = trials.filter(t => t.tier === 'Devotion');
-        const streaks   = trials.filter(t => t.tier === 'Streak');
-        const trialList = trials.filter(t => !['Devotion', 'Streak'].includes(t.tier));
+        const devotions = activeTrials.filter(t => t.tier === 'Devotion');
+        const streaks   = activeTrials.filter(t => t.tier === 'Streak');
+        const trialList = activeTrials.filter(t => !['Devotion', 'Streak'].includes(t.tier));
         container.innerHTML =
           renderTrialGroup(devotions, 'Devotions') +
           renderTrialGroup(streaks,   'Streaks') +
