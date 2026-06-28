@@ -435,9 +435,10 @@ jobs:
               with open("data/sleep.json") as f:
                   sleep_csv = f.read()
 
-              # Pre-bucket by night: <11:00 → previous night's sleep; ≥11:00 → same night
+              # Mirror the dashboard's nightLabel logic exactly:
+              # segments starting before noon belong to the previous calendar day's night.
               def sleep_night_of(start_dt):
-                  if start_dt.hour < 11:
+                  if start_dt.hour < 12:
                       return (start_dt - timedelta(days=1)).date()
                   else:
                       return start_dt.date()
@@ -455,7 +456,6 @@ jobs:
                           return datetime.strptime(s, fmt)
                       except ValueError:
                           continue
-                  # Try trimming to 16 chars for iso-style strings
                   for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M"):
                       try:
                           return datetime.strptime(s[:16], fmt)
@@ -463,13 +463,26 @@ jobs:
                           continue
                   return None
 
+              # Mirror parseDurSecs: "h:mm:ss", "mm:ss", or raw seconds string
+              def parse_dur_secs(s):
+                  if not s:
+                      return 0
+                  parts = s.split(":")
+                  try:
+                      if len(parts) == 1: return int(parts[0])
+                      if len(parts) == 2: return int(parts[0]) * 60 + int(parts[1])
+                      return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+                  except (ValueError, IndexError):
+                      return 0
+
+              SLEEP_STAGES = {"Core", "Deep", "REM", "Asleep"}  # Awake excluded from total, same as dashboard
+
               reader = csv.DictReader(io.StringIO(sleep_csv))
               nights = {}
               for row in reader:
-                  # Column names in this CSV are: start, end, stage, duration
-                  start_str = row.get("start") or row.get("From") or row.get("Start") or ""
-                  end_str   = row.get("end")   or row.get("To")   or row.get("End")   or ""
-                  stage     = row.get("stage","").strip()
+                  start_str = row.get("start", "").strip()
+                  dur_str   = row.get("duration", "").strip()
+                  stage     = row.get("stage", "").strip()
                   if not start_str:
                       continue
                   start_dt = parse_sleep_dt(start_str)
@@ -477,28 +490,29 @@ jobs:
                       continue
                   nd = sleep_night_of(start_dt)
                   if nd not in nights:
-                      nights[nd] = {"sessions": [], "total_duration_min": 0, "stages": {}}
-                  nights[nd]["sessions"].append(row)
-                  if end_str:
-                      end_dt = parse_sleep_dt(end_str)
-                      if end_dt:
-                          nights[nd]["total_duration_min"] += int((end_dt - start_dt).total_seconds() / 60)
+                      nights[nd] = {"sleep_secs": 0, "stages": {}}
+                  secs = parse_dur_secs(dur_str)
+                  # Total sleep excludes Awake, matching the dashboard formula
+                  if stage in SLEEP_STAGES:
+                      nights[nd]["sleep_secs"] += secs
                   if stage:
-                      nights[nd]["stages"][stage] = nights[nd]["stages"].get(stage, 0) + (
-                          int((parse_sleep_dt(end_str) - start_dt).total_seconds() / 60)
-                          if end_str and parse_sleep_dt(end_str) else 0
-                      )
+                      nights[nd]["stages"][stage] = nights[nd]["stages"].get(stage, 0) + secs
 
-              # Last 7 nights, pre-summarised
+              # Last 7 nights sorted oldest → newest, matching the dashboard's slice
               recent_nights = sorted(nights.keys())[-7:]
               bucketed_summary = []
               for nd in recent_nights:
                   n = nights[nd]
-                  total_h = n["total_duration_min"] // 60
-                  total_m = n["total_duration_min"] % 60
-                  stage_parts = [f"{s} {m//60}h{m%60}m" for s, m in sorted(n["stages"].items()) if m > 0]
+                  total_secs = n["sleep_secs"]
+                  total_h = total_secs // 3600
+                  total_m = (total_secs % 3600) // 60
+                  stage_parts = [
+                      f"{s} {n['stages'][s]//3600}h{(n['stages'][s]%3600)//60}m"
+                      for s in ("Deep", "REM", "Core", "Awake")
+                      if n["stages"].get(s, 0) > 0
+                  ]
                   stage_str = " | ".join(stage_parts) if stage_parts else ""
-                  line = f"Night of {nd}: {total_h}h {total_m}m total"
+                  line = f"Night of {nd}: {total_h}h {total_m}m sleep"
                   if stage_str:
                       line += f" ({stage_str})"
                   bucketed_summary.append(line)
