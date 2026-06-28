@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-28T03:56:08.969943Z",
+  "updated_at": "2026-06-28T04:08:28.448309Z",
   "trials": [
     {
       "notion_service_id": "38cdb4862bcd819385d2f3fb2b39a531",
@@ -54,6 +54,22 @@
       "service_name": "The critic is not the only voice in the room",
       "god": "Hermes",
       "favour_value": 10,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "38ddb4862bcd818ebfc4cb5ff13a849b",
+      "service_name": "Locked for the week",
+      "god": "Eros",
+      "favour_value": 15,
+      "grace_earned": 1,
+      "due_date": ""
+    },
+    {
+      "notion_service_id": "38ddb4862bcd81a2903ffc98475ceb3a",
+      "service_name": "Dan, Ash & Matt",
+      "god": "Eros",
+      "favour_value": 25,
       "grace_earned": 1,
       "due_date": ""
     },
