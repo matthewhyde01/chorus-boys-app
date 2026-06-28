@@ -15,6 +15,9 @@
       --rose-mid: #e85d75;
       --rose-light: #fda4af;
       --rose-pale: rgba(251,113,133,0.08);
+      --gold: #C9963A;
+      --gold-light: #E8C96A;
+      --border-gold: rgba(201,150,58,0.3);
       --bg: #0D0A14;
       --bg-card: rgba(255,255,255,0.04);
       --bg-card-hover: rgba(255,255,255,0.06);
@@ -360,29 +363,62 @@
       color: var(--text-muted);
     }
 
-    /* REFLECTION */
-    .reflection-card {
-      background: rgba(251,113,133,0.04);
-      border: 0.5px solid var(--border-rose);
-      border-radius: 12px;
-      padding: 1.5rem;
+    /* CHALLENGE ITEMS (Devotions / Streaks / Trials groups) */
+    .challenge-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 6px;
     }
 
-    .reflection-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 16px;
-      color: var(--text-secondary);
-      line-height: 1.8;
-      white-space: pre-wrap;
+    .c-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 5px;
+      background: var(--rose);
     }
 
-    .reflection-updated {
+    .c-dot.done   { background: rgba(251,113,133,0.3); }
+    .c-dot.stretch { background: transparent; border: 1.5px solid var(--rose); }
+
+    .c-text { font-size: 13px; color: var(--text-primary); line-height: 1.5; }
+
+    /* GRACE MYSTERIES GRID */
+    .mysteries-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    /* JEWEL BAR */
+    .jewel-bar {
+      background: rgba(255,255,255,0.06);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .jewel-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose-mid), var(--rose-light));
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    .jewel-fill.gold { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+
+    .jewel-labels {
+      display: flex;
+      justify-content: space-between;
       font-size: 10px;
       color: var(--text-muted);
-      margin-top: 1rem;
-      letter-spacing: 0.05em;
+      margin-top: 4px;
     }
+
+    .metric-card.gold-border { border-color: var(--border-gold); }
 
     /* DIVIDER */
     hr { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
@@ -446,34 +482,10 @@
 
   <main class="main">
 
-    <section class="section" aria-label="Active Trials">
-      <div class="section-title">Active Trials</div>
+    <section class="section" aria-label="Trials">
+      <div class="section-title">Trials</div>
       <div id="trials-container">
         <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading trials from Notion…</div>
-      </div>
-    </section>
-
-    <hr>
-
-    <section class="section" aria-label="Grace and The Demand">
-      <div class="section-title">Grace &amp; The Demand</div>
-      <div class="metric-card rose-border">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;">
-          <div>
-            <div style="font-size:14px;font-weight:500;color:white;margin-bottom:3px;">Gold body chain + anklet, lock &amp; pink ribbon charms</div>
-            <div style="font-size:11px;color:var(--text-muted);">Worthiness threshold: 12 Grace</div>
-          </div>
-        </div>
-        <div class="grace-bar-outer">
-          <div class="grace-bar-fill" id="grace-bar" style="width:0%"></div>
-        </div>
-        <div class="grace-labels">
-          <span id="grace-label">Grace earned: — / 12</span>
-          <span id="grace-pct" style="color:var(--rose-light);"></span>
-        </div>
-        <div id="demand-status" style="font-size:12px;color:var(--text-muted);margin-top:10px;font-style:italic;">
-          Not yet revealed.
-        </div>
       </div>
     </section>
 
@@ -488,11 +500,44 @@
 
     <hr>
 
-    <section class="section" aria-label="Reflection Log">
-      <div class="section-title">Reflection Log</div>
-      <div class="reflection-card" id="reflection-card">
-        <div class="reflection-text" id="reflection-text" style="color:var(--text-muted);">Loading…</div>
-        <div class="reflection-updated" id="reflection-updated"></div>
+    <section class="section" aria-label="Grace">
+      <div class="section-title">Grace</div>
+      <div class="metric-card rose-border" style="padding:16px 18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+          <div class="metric-label" style="margin:0;">Eros</div>
+          <div style="font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--rose);line-height:1;" id="grace-fraction-display">—</div>
+        </div>
+        <div class="jewel-bar" style="margin-bottom:6px;">
+          <div class="jewel-fill" id="grace-progress-fill" style="width:0%;"></div>
+        </div>
+        <div class="jewel-labels" style="margin-bottom:4px;">
+          <span id="grace-progress-label" style="color:var(--text-muted);font-size:11px;">— / — Grace</span>
+          <span id="grace-threshold-note" style="color:var(--text-muted);font-size:11px;"></span>
+        </div>
+        <div id="grace-mysteries" class="mysteries-grid"></div>
+      </div>
+    </section>
+
+    <hr>
+
+    <section class="section" aria-label="Devotional jewellery">
+      <div class="section-title">Devotional jewellery</div>
+      <div class="metric-card gold-border">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:500;color:white;margin-bottom:3px;">Gold body chain + anklet, lock &amp; pink ribbon charms</div>
+            <div style="font-size:11px;color:var(--text-muted);">Earned through Grace</div>
+          </div>
+          <span style="font-size:10px;color:var(--gold-light);border:0.5px solid var(--border-gold);border-radius:99px;padding:3px 10px;white-space:nowrap;">Accumulating Grace</span>
+        </div>
+        <div id="jewel-grace" style="font-size:12px;color:var(--text-muted);margin-top:8px;">Grace earned: —</div>
+        <div class="jewel-bar" style="margin-top:8px;">
+          <div class="jewel-fill gold" id="jewel-fill" style="width:0%"></div>
+        </div>
+        <div class="jewel-labels">
+          <span id="jewel-grace-label">0 / 12 Grace</span>
+          <span id="jewel-threshold-note">Worthiness threshold: 12</span>
+        </div>
       </div>
     </section>
 
@@ -521,7 +566,7 @@
   <script>
   (async function () {
 
-    // ── Trials ────────────────────────────────────────────────────────────────
+    // ── Trials (from eros_trials.json) ───────────────────────────────────────
 
     try {
       const res = await fetch('data/eros_trials.json');
@@ -530,62 +575,69 @@
       const trials = data.trials || [];
       const container = document.getElementById('trials-container');
 
-      if (trials.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active or planned Trials right now.</div>';
-      } else {
-        container.innerHTML = trials.map(t => {
-          const isPlanned = t.status === 'Planned';
-          const metaParts = [
-            t.tier     ? `<span>${t.tier}</span>` : '',
+      function renderTrialGroup(items, groupTitle) {
+        if (items.length === 0) return '';
+        const itemsHtml = items.map(t => {
+          const done = t.status === 'Complete';
+          const completePill = done
+            ? `<span style="font-size:10px;color:var(--rose);font-weight:600;margin-left:8px;">COMPLETE</span>`
+            : '';
+          const meta = [
             t.mystery  ? `<span style="color:var(--rose-light);">${t.mystery}</span>` : '',
-            t.due_date ? `<span>Due ${t.due_date}</span>` : '',
+            t.due_date ? `<span style="color:var(--text-muted);">Due ${t.due_date}</span>` : '',
           ].filter(Boolean).join(' · ');
           const trigger = t.trigger_condition
-            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Trigger: ${t.trigger_condition}</div>`
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${t.trigger_condition}</div>`
             : '';
-          const plannedPill = isPlanned
-            ? '<span class="pill planned">Planned</span>'
-            : '';
-          return `<div class="trial-item ${isPlanned ? '' : 'active'}">
-            <span class="t-dot ${isPlanned ? 'planned' : ''}"></span>
+          const dotCls = done ? 'done' : t.tier === 'Trial' ? '' : 'stretch';
+          return `<div class="challenge-item">
+            <span class="c-dot ${dotCls}"></span>
             <div style="flex:1;">
               <div style="display:flex;align-items:baseline;flex-wrap:wrap;">
-                <div class="t-text">${t.service || 'Unnamed Trial'}</div>${plannedPill}
+                <div class="c-text">${t.service || 'Unnamed'}</div>${completePill}
               </div>
-              ${metaParts ? `<div class="t-meta" style="margin-top:3px;">${metaParts}</div>` : ''}
+              ${meta ? `<div style="font-size:10px;margin-top:3px;">${meta}</div>` : ''}
               ${trigger}
             </div>
           </div>`;
         }).join('');
+        return `<div style="background:var(--bg-card);border:0.5px solid var(--border-rose);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.3em;color:var(--rose);text-transform:uppercase;margin-bottom:10px;">${groupTitle}</div>
+          ${itemsHtml}
+        </div>`;
+      }
+
+      if (trials.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active Trials right now.</div>';
+      } else {
+        const devotions = trials.filter(t => t.tier === 'Devotion');
+        const streaks   = trials.filter(t => t.tier === 'Streak');
+        const trialList = trials.filter(t => !['Devotion', 'Streak'].includes(t.tier));
+        container.innerHTML =
+          renderTrialGroup(devotions, 'Devotions') +
+          renderTrialGroup(streaks,   'Streaks') +
+          renderTrialGroup(trialList, 'Trials');
       }
 
       if (data.updated_at) {
-        container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:10px;">Synced from Notion ${new Date(data.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
+        container.innerHTML += `<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Synced from Notion ${new Date(data.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
       }
 
-      // ── Grace & The Demand ────────────────────────────────────────────────
-      const THRESHOLD = 12;
-      const grace = data.grace_total ?? 0;
-      const pct = Math.min(100, (grace / THRESHOLD) * 100);
-      document.getElementById('grace-bar').style.width = pct.toFixed(1) + '%';
-      document.getElementById('grace-label').textContent = `Grace earned: ${grace} / ${THRESHOLD}`;
-      document.getElementById('grace-pct').textContent = pct.toFixed(0) + '%';
-      if (grace >= THRESHOLD) {
-        document.getElementById('demand-status').textContent = 'Threshold reached. The Demand may now be revealed.';
-        document.getElementById('demand-status').style.color = 'var(--rose-light)';
-      }
     } catch (e) {
       console.error('Trials:', e);
       document.getElementById('trials-container').innerHTML =
         '<div style="color:var(--text-muted);font-size:12px;">Could not load trials — check back after next sync.</div>';
     }
 
-    // ── Completed Trials ─────────────────────────────────────────────────────
+    // ── Grace, Completed Trials & Devotional Jewellery (from grace.json) ─────
 
     try {
       const graceRes = await fetch('data/grace.json');
       if (!graceRes.ok) throw new Error(graceRes.status);
       const grace = await graceRes.json();
+      const eros = grace.gods?.Eros || grace.gods?.eros;
+
+      // Completed Trials
       const ctContainer = document.getElementById('completed-trials-container');
       const allTrials = (grace.completed_trials || []).filter(t => t.god === 'Eros');
       if (allTrials.length === 0) {
@@ -610,34 +662,49 @@
           </details>`;
         }).join('');
       }
+
+      if (eros) {
+        const gt        = eros.grace_total     ?? 0;
+        const threshold = eros.grace_threshold ?? 12;
+        const pct       = threshold > 0 ? Math.min(100, (gt / threshold) * 100) : 0;
+
+        // Grace section
+        const fractionEl = document.getElementById('grace-fraction-display');
+        const fillEl     = document.getElementById('grace-progress-fill');
+        const labelEl    = document.getElementById('grace-progress-label');
+        const noteEl     = document.getElementById('grace-threshold-note');
+        const mysteriesEl = document.getElementById('grace-mysteries');
+
+        if (fractionEl) fractionEl.textContent = `${gt} / ${threshold}`;
+        if (fillEl)     fillEl.style.width     = pct + '%';
+        if (labelEl)    labelEl.textContent    = `${gt} / ${threshold} Grace`;
+        if (noteEl)     noteEl.textContent     = `Worthiness threshold: ${threshold}`;
+
+        if (mysteriesEl && eros.completions_by_mystery) {
+          mysteriesEl.innerHTML = Object.entries(eros.completions_by_mystery)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([mystery, value]) => `
+              <div style="background:rgba(251,113,133,0.06);border:0.5px solid rgba(251,113,133,0.15);border-radius:10px;padding:10px 12px;">
+                <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(251,113,133,0.6);font-family:'Cinzel',serif;margin-bottom:4px;">${mystery}</div>
+                <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--rose);line-height:1;">${value}</div>
+              </div>`).join('');
+        }
+
+        // Devotional jewellery
+        const graceEl    = document.getElementById('jewel-grace');
+        const graceFill  = document.getElementById('jewel-fill');
+        const graceLabel = document.getElementById('jewel-grace-label');
+        const threshNote = document.getElementById('jewel-threshold-note');
+        if (graceEl)    graceEl.textContent    = `Grace earned: ${gt}`;
+        if (graceFill)  graceFill.style.width  = pct + '%';
+        if (graceLabel) graceLabel.textContent = `${gt} / ${threshold} Grace`;
+        if (threshNote) threshNote.textContent = `Worthiness threshold: ${threshold}`;
+      }
+
     } catch (e) {
-      console.error('Completed trials:', e);
+      console.error('Grace:', e);
       document.getElementById('completed-trials-container').innerHTML =
-        '<div style="color:var(--text-muted);font-size:12px;">Could not load completed trials.</div>';
-    }
-
-    // ── Reflection Log ────────────────────────────────────────────────────────
-
-    try {
-      const res = await fetch('data/eros_reflection.json');
-      if (!res.ok) throw new Error(res.status);
-      const data = await res.json();
-      const el = document.getElementById('reflection-text');
-      const updatedEl = document.getElementById('reflection-updated');
-      if (data.entry && data.entry.trim()) {
-        el.textContent = data.entry;
-        el.style.color = 'var(--text-secondary)';
-      } else {
-        el.textContent = 'No reflection entry found yet.';
-      }
-      if (data.updated_at) {
-        updatedEl.textContent = 'Synced ' + new Date(data.updated_at).toLocaleDateString('en-AU', {
-          day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
-        });
-      }
-    } catch (e) {
-      console.error('Reflection:', e);
-      document.getElementById('reflection-text').textContent = 'Could not load reflection — check back after next sync.';
+        '<div style="color:var(--text-muted);font-size:12px;">Could not load data — check back after next sync.</div>';
     }
 
   })();
