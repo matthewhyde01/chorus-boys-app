@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-28T03:44:28.691719Z",
+  "updated_at": "2026-06-28T03:56:08.475061Z",
   "favour_total": 115.0,
   "gods": {
     "Himbo": {
@@ -7,30 +7,95 @@
       "grace_threshold": 12,
       "favour_earned": 40.0,
       "completions_by_mystery": {
-        "Himbo: Physique": 2,
         "Himbo: Visibility & Self-Expression": 0,
+        "Himbo: Physique": 0.0,
         "Himbo: Internal Work": 0
       }
     },
     "Eros": {
       "grace_total": 4.0,
-      "grace_threshold": 0,
+      "grace_threshold": 12,
       "favour_earned": 65.0,
       "completions_by_mystery": {
-        "Eros: Vulnerability": 0,
-        "Eros: Kink Exploration": 1,
-        "Eros: Sexual Challenges": 1
+        "Eros: Sexual Challenges": 1.0,
+        "Eros: Kink Exploration": 1.0,
+        "Eros: Vulnerability": 0
       }
     },
     "Hestio": {
       "grace_total": 1.0,
-      "grace_threshold": 0,
+      "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
         "Hestio: The Hearth": 0,
-        "Hestio: Family": 1,
-        "Hestio: Friends": 0
+        "Hestio: Friends": 0,
+        "Hestio: Family": 1.0
       }
     }
-  }
+  },
+  "completed_trials": [
+    {
+      "service_name": "The Long Week",
+      "god": "Eros",
+      "date_completed": "2026-06-23",
+      "grace_earned": 1.0,
+      "favour_value": 20.0,
+      "mystery": "Eros: Kink Exploration",
+      "notes": "Completed by being locked for the whole time Matt was away, plus an extra day!"
+    },
+    {
+      "service_name": "The Morning After",
+      "god": "Eros",
+      "date_completed": "2026-06-22",
+      "grace_earned": 1.0,
+      "favour_value": 15.0,
+      "mystery": "Eros: Sexual Challenges",
+      "notes": "Completed by telling Matt how much I love being his subby toy after he used me."
+    },
+    {
+      "service_name": "Call George \u2014 hernia recovery check-in",
+      "god": "Hestio",
+      "date_completed": "2026-06-16",
+      "grace_earned": 1.0,
+      "favour_value": 10.0,
+      "mystery": "Hestio: Family",
+      "notes": null
+    },
+    {
+      "service_name": "Wetsuit off, no poncho, toes out",
+      "god": "Himbo",
+      "date_completed": "2026-06-14",
+      "grace_earned": 1.0,
+      "favour_value": 15.0,
+      "mystery": "",
+      "notes": null
+    },
+    {
+      "service_name": "Say It Out Loud",
+      "god": "Eros",
+      "date_completed": "2026-06-08",
+      "grace_earned": 1.0,
+      "favour_value": 20.0,
+      "mystery": "",
+      "notes": null
+    },
+    {
+      "service_name": "Knit cardigan to Bold & Beautiful",
+      "god": "Himbo",
+      "date_completed": "2026-06-07",
+      "grace_earned": 1.0,
+      "favour_value": 10.0,
+      "mystery": "",
+      "notes": null
+    },
+    {
+      "service_name": "The Honest Inventory",
+      "god": "Eros",
+      "date_completed": "2026-06-01",
+      "grace_earned": 1.0,
+      "favour_value": 10.0,
+      "mystery": "",
+      "notes": null
+    }
+  ]
 }
