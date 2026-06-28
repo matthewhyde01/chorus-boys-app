@@ -334,7 +334,13 @@ jobs:
                   if g and m:
                       all_mysteries.setdefault(g, set()).add(m)
 
-          GRACE_THRESHOLDS = {"Himbo": 12}
+          GRACE_THRESHOLDS = {
+              "Himbo":  12,
+              "Eros":   12,
+              "Hermes":  9,
+              "Hestio":  9,
+              "Apollo": 12,
+          }
 
           gods_in_log = [r[0] for r in conn.execute(
               "SELECT DISTINCT god FROM completion_log WHERE god IS NOT NULL AND god != ''"
@@ -349,11 +355,11 @@ jobs:
                   "SELECT COALESCE(SUM(favour_value),0) FROM completion_log WHERE god=?", (god,)
               ).fetchone()[0]
               mystery_counts = {m: 0 for m in all_mysteries.get(god, set())}
-              for m, cnt in conn.execute(
-                  "SELECT mystery, COUNT(*) FROM completion_log WHERE god=? AND COALESCE(mystery,'')!='' GROUP BY mystery",
+              for m, grace in conn.execute(
+                  "SELECT mystery, COALESCE(SUM(grace_earned),0) FROM completion_log WHERE god=? AND COALESCE(mystery,'')!='' GROUP BY mystery",
                   (god,)
               ).fetchall():
-                  mystery_counts[m] = cnt
+                  mystery_counts[m] = round(grace, 2)
               gods_data[god] = {
                   "grace_total":            round(grace_total, 2),
                   "grace_threshold":        GRACE_THRESHOLDS.get(god, 0),
@@ -363,11 +369,29 @@ jobs:
 
           favour_grand_total = round(sum(g["favour_earned"] for g in gods_data.values()), 2)
 
+          completed_trials = [
+              {
+                  "service_name":  row[0],
+                  "god":           row[1],
+                  "date_completed":row[2],
+                  "grace_earned":  row[3],
+                  "favour_value":  row[4],
+                  "mystery":       row[5] or "",
+                  "notes":         row[6],
+              }
+              for row in conn.execute(
+                  "SELECT service_name, god, date_completed, grace_earned, favour_value, "
+                  "COALESCE(mystery,''), notes "
+                  "FROM completion_log WHERE tier='Trial' ORDER BY date_completed DESC"
+              ).fetchall()
+          ]
+
           with open("data/grace.json", "w") as f:
               json.dump({
-                  "updated_at":   datetime.utcnow().isoformat() + "Z",
-                  "favour_total": favour_grand_total,
-                  "gods":         gods_data,
+                  "updated_at":       datetime.utcnow().isoformat() + "Z",
+                  "favour_total":     favour_grand_total,
+                  "gods":             gods_data,
+                  "completed_trials": completed_trials,
               }, f, indent=2)
           print(f"grace.json written — favour_total={favour_grand_total}, gods={list(gods_data.keys())}")
 

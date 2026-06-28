@@ -159,6 +159,78 @@
       background: var(--border-pink);
     }
 
+    /* Completed trials accordion */
+    .ct-item {
+      border: 0.5px solid var(--border-pink);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .ct-item summary {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+
+    .ct-item summary::-webkit-details-marker { display: none; }
+
+    .ct-item summary:hover { background: rgba(232,69,139,0.04); }
+
+    .ct-item[open] summary { border-bottom: 0.5px solid var(--border-pink); }
+
+    .ct-item-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .ct-item-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .ct-item-chevron {
+      flex-shrink: 0;
+      color: var(--pink);
+      opacity: 0.5;
+      transition: transform 0.2s;
+    }
+
+    .ct-item[open] .ct-item-chevron { transform: rotate(180deg); }
+
+    .ct-item-body {
+      padding: 12px 14px;
+      background: rgba(232,69,139,0.03);
+    }
+
+    .ct-item-body-row {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+      line-height: 1.5;
+    }
+
+    .ct-item-body-row:last-child { margin-bottom: 0; }
+
+    .ct-item-body-label {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--pink);
+      opacity: 0.7;
+      margin-right: 6px;
+    }
+
     /* METRIC GRID */
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
@@ -621,6 +693,15 @@
           <span id="grace-threshold-note" style="color:var(--text-muted);font-size:11px;"></span>
         </div>
         <div id="grace-mysteries" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;"></div>
+      </div>
+    </section>
+
+    <hr>
+
+    <section class="section" aria-label="Completed Trials">
+      <div class="section-title">Completed Trials</div>
+      <div id="completed-trials-container">
+        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div>
       </div>
     </section>
 
@@ -1567,6 +1648,34 @@
                 <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,69,139,0.6);font-family:'Cinzel',serif;margin-bottom:4px;">${mystery}</div>
                 <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--pink);line-height:1;">${count}</div>
               </div>`).join('');
+        }
+
+        // Completed trials
+        const ctContainer = document.getElementById('completed-trials-container');
+        if (ctContainer) {
+          const allTrials = (grace.completed_trials || []).filter(t => t.god === 'Himbo');
+          if (allTrials.length === 0) {
+            ctContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No completed trials recorded yet.</div>';
+          } else {
+            ctContainer.innerHTML = allTrials.map(t => {
+              const d = new Date(t.date_completed + 'T00:00:00');
+              const dateStr = d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+              const details = [
+                t.mystery  ? `<div class="ct-item-body-row"><span class="ct-item-body-label">Mystery</span>${t.mystery}</div>` : '',
+                `<div class="ct-item-body-row"><span class="ct-item-body-label">Completed</span>${dateStr}</div>`,
+                `<div class="ct-item-body-row"><span class="ct-item-body-label">Reward</span>+${t.grace_earned} Grace · +${t.favour_value} Favour</div>`,
+                t.notes    ? `<div class="ct-item-body-row"><span class="ct-item-body-label">Notes</span>${t.notes}</div>` : '',
+              ].filter(Boolean).join('');
+              return `<details class="ct-item">
+                <summary>
+                  <span class="ct-item-name">${t.service_name}</span>
+                  <span class="ct-item-date">${d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                  <svg class="ct-item-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </summary>
+                <div class="ct-item-body">${details}</div>
+              </details>`;
+            }).join('');
+          }
         }
 
         // Devotional jewellery section (still reads same values)
