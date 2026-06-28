@@ -88,7 +88,7 @@ jobs:
           service_name  = prop_text("Service") or prop_text("Name") or prop_text("Title") or page_id_compact
           god           = prop_text("God")
           tier          = prop_text("Tier")
-          mystery       = prop_text("Mystery")
+          mystery       = (page.get("properties", {}).get("Mystery", {}).get("select") or {}).get("name", "")
           favour_value  = float(page.get("properties",{}).get("Favour Value",{}).get("number") or 0)
           grace_earned  = float(page.get("properties",{}).get("Grace Earned",{}).get("number") or 0)
 
