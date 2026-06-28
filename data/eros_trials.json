@@ -1,5 +1,126 @@
 {
-  "updated_at": "2026-06-28T05:02:25.490315Z",
-  "trials": [],
-  "grace_total": 0
+  "updated_at": "2026-06-28T05:06:08.247587Z",
+  "trials": [
+    {
+      "service": "Sauna",
+      "tier": "Trial",
+      "mystery": "Eros: Kink Exploration",
+      "status": "Planned",
+      "due_date": null,
+      "trigger_condition": "Activates when assigned at a check-in. Completes when it happens.",
+      "favour_value": null,
+      "grace_earned": 0
+    },
+    {
+      "service": "Glory hole",
+      "tier": "Trial",
+      "mystery": "Eros: Sexual Challenges",
+      "status": "Planned",
+      "due_date": null,
+      "trigger_condition": "Activates when assigned at a check-in. Completes when it happens.",
+      "favour_value": null,
+      "grace_earned": 0
+    },
+    {
+      "service": "Swing",
+      "tier": "Trial",
+      "mystery": "Eros: Kink Exploration",
+      "status": "Planned",
+      "due_date": null,
+      "trigger_condition": "Activates when assigned at a check-in. Completes when it happens.",
+      "favour_value": null,
+      "grace_earned": 0
+    },
+    {
+      "service": "Triniful order \u2014 wear it for Matt",
+      "tier": "Trial",
+      "mystery": "Eros: Vulnerability",
+      "status": "Planned",
+      "due_date": null,
+      "trigger_condition": "Activates when Triniful order arrives. Completes when worn for Matt.",
+      "favour_value": 15,
+      "grace_earned": 1
+    },
+    {
+      "service": "Locked for the week",
+      "tier": "Trial",
+      "mystery": "Eros: Kink Exploration",
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "Completed at end of week, confirmed at next check-in",
+      "favour_value": 15,
+      "grace_earned": 1
+    },
+    {
+      "service": "Dan, Ash & Matt",
+      "tier": "Trial",
+      "mystery": "Eros: Sexual Challenges",
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "Completed when it happens next weekend",
+      "favour_value": 25,
+      "grace_earned": 1
+    },
+    {
+      "service": "Sunday check-in",
+      "tier": "Devotion",
+      "mystery": null,
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Eros-coded item worn",
+      "tier": "Devotion",
+      "mystery": "Eros: Kink Exploration",
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Serving Matt B or another dom",
+      "tier": "Devotion",
+      "mystery": "Eros: Vulnerability",
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Permission Protocol streak",
+      "tier": "Streak",
+      "mystery": "Eros: Vulnerability",
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "",
+      "favour_value": 5,
+      "grace_earned": 0
+    },
+    {
+      "service": "Kink exploration moment",
+      "tier": "Devotion",
+      "mystery": "Eros: Kink Exploration",
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Wednesday midweek pulse check-in",
+      "tier": "Devotion",
+      "mystery": null,
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "",
+      "favour_value": 1,
+      "grace_earned": 0
+    }
+  ],
+  "grace_total": 4
 }
