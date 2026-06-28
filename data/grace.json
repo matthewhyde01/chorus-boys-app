@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-06-28T03:13:30.040215Z",
-  "favour_total": 89.0,
+  "updated_at": "2026-06-28T03:14:04.230748Z",
+  "favour_total": 109.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
       "favour_earned": 34.0,
       "completions_by_mystery": {
+        "Himbo: Visibility & Self-Expression": 0,
         "Himbo: Physique": 0,
-        "Himbo: Internal Work": 0,
-        "Himbo: Visibility & Self-Expression": 0
+        "Himbo: Internal Work": 0
       }
     },
     "Eros": {
-      "grace_total": 3.0,
+      "grace_total": 4.0,
       "grace_threshold": 0,
-      "favour_earned": 45.0,
+      "favour_earned": 65.0,
       "completions_by_mystery": {
-        "Eros: Kink Exploration": 0,
+        "Eros: Sexual Challenges": 1,
         "Eros: Vulnerability": 0,
-        "Eros: Sexual Challenges": 1
+        "Eros: Kink Exploration": 1
       }
     },
     "Hestio": {
@@ -27,9 +27,9 @@
       "grace_threshold": 0,
       "favour_earned": 10.0,
       "completions_by_mystery": {
+        "Hestio: Friends": 0,
         "Hestio: The Hearth": 0,
-        "Hestio: Family": 1,
-        "Hestio: Friends": 0
+        "Hestio: Family": 1
       }
     }
   }
