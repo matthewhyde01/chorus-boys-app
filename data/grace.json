@@ -1,15 +1,15 @@
 {
-  "updated_at": "2026-06-28T03:14:04.230748Z",
-  "favour_total": 109.0,
+  "updated_at": "2026-06-28T03:19:59.713532Z",
+  "favour_total": 115.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
-      "favour_earned": 34.0,
+      "favour_earned": 40.0,
       "completions_by_mystery": {
         "Himbo: Visibility & Self-Expression": 0,
-        "Himbo: Physique": 0,
-        "Himbo: Internal Work": 0
+        "Himbo: Internal Work": 0,
+        "Himbo: Physique": 2
       }
     },
     "Eros": {
@@ -28,8 +28,8 @@
       "favour_earned": 10.0,
       "completions_by_mystery": {
         "Hestio: Friends": 0,
-        "Hestio: The Hearth": 0,
-        "Hestio: Family": 1
+        "Hestio: Family": 1,
+        "Hestio: The Hearth": 0
       }
     }
   }

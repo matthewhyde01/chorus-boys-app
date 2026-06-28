@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-27T10:52:07.872160Z",
+  "updated_at": "2026-06-28T03:19:59.933652Z",
   "trials": [
     {
       "notion_service_id": "38cdb4862bcd819385d2f3fb2b39a531",
@@ -58,34 +58,10 @@
       "due_date": ""
     },
     {
-      "notion_service_id": "385db4862bcd814d8395f0ade1334fba",
-      "service_name": "The Morning After",
-      "god": "Eros",
-      "favour_value": 15,
-      "grace_earned": 1,
-      "due_date": "2026-06-30"
-    },
-    {
-      "notion_service_id": "385db4862bcd81fa9ee0d8ab55175ea1",
-      "service_name": "The Long Week",
-      "god": "Eros",
-      "favour_value": 20,
-      "grace_earned": 1,
-      "due_date": "2026-06-23"
-    },
-    {
       "notion_service_id": "385db4862bcd812fa9aefeae576f246e",
       "service_name": "Reconnect with a WAAPA friend",
       "god": "Hestio",
       "favour_value": 15,
-      "grace_earned": 1,
-      "due_date": ""
-    },
-    {
-      "notion_service_id": "385db4862bcd81c8b5d8f1ff91b3daea",
-      "service_name": "Call George \u2014 hernia recovery check-in",
-      "god": "Hestio",
-      "favour_value": 10,
       "grace_earned": 1,
       "due_date": ""
     },
