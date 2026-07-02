@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-29T02:01:29.588497Z",
+  "updated_at": "2026-07-02T14:02:10.906734Z",
   "sessions_this_week": 4,
   "muscle_best": {
     "Chest": {
@@ -23,9 +23,9 @@
       "date": "2026-06-17"
     },
     "Quad": {
-      "e1rm": 154.0,
+      "e1rm": 168.0,
       "exercise": "Leg Press Horizontal (Machine)",
-      "date": "2026-06-18"
+      "date": "2026-07-02"
     },
     "Hinge": {
       "e1rm": 107.9,
@@ -54,6 +54,10 @@
       {
         "date": "2026-06-26",
         "e1rm": 32.0
+      },
+      {
+        "date": "2026-06-29",
+        "e1rm": 76.0
       }
     ],
     "Back": [
@@ -76,6 +80,10 @@
       {
         "date": "2026-06-26",
         "e1rm": 77.0
+      },
+      {
+        "date": "2026-07-02",
+        "e1rm": 84.0
       }
     ],
     "Biceps": [
@@ -98,6 +106,10 @@
       {
         "date": "2026-06-26",
         "e1rm": 16.8
+      },
+      {
+        "date": "2026-06-29",
+        "e1rm": 31.5
       }
     ],
     "Shoulders": [
@@ -107,6 +119,10 @@
       },
       {
         "date": "2026-06-22",
+        "e1rm": 9.0
+      },
+      {
+        "date": "2026-06-29",
         "e1rm": 9.0
       }
     ],
@@ -126,6 +142,10 @@
       {
         "date": "2026-06-27",
         "e1rm": 21.3
+      },
+      {
+        "date": "2026-07-02",
+        "e1rm": 168.0
       }
     ],
     "Hinge": [
@@ -144,6 +164,10 @@
       {
         "date": "2026-06-27",
         "e1rm": 107.9
+      },
+      {
+        "date": "2026-07-02",
+        "e1rm": 101.3
       }
     ]
   },
@@ -160,9 +184,41 @@
     {
       "week_of": "2026-06-22",
       "volume_kg": 23660
+    },
+    {
+      "week_of": "2026-06-29",
+      "volume_kg": 13925
     }
   ],
   "recent_workouts": [
+    {
+      "title": "Workout",
+      "date": "2026-07-02",
+      "duration_min": 48,
+      "exercises": [
+        "Pull Up",
+        "Lat Pulldown - Reverse Grip",
+        "Squat (Barbell)",
+        "Romanian Deadlift (Barbell)",
+        "Leg Press Horizontal (Machine)",
+        "Walking Lunge (Dumbbell)",
+        "Hanging Knee Raise"
+      ]
+    },
+    {
+      "title": "Workout",
+      "date": "2026-06-29",
+      "duration_min": 37,
+      "exercises": [
+        "Incline Bench Press (Barbell)",
+        "Bench Press (Dumbbell)",
+        "Single Arm Landmine Press (Barbell)",
+        "Cable Chest Fly",
+        "Lateral Raise (Dumbbell)",
+        "Bicep Curl (Barbell)",
+        "Push Up"
+      ]
+    },
     {
       "title": "Workout",
       "date": "2026-06-27",
@@ -194,34 +250,6 @@
     },
     {
       "title": "Workout",
-      "date": "2026-06-25",
-      "duration_min": 51,
-      "exercises": [
-        "Pull Up",
-        "Lat Pulldown - Reverse Grip",
-        "Squat (Barbell)",
-        "Romanian Deadlift (Barbell)",
-        "Leg Press Horizontal (Machine)",
-        "Walking Lunge (Dumbbell)",
-        "Hanging Knee Raise"
-      ]
-    },
-    {
-      "title": "Workout",
-      "date": "2026-06-22",
-      "duration_min": 42,
-      "exercises": [
-        "Incline Bench Press (Barbell)",
-        "Bench Press (Dumbbell)",
-        "Single Arm Landmine Press (Barbell)",
-        "Cable Chest Fly",
-        "Lateral Raise (Dumbbell)",
-        "Bicep Curl (Barbell)",
-        "Push Up"
-      ]
-    },
-    {
-      "title": "Workout",
       "date": "2026-06-21",
       "duration_min": 40,
       "exercises": [
@@ -236,10 +264,10 @@
   ],
   "recent_prs": [
     {
-      "exercise": "Bench Press (Dumbbell)",
-      "e1rm": 31.7,
-      "prev": 28.5,
-      "date": "2026-06-22"
+      "exercise": "Leg Press Horizontal (Machine)",
+      "e1rm": 168.0,
+      "prev": 154.0,
+      "date": "2026-07-02"
     }
   ]
 }
