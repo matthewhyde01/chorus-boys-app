@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-03T02:01:31.840653Z",
+  "updated_at": "2026-07-03T14:01:41.754190Z",
   "sessions_this_week": 4,
   "muscle_best": {
     "Chest": {
@@ -58,6 +58,10 @@
       {
         "date": "2026-06-29",
         "e1rm": 76.0
+      },
+      {
+        "date": "2026-07-03",
+        "e1rm": 34.7
       }
     ],
     "Back": [
@@ -83,6 +87,10 @@
       },
       {
         "date": "2026-07-02",
+        "e1rm": 84.0
+      },
+      {
+        "date": "2026-07-03",
         "e1rm": 84.0
       }
     ],
@@ -110,6 +118,10 @@
       {
         "date": "2026-06-29",
         "e1rm": 31.5
+      },
+      {
+        "date": "2026-07-03",
+        "e1rm": 19.6
       }
     ],
     "Shoulders": [
@@ -187,10 +199,26 @@
     },
     {
       "week_of": "2026-06-29",
-      "volume_kg": 13925
+      "volume_kg": 20124
     }
   ],
   "recent_workouts": [
+    {
+      "title": "Workout",
+      "date": "2026-07-03",
+      "duration_min": 47,
+      "exercises": [
+        "Incline Bench Press (Dumbbell)",
+        "Shoulder Press (Dumbbell)",
+        "Seated Cable Row - Bar Wide Grip",
+        "Single Arm Cable Row",
+        "Face Pull",
+        "Hammer Curl (Dumbbell)",
+        "Triceps Rope Pushdown",
+        "Plank",
+        "Side Plank"
+      ]
+    },
     {
       "title": "Workout",
       "date": "2026-07-02",
@@ -234,22 +262,6 @@
     },
     {
       "title": "Workout",
-      "date": "2026-06-26",
-      "duration_min": 52,
-      "exercises": [
-        "Incline Bench Press (Dumbbell)",
-        "Shoulder Press (Dumbbell)",
-        "Seated Cable Row - Bar Wide Grip",
-        "Single Arm Cable Row",
-        "Face Pull",
-        "Hammer Curl (Dumbbell)",
-        "Triceps Rope Pushdown",
-        "Plank",
-        "Side Plank"
-      ]
-    },
-    {
-      "title": "Workout",
       "date": "2026-06-21",
       "duration_min": 40,
       "exercises": [
@@ -268,6 +280,24 @@
       "e1rm": 168.0,
       "prev": 154.0,
       "date": "2026-07-02"
+    },
+    {
+      "exercise": "Incline Bench Press (Dumbbell)",
+      "e1rm": 34.7,
+      "prev": 32.0,
+      "date": "2026-07-03"
+    },
+    {
+      "exercise": "Seated Cable Row - Bar Wide Grip",
+      "e1rm": 84.0,
+      "prev": 77.0,
+      "date": "2026-07-03"
+    },
+    {
+      "exercise": "Hammer Curl (Dumbbell)",
+      "e1rm": 19.6,
+      "prev": 16.8,
+      "date": "2026-07-03"
     }
   ]
 }
