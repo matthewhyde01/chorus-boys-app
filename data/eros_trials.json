@@ -1,13 +1,25 @@
 {
-  "updated_at": "2026-07-04T03:43:06.677408Z",
+  "updated_at": "2026-07-04T06:58:05.632398Z",
   "trials": [
+    {
+      "service": "Permission asked",
+      "tier": "Devotion",
+      "mystery": "Eros: Vulnerability",
+      "status": "Active",
+      "due_date": null,
+      "trigger_condition": "",
+      "description": "Asked before touching himself \u2014 out loud, to Dante. Granted or withheld, the asking is what counts.",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
     {
       "service": "Sauna",
       "tier": "Trial",
       "mystery": "Eros: Kink Exploration",
       "status": "Planned",
       "due_date": null,
-      "trigger_condition": "Activates when assigned at a check-in. Completes when it happens.",
+      "trigger_condition": "",
+      "description": "Visit a sauna and be used by other men. Fluency with men beyond Matt B \u2014 in the room, in the dynamic, present and uninhibited.",
       "favour_value": null,
       "grace_earned": 0
     },
@@ -17,7 +29,8 @@
       "mystery": "Eros: Sexual Challenges",
       "status": "Planned",
       "due_date": null,
-      "trigger_condition": "Activates when assigned at a check-in. Completes when it happens.",
+      "trigger_condition": "",
+      "description": "Use a glory hole. Anonymous, uninhibited, fully in the submissive identity without the social layer.",
       "favour_value": null,
       "grace_earned": 0
     },
@@ -27,7 +40,8 @@
       "mystery": "Eros: Kink Exploration",
       "status": "Planned",
       "due_date": null,
-      "trigger_condition": "Activates when assigned at a check-in. Completes when it happens.",
+      "trigger_condition": "",
+      "description": "Be used in a swing. Full physical vulnerability, completely given over.",
       "favour_value": null,
       "grace_earned": 0
     },
@@ -35,9 +49,10 @@
       "service": "Triniful order \u2014 wear it for Matt",
       "tier": "Trial",
       "mystery": "Eros: Vulnerability",
-      "status": "Planned",
+      "status": "Active",
       "due_date": null,
-      "trigger_condition": "Activates when Triniful order arrives. Completes when worn for Matt.",
+      "trigger_condition": "",
+      "description": "When the Triniful order arrives, wear something from it for Matt \u2014 in the room, on purpose. He gets to use you in it. No skipping.",
       "favour_value": 15,
       "grace_earned": 1
     },
@@ -46,18 +61,20 @@
       "tier": "Trial",
       "mystery": "Eros: Sexual Challenges",
       "status": "Active",
-      "due_date": null,
-      "trigger_condition": "Completed when it happens next weekend",
+      "due_date": "2026-07-05",
+      "trigger_condition": "",
+      "description": "Be used by Dan, Ash, and Matt together next weekend while locked. First time with men other than Matt B in the dynamic.",
       "favour_value": 25,
       "grace_earned": 1
     },
     {
-      "service": "Sunday check-in",
+      "service": "Sunday full check-in",
       "tier": "Devotion",
-      "mystery": null,
+      "mystery": "Eros: Vulnerability",
       "status": "Active",
       "due_date": null,
       "trigger_condition": "",
+      "description": "Showing up on Sunday, into Eros's territory. Have you been a good boy this week?",
       "favour_value": 1,
       "grace_earned": 0
     },
@@ -68,6 +85,7 @@
       "status": "Active",
       "due_date": null,
       "trigger_condition": "",
+      "description": "Something Eros-coded, carried through the day. Thong, cage \u2014 whatever he chose.",
       "favour_value": 1,
       "grace_earned": 0
     },
@@ -78,6 +96,7 @@
       "status": "Active",
       "due_date": null,
       "trigger_condition": "",
+      "description": "Serving Matt B, or another dom. Full presence. No performance.",
       "favour_value": 1,
       "grace_earned": 0
     },
@@ -88,6 +107,7 @@
       "status": "Active",
       "due_date": null,
       "trigger_condition": "",
+      "description": "Asked out loud, not by text, every time the moment arose. All week, no exceptions.",
       "favour_value": 5,
       "grace_earned": 0
     },
@@ -98,16 +118,18 @@
       "status": "Active",
       "due_date": null,
       "trigger_condition": "",
+      "description": "A kink exploration moment \u2014 trying something, building the vocabulary of what he wants.",
       "favour_value": 1,
       "grace_earned": 0
     },
     {
       "service": "Wednesday midweek pulse check-in",
       "tier": "Devotion",
-      "mystery": null,
+      "mystery": "Eros: Vulnerability",
       "status": "Active",
       "due_date": null,
       "trigger_condition": "",
+      "description": "One check, midweek. Any progress worth naming. No performance required.",
       "favour_value": 1,
       "grace_earned": 0
     }
