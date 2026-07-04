@@ -494,24 +494,6 @@
 
     <hr>
 
-    <section class="section" aria-label="Today's Devotions">
-      <div class="section-title">Today's Devotions</div>
-      <div id="today-devotions-container">
-        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div>
-      </div>
-    </section>
-
-    <hr>
-
-    <section class="section" aria-label="This Week's Devotions">
-      <div class="section-title">This Week's Devotions</div>
-      <div id="week-devotions-container">
-        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div>
-      </div>
-    </section>
-
-    <hr>
-
     <section class="section" aria-label="Completed Trials">
       <div class="section-title">Completed Trials</div>
       <div id="completed-trials-container">
@@ -589,10 +571,15 @@
 
     // ── Trials (from eros_trials.json) ───────────────────────────────────────
 
+    const [trialsRes, devCatalogRes, graceRes] = await Promise.allSettled([
+      fetch('data/eros_trials.json').then(r => r.json()),
+      fetch('data/devotions.json').then(r => r.json()),
+      fetch('data/grace.json').then(r => r.json()),
+    ]);
+
     try {
-      const res = await fetch('data/eros_trials.json');
-      if (!res.ok) throw new Error(res.status);
-      const data = await res.json();
+      if (trialsRes.status !== 'fulfilled') throw new Error('eros_trials.json failed');
+      const data = trialsRes.value;
       const trials = data.trials || [];
       const container = document.getElementById('trials-container');
 
@@ -628,6 +615,120 @@
         </div>`;
       }
 
+      // Devotions get their own renderer: due-today (day/pool-filtered against
+      // data/devotions.json, same algorithm as devotions.html) plus a rolling
+      // 7-day completed history (from grace.json's devotion_completions, which
+      // covers both manual taps and tally-grace.yml's automated logging).
+      function renderDevotionsGroup(items) {
+        if (items.length === 0) return '';
+
+        const devCatalog = devCatalogRes.status === 'fulfilled' ? devCatalogRes.value : { devotions: [], pools: {} };
+        const graceForDevotions = graceRes.status === 'fulfilled' ? graceRes.value : {};
+        const godManual  = (devCatalog.devotions || []).filter(d => d.god === 'Eros');
+        const godPools   = devCatalog.pools || {};
+        const godCompletions = (graceForDevotions.devotion_completions || []).filter(c => c.god === 'Eros');
+
+        const SYDNEY = 'Australia/Sydney';
+        function sydneyDateStr(d = new Date()) {
+          return new Intl.DateTimeFormat('en-CA', { timeZone: SYDNEY, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+        }
+        function sydneyWeekdayName(d = new Date()) {
+          return new Intl.DateTimeFormat('en-US', { timeZone: SYDNEY, weekday: 'long' }).format(d);
+        }
+        function sydneyLastNDays(n, d = new Date()) {
+          const [y, m, day] = sydneyDateStr(d).split('-').map(Number);
+          return Array.from({ length: n }, (_, i) => new Date(Date.UTC(y, m - 1, day - i)).toISOString().slice(0, 10));
+        }
+        function hashSeed(str) {
+          let h = 2166136261 >>> 0;
+          for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+          return h >>> 0;
+        }
+        function mulberry32(seed) {
+          return function () {
+            seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+            let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+        function seededPick(pickItems, n, seedStr) {
+          if (n >= pickItems.length) return pickItems.slice();
+          const rand = mulberry32(hashSeed(seedStr));
+          const pool = pickItems.slice(); const picked = [];
+          for (let i = 0; i < n && pool.length; i++) { const idx = Math.floor(rand() * pool.length); picked.push(pool.splice(idx, 1)[0]); }
+          return picked;
+        }
+
+        const todayStr = sydneyDateStr();
+        const todayWeekday = sydneyWeekdayName();
+        const last7 = sydneyLastNDays(7);
+
+        // Which manual devotions.json entries are actually selected for today —
+        // same day + pool/slot algorithm as devotions.html.
+        const eligibleManual = godManual.filter(d => Array.isArray(d.days) && d.days.includes(todayWeekday));
+        const noPool = eligibleManual.filter(d => !d.pool);
+        const byPool = {};
+        for (const d of eligibleManual) if (d.pool) (byPool[d.pool] = byPool[d.pool] || []).push(d);
+        let todaysManual = [...noPool];
+        for (const [poolName, poolItems] of Object.entries(byPool)) {
+          const slots = godPools[poolName];
+          const n = (slots === '' || slots === null || slots === undefined) ? poolItems.length : Number(slots);
+          todaysManual.push(...((!Number.isFinite(n) || n >= poolItems.length) ? poolItems : seededPick(poolItems, n, `${todayStr}-${poolName.toLowerCase()}`)));
+        }
+        const todaysManualNames = new Set(todaysManual.map(d => d.service_name));
+        const manualNames = new Set(godManual.map(d => d.service_name));
+
+        function isDueToday(ch) {
+          if (manualNames.has(ch.service)) return todaysManualNames.has(ch.service);
+          const svc = ch.service.toLowerCase();
+          if (svc.includes('saturday'))  return todayWeekday === 'Saturday';
+          if (svc.includes('wednesday')) return todayWeekday === 'Wednesday';
+          return true; // daily-cadence automated items are due every day
+        }
+        function completedToday(ch) {
+          return godCompletions.some(c => c.service_name === ch.service && c.date_completed === todayStr);
+        }
+
+        const dueToday = items.filter(ch => isDueToday(ch) && !completedToday(ch));
+        const completedRecent = godCompletions
+          .filter(c => last7.includes(c.date_completed))
+          .sort((a, b) => b.date_completed.localeCompare(a.date_completed));
+
+        const dueHtml = dueToday.length ? dueToday.map(ch => {
+          const meta = ch.mystery ? `<div style="font-size:10px;margin-top:3px;color:var(--rose-light);">${ch.mystery}</div>` : '';
+          const trigger = ch.trigger_condition
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${ch.trigger_condition}</div>`
+            : '';
+          return `<div class="challenge-item active" style="margin-bottom:6px;">
+            <span class="c-dot active"></span>
+            <div style="flex:1;">
+              <div class="c-text">${ch.service || 'Unnamed'}</div>
+              ${meta}
+              ${trigger}
+            </div>
+          </div>`;
+        }).join('') : '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">Nothing due today.</div>';
+
+        const completedHtml = completedRecent.length ? completedRecent.map(c => {
+          const d = new Date(c.date_completed + 'T00:00:00');
+          const label = d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          return `<div class="challenge-item done" style="margin-bottom:6px;">
+            <span class="c-dot done"></span>
+            <div style="flex:1;"><div class="c-text">${c.service_name}</div></div>
+            <span style="font-size:10px;color:var(--text-muted);">${label}</span>
+          </div>`;
+        }).join('') : '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">Nothing completed in the last 7 days.</div>';
+
+        return `<div style="background:var(--bg-card);border:0.5px solid var(--border-rose);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.3em;color:var(--rose);text-transform:uppercase;margin-bottom:10px;">Devotions</div>
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Due Today</div>
+          ${dueHtml}
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin:14px 0 6px;">Completed — Last 7 Days</div>
+          ${completedHtml}
+        </div>`;
+      }
+
       const activeTrials = trials.filter(t => t.status === 'Active');
       if (activeTrials.length === 0) {
         container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No active Trials right now.</div>';
@@ -636,7 +737,7 @@
         const streaks   = activeTrials.filter(t => t.tier === 'Streak');
         const trialList = activeTrials.filter(t => !['Devotion', 'Streak'].includes(t.tier));
         container.innerHTML =
-          renderTrialGroup(devotions, 'Devotions') +
+          renderDevotionsGroup(devotions) +
           renderTrialGroup(streaks,   'Streaks') +
           renderTrialGroup(trialList, 'Trials');
       }
@@ -654,9 +755,8 @@
     // ── Grace, Completed Trials & Devotional Jewellery (from grace.json) ─────
 
     try {
-      const graceRes = await fetch('data/grace.json');
-      if (!graceRes.ok) throw new Error(graceRes.status);
-      const grace = await graceRes.json();
+      if (graceRes.status !== 'fulfilled') throw new Error('grace.json failed');
+      const grace = graceRes.value;
       const eros = grace.gods?.Eros || grace.gods?.eros;
 
       // Completed Trials
@@ -683,115 +783,6 @@
             <div class="ct-item-body">${details}</div>
           </details>`;
         }).join('');
-      }
-
-      // Today's & This Week's Devotions (from the manual Devotions system)
-      try {
-        const devRes = await fetch('data/devotions.json');
-        const devCatalog = devRes.ok ? await devRes.json() : { devotions: [], pools: {} };
-
-        const SYDNEY = 'Australia/Sydney';
-        function sydneyDateStr(d = new Date()) {
-          return new Intl.DateTimeFormat('en-CA', { timeZone: SYDNEY, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
-        }
-        function sydneyWeekday(d = new Date()) {
-          return new Intl.DateTimeFormat('en-US', { timeZone: SYDNEY, weekday: 'long' }).format(d);
-        }
-        // Monday..Sunday date strings for the current Sydney week (matches tally-grace.yml's week window)
-        function sydneyWeekDates(d = new Date()) {
-          const weekdayIdx = { Monday:0, Tuesday:1, Wednesday:2, Thursday:3, Friday:4, Saturday:5, Sunday:6 }[sydneyWeekday(d)];
-          const [y, m, day] = sydneyDateStr(d).split('-').map(Number);
-          const monday = new Date(Date.UTC(y, m - 1, day - weekdayIdx));
-          return Array.from({ length: 7 }, (_, i) => new Date(monday.getTime() + i * 86400000).toISOString().slice(0, 10));
-        }
-        // Deterministic seeded pool selection — same algorithm as devotions.html
-        function hashSeed(str) {
-          let h = 2166136261 >>> 0;
-          for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-          return h >>> 0;
-        }
-        function mulberry32(seed) {
-          return function () {
-            seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
-            let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-          };
-        }
-        function seededPick(items, n, seedStr) {
-          if (n >= items.length) return items.slice();
-          const rand = mulberry32(hashSeed(seedStr));
-          const pool = items.slice(); const picked = [];
-          for (let i = 0; i < n && pool.length; i++) { const idx = Math.floor(rand() * pool.length); picked.push(pool.splice(idx, 1)[0]); }
-          return picked;
-        }
-
-        const godDevotions  = (devCatalog.devotions || []).filter(d => d.god === 'Eros');
-        const pools         = devCatalog.pools || {};
-        const godCompletions = (grace.devotion_completions || []).filter(c => c.god === 'Eros');
-
-        const todayStr  = sydneyDateStr();
-        const weekday   = sydneyWeekday();
-        const weekDates = sydneyWeekDates();
-
-        // Today's active list — same day-filter + pool/slot selection as devotions.html
-        const eligible = godDevotions.filter(d => Array.isArray(d.days) && d.days.includes(weekday));
-        const noPool = eligible.filter(d => !d.pool);
-        const byPool = {};
-        for (const d of eligible) if (d.pool) (byPool[d.pool] = byPool[d.pool] || []).push(d);
-        let todaysList = [...noPool];
-        for (const [poolName, items] of Object.entries(byPool)) {
-          const slots = pools[poolName];
-          const n = (slots === '' || slots === null || slots === undefined) ? items.length : Number(slots);
-          todaysList.push(...((!Number.isFinite(n) || n >= items.length) ? items : seededPick(items, n, `${todayStr}-${poolName.toLowerCase()}`)));
-        }
-        const completedTodaySet = new Set(godCompletions.filter(c => c.date_completed === todayStr).map(c => c.notion_service_id));
-
-        const todayContainer = document.getElementById('today-devotions-container');
-        if (todayContainer) {
-          if (todaysList.length === 0) {
-            todayContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No Devotions on the list for today.</div>';
-          } else {
-            todayContainer.innerHTML = todaysList.map(d => {
-              const done = completedTodaySet.has(d.notion_service_id);
-              return `<div class="challenge-item ${done ? 'done' : 'active'}" style="margin-bottom:6px;">
-                <span class="c-dot ${done ? 'done' : 'active'}"></span>
-                <div style="flex:1;">
-                  <div class="c-text">${d.service_name}</div>
-                  ${d.mystery ? `<div class="c-tag">${d.mystery}</div>` : ''}
-                </div>
-                ${done ? `<span style="font-size:10px;color:var(--rose);font-weight:600;">DONE</span>` : ''}
-              </div>`;
-            }).join('') + `<div style="font-size:10px;color:var(--text-muted);margin-top:8px;">Tap to complete on <a href="devotions.html" style="color:var(--rose);">Today's Devotions</a>.</div>`;
-          }
-        }
-
-        // This week's completed Devotions — chronological, Monday..Sunday Sydney
-        const weekContainer = document.getElementById('week-devotions-container');
-        if (weekContainer) {
-          const weekCompletions = godCompletions
-            .filter(c => weekDates.includes(c.date_completed))
-            .sort((a, b) => b.date_completed.localeCompare(a.date_completed));
-          if (weekCompletions.length === 0) {
-            weekContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No Devotions completed yet this week.</div>';
-          } else {
-            weekContainer.innerHTML = weekCompletions.map(c => {
-              const d = new Date(c.date_completed + 'T00:00:00');
-              const label = d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
-              return `<div class="challenge-item done" style="margin-bottom:6px;">
-                <span class="c-dot done"></span>
-                <div style="flex:1;"><div class="c-text">${c.service_name}</div></div>
-                <span style="font-size:10px;color:var(--text-muted);">${label}</span>
-              </div>`;
-            }).join('');
-          }
-        }
-      } catch (e) {
-        console.error('Devotions (today/week):', e);
-        const todayContainer = document.getElementById('today-devotions-container');
-        const weekContainer  = document.getElementById('week-devotions-container');
-        if (todayContainer) todayContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">Could not load Devotions.</div>';
-        if (weekContainer)  weekContainer.innerHTML  = '<div style="color:var(--text-muted);font-size:12px;">Could not load Devotions.</div>';
       }
 
       if (eros) {
