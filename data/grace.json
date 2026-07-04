@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-07-04T05:15:31.505710Z",
-  "favour_total": 134.0,
+  "updated_at": "2026-07-04T05:18:33.214109Z",
+  "favour_total": 135.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
-      "favour_earned": 44.0,
+      "favour_earned": 45.0,
       "completions_by_mystery": {
         "Himbo: Visibility & Self-Expression": 2.0,
         "Himbo: Physique": 0.0,
@@ -17,9 +17,9 @@
       "grace_threshold": 12,
       "favour_earned": 80.0,
       "completions_by_mystery": {
+        "Eros: Vulnerability": 0,
         "Eros: Kink Exploration": 2.0,
-        "Eros: Sexual Challenges": 3.0,
-        "Eros: Vulnerability": 0
+        "Eros: Sexual Challenges": 3.0
       }
     },
     "Hestio": {
@@ -27,9 +27,9 @@
       "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
-        "Hestio: The Hearth": 0,
+        "Hestio: Family": 1.0,
         "Hestio: Friends": 0,
-        "Hestio: Family": 1.0
+        "Hestio: The Hearth": 0
       }
     }
   },
@@ -105,6 +105,98 @@
       "favour_value": 10.0,
       "mystery": "Eros: Sexual Challenges",
       "notes": null
+    }
+  ],
+  "devotion_completions": [
+    {
+      "notion_service_id": "384db4862bcd81a0bd4ef2f45d072662",
+      "service_name": "Run session",
+      "god": "Himbo",
+      "date_completed": "2026-07-04"
+    },
+    {
+      "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
+      "service_name": "Saturday full check-in",
+      "god": "Himbo",
+      "date_completed": "2026-07-04"
+    },
+    {
+      "notion_service_id": "384db4862bcd81afbb4be3f33e4305b2",
+      "service_name": "Visibility-coded item worn",
+      "god": "Himbo",
+      "date_completed": "2026-07-04"
+    },
+    {
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "service_name": "Gym session (programme day)",
+      "god": "Himbo",
+      "date_completed": "2026-07-03"
+    },
+    {
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "service_name": "Swim session",
+      "god": "Himbo",
+      "date_completed": "2026-07-03"
+    },
+    {
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "service_name": "Gym session (programme day)",
+      "god": "Himbo",
+      "date_completed": "2026-07-02"
+    },
+    {
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "service_name": "Swim session",
+      "god": "Himbo",
+      "date_completed": "2026-07-02"
+    },
+    {
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "service_name": "Swim session",
+      "god": "Himbo",
+      "date_completed": "2026-06-30"
+    },
+    {
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "service_name": "Gym session (programme day)",
+      "god": "Himbo",
+      "date_completed": "2026-06-29"
+    },
+    {
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "service_name": "Swim session",
+      "god": "Himbo",
+      "date_completed": "2026-06-29"
+    },
+    {
+      "notion_service_id": "384db4862bcd81a0bd4ef2f45d072662",
+      "service_name": "Run session",
+      "god": "Himbo",
+      "date_completed": "2026-06-27"
+    },
+    {
+      "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
+      "service_name": "Saturday full check-in",
+      "god": "Himbo",
+      "date_completed": "2026-06-27"
+    },
+    {
+      "notion_service_id": "385db4862bcd8186ba9eccbb6c90fdaf",
+      "service_name": "Wednesday midweek pulse check-in",
+      "god": "Himbo",
+      "date_completed": "2026-06-25"
+    },
+    {
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "service_name": "Gym session (programme day)",
+      "god": "Himbo",
+      "date_completed": "2026-06-22"
+    },
+    {
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "service_name": "Swim session",
+      "god": "Himbo",
+      "date_completed": "2026-06-22"
     }
   ]
 }
