@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-04T05:26:04.823333Z",
+  "updated_at": "2026-07-04T05:28:34.190605Z",
   "favour_total": 134.0,
   "gods": {
     "Himbo": {
@@ -7,9 +7,9 @@
       "grace_threshold": 12,
       "favour_earned": 44.0,
       "completions_by_mystery": {
+        "Himbo: Visibility & Self-Expression": 2.0,
         "Himbo: Internal Work": 0,
-        "Himbo: Physique": 0.0,
-        "Himbo: Visibility & Self-Expression": 2.0
+        "Himbo: Physique": 0.0
       }
     },
     "Eros": {
@@ -17,9 +17,9 @@
       "grace_threshold": 12,
       "favour_earned": 80.0,
       "completions_by_mystery": {
-        "Eros: Kink Exploration": 2.0,
         "Eros: Sexual Challenges": 3.0,
-        "Eros: Vulnerability": 0
+        "Eros: Vulnerability": 0,
+        "Eros: Kink Exploration": 2.0
       }
     },
     "Hestio": {
