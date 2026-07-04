@@ -689,6 +689,24 @@
 
     <hr>
 
+    <section class="section" aria-label="Today's Devotions">
+      <div class="section-title">Today's Devotions</div>
+      <div id="today-devotions-container">
+        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div>
+      </div>
+    </section>
+
+    <hr>
+
+    <section class="section" aria-label="This Week's Devotions">
+      <div class="section-title">This Week's Devotions</div>
+      <div id="week-devotions-container">
+        <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading…</div>
+      </div>
+    </section>
+
+    <hr>
+
     <section class="section" aria-label="Completed Trials">
       <div class="section-title">Completed Trials</div>
       <div id="completed-trials-container">
@@ -940,7 +958,7 @@
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, gymAiRes, checkinsRes, graceRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, gymAiRes, checkinsRes, graceRes, devCatalogRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
@@ -956,6 +974,7 @@
       fetch('data/himbo_gym_ai.json').then(r => r.json()),
       fetch('data/himbo_checkins.json').then(r => r.json()),
       fetch('data/grace.json').then(r => r.json()),
+      fetch('data/devotions.json').then(r => r.json()),
     ]);
 
     let sufferScore3d = 0;
@@ -1617,6 +1636,114 @@
       }
 
     } catch(e) { console.error('Challenges:', e); }
+
+    // ── Today's & This Week's Devotions (from the manual Devotions system) ───
+    try {
+      const SYDNEY = 'Australia/Sydney';
+      function sydneyDateStr(d = new Date()) {
+        return new Intl.DateTimeFormat('en-CA', { timeZone: SYDNEY, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+      }
+      function sydneyWeekday(d = new Date()) {
+        return new Intl.DateTimeFormat('en-US', { timeZone: SYDNEY, weekday: 'long' }).format(d);
+      }
+      // Monday..Sunday date strings for the current Sydney week (matches tally-grace.yml's week window)
+      function sydneyWeekDates(d = new Date()) {
+        const weekdayIdx = { Monday:0, Tuesday:1, Wednesday:2, Thursday:3, Friday:4, Saturday:5, Sunday:6 }[sydneyWeekday(d)];
+        const [y, m, day] = sydneyDateStr(d).split('-').map(Number);
+        const monday = new Date(Date.UTC(y, m - 1, day - weekdayIdx));
+        return Array.from({ length: 7 }, (_, i) => new Date(monday.getTime() + i * 86400000).toISOString().slice(0, 10));
+      }
+      // Deterministic seeded pool selection — same algorithm as devotions.html
+      function hashSeed(str) {
+        let h = 2166136261 >>> 0;
+        for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return h >>> 0;
+      }
+      function mulberry32(seed) {
+        return function () {
+          seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      function seededPick(items, n, seedStr) {
+        if (n >= items.length) return items.slice();
+        const rand = mulberry32(hashSeed(seedStr));
+        const pool = items.slice(); const picked = [];
+        for (let i = 0; i < n && pool.length; i++) { const idx = Math.floor(rand() * pool.length); picked.push(pool.splice(idx, 1)[0]); }
+        return picked;
+      }
+
+      const devCatalog = devCatalogRes.status === 'fulfilled' ? devCatalogRes.value : { devotions: [], pools: {} };
+      const graceForDevotions = graceRes.status === 'fulfilled' ? graceRes.value : {};
+      const godDevotions  = (devCatalog.devotions || []).filter(d => d.god === 'Himbo');
+      const pools         = devCatalog.pools || {};
+      const godCompletions = (graceForDevotions.devotion_completions || []).filter(c => c.god === 'Himbo');
+
+      const todayStr  = sydneyDateStr();
+      const weekday   = sydneyWeekday();
+      const weekDates = sydneyWeekDates();
+
+      // Today's active list — same day-filter + pool/slot selection as devotions.html
+      const eligible = godDevotions.filter(d => Array.isArray(d.days) && d.days.includes(weekday));
+      const noPool = eligible.filter(d => !d.pool);
+      const byPool = {};
+      for (const d of eligible) if (d.pool) (byPool[d.pool] = byPool[d.pool] || []).push(d);
+      let todaysList = [...noPool];
+      for (const [poolName, items] of Object.entries(byPool)) {
+        const slots = pools[poolName];
+        const n = (slots === '' || slots === null || slots === undefined) ? items.length : Number(slots);
+        todaysList.push(...((!Number.isFinite(n) || n >= items.length) ? items : seededPick(items, n, `${todayStr}-${poolName.toLowerCase()}`)));
+      }
+      const completedTodaySet = new Set(godCompletions.filter(c => c.date_completed === todayStr).map(c => c.notion_service_id));
+
+      const todayContainer = document.getElementById('today-devotions-container');
+      if (todayContainer) {
+        if (todaysList.length === 0) {
+          todayContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No Devotions on the list for today.</div>';
+        } else {
+          todayContainer.innerHTML = todaysList.map(d => {
+            const done = completedTodaySet.has(d.notion_service_id);
+            return `<div class="challenge-item ${done ? 'done' : 'active'}" style="margin-bottom:6px;">
+              <span class="c-dot ${done ? 'done' : 'active'}"></span>
+              <div style="flex:1;">
+                <div class="c-text">${d.service_name}</div>
+                ${d.mystery ? `<div class="c-tag">${d.mystery}</div>` : ''}
+              </div>
+              ${done ? `<span class="complete-label" style="font-size:10px;color:var(--pink);font-weight:600;">DONE</span>` : ''}
+            </div>`;
+          }).join('') + `<div style="font-size:10px;color:var(--text-muted);margin-top:8px;">Tap to complete on <a href="devotions.html" style="color:var(--pink);">Today's Devotions</a>.</div>`;
+        }
+      }
+
+      // This week's completed Devotions — chronological, Monday..Sunday Sydney
+      const weekContainer = document.getElementById('week-devotions-container');
+      if (weekContainer) {
+        const weekCompletions = godCompletions
+          .filter(c => weekDates.includes(c.date_completed))
+          .sort((a, b) => b.date_completed.localeCompare(a.date_completed));
+        if (weekCompletions.length === 0) {
+          weekContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No Devotions completed yet this week.</div>';
+        } else {
+          weekContainer.innerHTML = weekCompletions.map(c => {
+            const d = new Date(c.date_completed + 'T00:00:00');
+            const label = d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+            return `<div class="challenge-item done" style="margin-bottom:6px;">
+              <span class="c-dot done"></span>
+              <div style="flex:1;"><div class="c-text">${c.service_name}</div></div>
+              <span style="font-size:10px;color:var(--text-muted);">${label}</span>
+            </div>`;
+          }).join('');
+        }
+      }
+    } catch (e) {
+      console.error('Devotions (today/week):', e);
+      const todayContainer = document.getElementById('today-devotions-container');
+      const weekContainer  = document.getElementById('week-devotions-container');
+      if (todayContainer) todayContainer.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">Could not load Devotions.</div>';
+      if (weekContainer)  weekContainer.innerHTML  = '<div style="color:var(--text-muted);font-size:12px;">Could not load Devotions.</div>';
+    }
 
     // ── Grace section & Devotional Jewellery (from grace.json) ───────────────
 
