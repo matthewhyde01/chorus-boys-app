@@ -386,12 +386,28 @@ jobs:
               ).fetchall()
           ]
 
+          # Devotion completions — preserved here too so this workflow doesn't
+          # clobber the key when it runs after a devotion completion.
+          devotion_completions = [
+              {
+                  "notion_service_id": row[0],
+                  "service_name":      row[1],
+                  "god":               row[2],
+                  "date_completed":    row[3],
+              }
+              for row in conn.execute(
+                  "SELECT notion_service_id, service_name, god, date_completed "
+                  "FROM completion_log WHERE tier='Devotion' ORDER BY date_completed DESC LIMIT 500"
+              ).fetchall()
+          ]
+
           with open("data/grace.json", "w") as f:
               json.dump({
-                  "updated_at":       datetime.utcnow().isoformat() + "Z",
-                  "favour_total":     favour_grand_total,
-                  "gods":             gods_data,
-                  "completed_trials": completed_trials,
+                  "updated_at":           datetime.utcnow().isoformat() + "Z",
+                  "favour_total":         favour_grand_total,
+                  "gods":                 gods_data,
+                  "completed_trials":     completed_trials,
+                  "devotion_completions": devotion_completions,
               }, f, indent=2)
           print(f"grace.json written — favour_total={favour_grand_total}, gods={list(gods_data.keys())}")
 

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Today's Devotions — Chorus Boys</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9963A;
+      --gold-light: #E8C96A;
+      --bg: #0D0A14;
+      --bg-card: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --border-gold: rgba(201,150,58,0.3);
+      --text-primary: rgba(255,255,255,0.92);
+      --text-secondary: rgba(255,255,255,0.45);
+      --text-muted: rgba(255,255,255,0.25);
+      --red: #E8458B;
+
+      /* God colours — locked per Devotions brief (Hermes gets a page-specific
+         sky blue + feather here, distinct from its site-wide green elsewhere) */
+      --himbo:  #E8458B;
+      --hermes: #5bc8f5;
+      --hestio: #C9963A;
+      --eros:   #C46060;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 4rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(13,10,20,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    .nav-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      text-transform: uppercase;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero {
+      padding: 3rem 2rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at top left, rgba(201,150,58,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 640px; }
+
+    .hero-label {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .main { max-width: 640px; margin: 0 auto; padding: 2rem; }
+
+    .god-section { margin-bottom: 2rem; }
+    .god-section:last-child { margin-bottom: 0; }
+
+    .god-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--god-color, var(--gold));
+    }
+
+    .god-section-title::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: var(--god-color, var(--border-gold));
+      opacity: 0.35;
+    }
+
+    .devotion-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg-card);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s ease, border-color 0.2s ease;
+      user-select: none;
+    }
+
+    .devotion-row:hover { border-color: var(--god-color, var(--border-gold)); }
+    .devotion-row:active { transform: scale(0.99); }
+    .devotion-row.done { opacity: 0.5; cursor: default; }
+    .devotion-row.done:hover { border-color: var(--border); }
+
+    .devotion-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--god-color, var(--gold));
+    }
+
+    .devotion-name {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .devotion-row.done .devotion-name {
+      color: var(--text-secondary);
+      text-decoration: line-through;
+    }
+
+    .devotion-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-gold);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .devotion-row.done .devotion-check {
+      background: var(--god-color, var(--gold));
+      border-color: var(--god-color, var(--gold));
+    }
+
+    .devotion-check svg { opacity: 0; transition: opacity 0.15s ease; }
+    .devotion-row.done .devotion-check svg { opacity: 1; }
+
+    .empty-state {
+      color: var(--text-muted);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 15px;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    #status {
+      margin-top: 1rem;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.6;
+      display: none;
+      background: rgba(232,69,139,0.08);
+      border: 0.5px solid rgba(232,69,139,0.25);
+      color: var(--red);
+    }
+
+    @media (max-width: 600px) {
+      .nav { padding: 1rem; }
+      .hero { padding: 2rem 1rem 1.5rem; }
+      .main { padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-brand" aria-label="Back to Chorus Boys">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M9 2L4 7L9 12" stroke="#C9963A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Chorus Boys
+    </a>
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;color:var(--gold-light);">Devotions</div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-label">Grace &amp; Favour</div>
+      <h1 class="hero-title">Today's Devotions</h1>
+      <p class="hero-sub" id="today-sub">Loading today…</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div id="devotions-list">
+      <div class="empty-state">Loading Devotions…</div>
+    </div>
+    <div id="status"></div>
+  </main>
+
+  <script>
+    const RELAY_URL = 'https://complete-trial-relay.matthewhyde01.workers.dev';
+    const SYDNEY = 'Australia/Sydney';
+
+    const GODS = [
+      { key: 'Himbo',  varName: '--himbo'  },
+      { key: 'Hermes', varName: '--hermes' },
+      { key: 'Hestio', varName: '--hestio' },
+      { key: 'Eros',   varName: '--eros'   },
+    ];
+
+    // ── Icons — locked per brief: Himbo diamond, Hermes feather, Eros padlock, Hestio nest ──
+    const ICONS = {
+      himbo: `<svg width="20" height="20" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <polygon points="16,3 26,13 16,29 6,13" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+        <line x1="6" y1="13" x2="26" y2="13" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
+        <line x1="16" y1="3" x2="16" y2="13" stroke="currentColor" stroke-width="0.8" opacity="0.3"/>
+      </svg>`,
+      hermes: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 3C12 3 20 7 20 14C20 19 15 21 12 21C9 21 4 19 4 14C4 7 12 3 12 3Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
+        <path d="M12 3L12 21" stroke="currentColor" stroke-width="0.9" opacity="0.5"/>
+        <path d="M12 8L7 10" stroke="currentColor" stroke-width="0.7" opacity="0.4"/>
+        <path d="M12 12L6.5 14" stroke="currentColor" stroke-width="0.7" opacity="0.4"/>
+        <path d="M12 16L7.5 17.5" stroke="currentColor" stroke-width="0.7" opacity="0.4"/>
+        <path d="M12 8L17 10" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+        <path d="M12 12L17.5 14" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+        <path d="M12 16L16.5 17.5" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+      </svg>`,
+      hestio: `<svg width="20" height="20" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+        <path d="M8 20C8 16 10 14 15 14C20 14 22 16 22 20" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+        <path d="M7 22C7 22 10 20 15 20C20 20 23 22 23 22" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+        <ellipse cx="12.5" cy="17" rx="2" ry="1.5" fill="currentColor" opacity="0.6"/>
+        <ellipse cx="17.5" cy="17" rx="2" ry="1.5" fill="currentColor" opacity="0.6"/>
+        <ellipse cx="15" cy="16" rx="2" ry="1.5" fill="currentColor" opacity="0.8"/>
+      </svg>`,
+      eros: `<svg width="20" height="20" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+        <rect x="9" y="15" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+        <path d="M11 15L11 11C11 8.2 19 8.2 19 11L19 15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+        <circle cx="15" cy="20" r="1.5" fill="currentColor" opacity="0.7"/>
+      </svg>`,
+    };
+
+    const CHECK_SVG = `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M2 6.5L4.5 9L10 3" stroke="#0D0A14" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+
+    // ── Sydney date helpers ──────────────────────────────────────────────────
+    function sydneyDateStr(d = new Date()) {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: SYDNEY, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+    }
+    function sydneyWeekday(d = new Date()) {
+      return new Intl.DateTimeFormat('en-US', { timeZone: SYDNEY, weekday: 'long' }).format(d);
+    }
+    function sydneyDisplayDate(d = new Date()) {
+      return new Intl.DateTimeFormat('en-AU', { timeZone: SYDNEY, weekday: 'long', day: 'numeric', month: 'long' }).format(d);
+    }
+
+    // ── Deterministic seeded pool selection ──────────────────────────────────
+    function hashSeed(str) {
+      let h = 2166136261 >>> 0;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+    function mulberry32(seed) {
+      return function () {
+        seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    function seededPick(items, n, seedStr) {
+      if (n >= items.length) return items.slice();
+      const rand = mulberry32(hashSeed(seedStr));
+      const pool = items.slice();
+      const picked = [];
+      for (let i = 0; i < n && pool.length; i++) {
+        const idx = Math.floor(rand() * pool.length);
+        picked.push(pool.splice(idx, 1)[0]);
+      }
+      return picked;
+    }
+
+    function showError(msg) {
+      const status = document.getElementById('status');
+      status.style.display = 'block';
+      status.textContent = msg;
+      setTimeout(() => { status.style.display = 'none'; }, 5000);
+    }
+
+    // ── Complete a devotion ───────────────────────────────────────────────────
+    function toggleDevotion(row, devotion, todayStr) {
+      if (row.classList.contains('done')) return; // already logged today — no double-tap
+      row.classList.add('done');
+
+      fetch(RELAY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action:             'complete-devotion',
+          notion_service_id:  devotion.notion_service_id,
+          service_name:       devotion.service_name,
+          date_completed:     todayStr,
+          notes:              '',
+        }),
+      }).then(r => {
+        if (!r.ok) return r.text().then(t => { throw new Error(t || `HTTP ${r.status}`); });
+      }).catch(e => {
+        row.classList.remove('done');
+        showError(`Couldn't log "${devotion.service_name}" — try again. (${e.message})`);
+      });
+    }
+
+    // ── Build the page ────────────────────────────────────────────────────────
+    async function init() {
+      const now       = new Date();
+      const todayStr  = sydneyDateStr(now);
+      const weekday   = sydneyWeekday(now);
+      document.getElementById('today-sub').textContent = sydneyDisplayDate(now);
+
+      const listEl = document.getElementById('devotions-list');
+
+      let devotionsData, graceData;
+      try {
+        const [dR, gR] = await Promise.all([
+          fetch('data/devotions.json'),
+          fetch('data/grace.json'),
+        ]);
+        devotionsData = dR.ok ? await dR.json() : { devotions: [], pools: {} };
+        graceData     = gR.ok ? await gR.json() : {};
+      } catch (e) {
+        listEl.innerHTML = '<div class="empty-state">Could not load today\'s Devotions — try again later.</div>';
+        console.error('init:', e);
+        return;
+      }
+
+      const allDevotions   = devotionsData.devotions || [];
+      const pools          = devotionsData.pools || {};
+      const completedToday = new Set(
+        (graceData.devotion_completions || [])
+          .filter(c => c.date_completed === todayStr)
+          .map(c => c.notion_service_id)
+      );
+
+      // Filter to today's weekday
+      const eligible = allDevotions.filter(d => Array.isArray(d.days) && d.days.includes(weekday));
+
+      // Split into no-pool (always show) vs pooled (subject to Slots selection)
+      const noPool = eligible.filter(d => !d.pool);
+      const byPool = {};
+      for (const d of eligible) {
+        if (d.pool) (byPool[d.pool] = byPool[d.pool] || []).push(d);
+      }
+
+      let todaysList = [...noPool];
+      for (const [poolName, items] of Object.entries(byPool)) {
+        const slots = pools[poolName];
+        const n = (slots === '' || slots === null || slots === undefined) ? items.length : Number(slots);
+        if (!Number.isFinite(n) || n >= items.length) {
+          todaysList.push(...items);
+        } else {
+          todaysList.push(...seededPick(items, n, `${todayStr}-${poolName.toLowerCase()}`));
+        }
+      }
+
+      if (todaysList.length === 0) {
+        listEl.innerHTML = '<div class="empty-state">No Devotions on the list for today.</div>';
+        return;
+      }
+
+      // Group by god, in fixed dashboard order
+      const byGod = {};
+      for (const d of todaysList) (byGod[d.god] = byGod[d.god] || []).push(d);
+
+      let html = '';
+      for (const { key, varName } of GODS) {
+        const items = byGod[key];
+        if (!items || !items.length) continue;
+        const icon = ICONS[key.toLowerCase()] || '';
+        html += `<section class="god-section">
+          <div class="god-section-title" style="--god-color:var(${varName})">${key}</div>`;
+        for (const d of items) {
+          const done = completedToday.has(d.notion_service_id);
+          html += `<div class="devotion-row${done ? ' done' : ''}" style="--god-color:var(${varName})" data-id="${d.notion_service_id}">
+            <div class="devotion-icon">${icon}</div>
+            <div class="devotion-name">${d.service_name}</div>
+            <div class="devotion-check">${CHECK_SVG}</div>
+          </div>`;
+        }
+        html += `</section>`;
+      }
+      listEl.innerHTML = html;
+
+      // Wire tap handlers
+      for (const d of todaysList) {
+        const row = listEl.querySelector(`[data-id="${d.notion_service_id}"]`);
+        if (row) row.addEventListener('click', () => toggleDevotion(row, d, todayStr));
+      }
+    }
+
+    init();
+  </script>
+
+</body>
+</html>

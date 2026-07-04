@@ -1,18 +1,18 @@
-name: Complete Trial
+name: Complete Devotion
 
 on:
   workflow_dispatch:
     inputs:
       notion_service_id:
-        description: 'Notion page ID of the Trial (32-char hex, no dashes)'
+        description: 'Notion page ID of the Devotion (32-char hex, no dashes)'
         required: true
         type: string
       service_name:
-        description: 'Trial name (passed from Shortcut, used in commit message)'
+        description: 'Devotion name (passed from devotions.html, used in commit message)'
         required: true
         type: string
       date_completed:
-        description: 'Date completed (YYYY-MM-DD)'
+        description: 'Date completed (YYYY-MM-DD, Sydney local)'
         required: true
         type: string
       notes:
@@ -21,7 +21,7 @@ on:
         type: string
 
 jobs:
-  complete-trial:
+  complete-devotion:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Write completion and update Notion
+      - name: Write completion
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_SERVICE_ID: ${{ inputs.notion_service_id }}
@@ -46,7 +46,7 @@ jobs:
           NOTES: ${{ inputs.notes }}
         run: |
           python - <<'EOF'
-          import requests, json, os, sqlite3
+          import requests, json, os, sqlite3, re
           from datetime import datetime
 
           notion_key = os.environ["NOTION_API_KEY"].strip()
@@ -65,7 +65,7 @@ jobs:
           if len(pid) == 32 and "-" not in pid:
               pid = f"{pid[:8]}-{pid[8:12]}-{pid[12:16]}-{pid[16:20]}-{pid[20:]}"
 
-          # ── 1. Fetch Trial metadata from Notion ──────────────────────────────
+          # ── 1. Fetch Devotion metadata from Notion ───────────────────────────
           r = requests.get(
               f"https://api.notion.com/v1/pages/{pid}",
               headers=notion_headers,
@@ -85,16 +85,21 @@ jobs:
               if pt == "number":    return p.get("number")
               return ""
 
-          service_name  = prop_text("Service") or prop_text("Name") or prop_text("Title") or page_id_compact
+          service_name  = prop_text("Service") or prop_text("Name") or page_id_compact
           god           = prop_text("God")
-          tier          = prop_text("Tier")
           mystery       = (page.get("properties", {}).get("Mystery", {}).get("select") or {}).get("name", "")
           favour_value  = float(page.get("properties",{}).get("Favour Value",{}).get("number") or 0)
-          grace_earned  = float(page.get("properties",{}).get("Grace Earned",{}).get("number") or 0)
+          frequency_cap = prop_text("Frequency Cap") or "1/day"
 
-          print(f"Trial: {service_name} | {god} | mystery={mystery} | grace={grace_earned} | favour={favour_value}")
+          # Devotions never earn Grace — only Trials do.
+          grace_earned = 0.0
 
-          # ── 2. Write completion to SQLite ────────────────────────────────────
+          m = re.match(r"\s*(\d+)\s*/\s*day", frequency_cap, re.IGNORECASE)
+          cap_per_day = int(m.group(1)) if m else 1
+
+          print(f"Devotion: {service_name} | {god} | mystery={mystery} | favour={favour_value} | cap={cap_per_day}/day")
+
+          # ── 2. Write completion to SQLite (respecting Frequency Cap) ─────────
           os.makedirs("data", exist_ok=True)
           conn = sqlite3.connect("data/grace.db")
           conn.execute("""
@@ -120,16 +125,17 @@ jobs:
           except Exception:
               pass  # column already exists
 
-          existing = conn.execute(
-              "SELECT id FROM completion_log WHERE notion_service_id=?",
-              (page_id_compact,),
-          ).fetchone()
-          if existing:
-              print(f"Already logged — skipping SQLite write (id={existing[0]})")
+          existing_today = conn.execute(
+              "SELECT COUNT(*) FROM completion_log WHERE notion_service_id=? AND date_completed=?",
+              (page_id_compact, date_completed),
+          ).fetchone()[0]
+
+          if existing_today >= cap_per_day:
+              print(f"Frequency Cap reached ({existing_today}/{cap_per_day}) — skipping SQLite write")
           else:
               conn.execute(
                   "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes, mystery) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                  (service_name, page_id_compact, date_completed, god, tier, favour_value, grace_earned, "Manual", notes, mystery),
+                  (service_name, page_id_compact, date_completed, god, "Devotion", favour_value, grace_earned, "Manual", notes, mystery),
               )
               conn.commit()
               print(f"SQLite: logged {service_name} on {date_completed}")
@@ -155,9 +161,9 @@ jobs:
           if all_svc_r.ok:
               for pg in all_svc_r.json().get("results", []):
                   g = sc_prop_text(pg, "God")
-                  m = sc_prop_text(pg, "Mystery")
-                  if g and m:
-                      all_mysteries.setdefault(g, set()).add(m)
+                  m2 = sc_prop_text(pg, "Mystery")
+                  if g and m2:
+                      all_mysteries.setdefault(g, set()).add(m2)
 
           GRACE_THRESHOLDS = {
               "Himbo":  12,
@@ -167,7 +173,7 @@ jobs:
               "Apollo": 12,
           }
 
-          gods_in_log = [r[0] for r in conn.execute(
+          gods_in_log = [row[0] for row in conn.execute(
               "SELECT DISTINCT god FROM completion_log WHERE god IS NOT NULL AND god != ''"
           ).fetchall()]
 
@@ -179,12 +185,12 @@ jobs:
               favour_total = conn.execute(
                   "SELECT COALESCE(SUM(favour_value),0) FROM completion_log WHERE god=?", (g,)
               ).fetchone()[0]
-              mystery_counts = {m: 0 for m in all_mysteries.get(g, set())}
-              for m, grace in conn.execute(
+              mystery_counts = {m2: 0 for m2 in all_mysteries.get(g, set())}
+              for m2, grace in conn.execute(
                   "SELECT mystery, COALESCE(SUM(grace_earned),0) FROM completion_log WHERE god=? AND COALESCE(mystery,'')!='' GROUP BY mystery",
                   (g,)
               ).fetchall():
-                  mystery_counts[m] = round(grace, 2)
+                  mystery_counts[m2] = round(grace, 2)
               gods_data[g] = {
                   "grace_total":            round(grace_total, 2),
                   "grace_threshold":        GRACE_THRESHOLDS.get(g, 0),
@@ -211,8 +217,8 @@ jobs:
               ).fetchall()
           ]
 
-          # Devotion completions — preserved here too so this workflow doesn't
-          # clobber the key when it runs after a devotion completion.
+          # Devotion completions — used by devotions.html to know what's already
+          # ticked off today (and, incidentally, on any other day it re-opens).
           devotion_completions = [
               {
                   "notion_service_id": row[0],
@@ -236,18 +242,6 @@ jobs:
               }, f, indent=2)
           print(f"grace.json updated — favour_total={favour_grand_total}")
           conn.close()
-
-          # ── 4. Mark Notion Service Compendium row as Complete ────────────────
-          update_r = requests.patch(
-              f"https://api.notion.com/v1/pages/{pid}",
-              headers=notion_headers,
-              json={"properties": {"Status": {"select": {"name": "Complete"}}}},
-              timeout=30,
-          )
-          if update_r.ok:
-              print(f"Notion: {service_name} marked Complete")
-          else:
-              print(f"Notion update failed: {update_r.status_code} {update_r.text[:200]}")
           EOF
 
       - name: Commit data files
@@ -255,6 +249,6 @@ jobs:
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
           git add data/grace.db data/grace.json
-          git diff --staged --quiet || git commit -m "chore: trial complete — ${{ inputs.service_name }} on ${{ inputs.date_completed }}"
+          git diff --staged --quiet || git commit -m "chore: devotion complete — ${{ inputs.service_name }} on ${{ inputs.date_completed }}"
           git pull --rebase
           git push
