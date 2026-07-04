@@ -154,7 +154,13 @@ jobs:
               if not m: return None
               return f"{m.group(3)}-{MONTHS.get(m.group(2),0):02d}-{int(m.group(1)):02d}"
 
+          # kJ target — hardcoded like the 180g protein / 4-session gym thresholds
+          # below. Confirmed live on the Himbo Notion page (moved 16,000 -> 15,500
+          # -> 15,750 as the bulk progressed) — update manually if it moves again.
+          KJ_TARGET = 15750
+
           protein_by_date = {}
+          kj_by_date = {}
           try:
               with open("data/nutrition.json") as f:
                   reader = csv.DictReader(f)
@@ -166,9 +172,17 @@ jobs:
                                   protein_by_date[d] = float(row["value"])
                               except (ValueError, KeyError):
                                   pass
+                      if row.get("type","").strip() == "Dietary Calories":
+                          d = parse_nutrition_date(row.get("date",""))
+                          if d and week_start_date <= d <= week_end_date:
+                              try:
+                                  kj_by_date[d] = float(row["value"])
+                              except (ValueError, KeyError):
+                                  pass
               print(f"Protein data this week: {protein_by_date}")
+              print(f"kJ data this week: {kj_by_date}")
           except FileNotFoundError:
-              print("nutrition.json not found — skipping protein streak")
+              print("nutrition.json not found — skipping protein/kJ streaks")
 
           # ── Fetch Service Compendium page metadata ───────────────────────────
           # Page IDs from design doc (32-char hex → UUID with dashes)
@@ -180,6 +194,8 @@ jobs:
               "protein_streak":  "384db486-2bcd-81cb-8dea-fb9053662cef",
               "saturday_checkin":"385db486-2bcd-81e9-9ccd-d7e4a959109e",
               "wednesday_pulse": "385db486-2bcd-8186-ba9e-ccbb6c90fdaf",
+              "kj_devotion":     "393db486-2bcd-815e-9219-f6b9348b9b78",
+              "kj_streak":       "393db486-2bcd-815e-93d2-da25c212d103",
           }
 
           def fetch_service_meta(page_id):
@@ -305,6 +321,24 @@ jobs:
                       new_completions += 1
               else:
                   print(f"Protein streak: {len(days_on_target)}/{len(days_with_data)} days on target — not yet complete")
+
+          # kJ devotion — per-day, same shape as gym/run/swim (not all-or-nothing)
+          if "kj_devotion" in service_meta:
+              for d, kj in kj_by_date.items():
+                  if kj >= KJ_TARGET:
+                      if log_completion(service_meta["kj_devotion"], d):
+                          new_completions += 1
+
+          # kJ streak (target+ every day, 7/7) — date = week end Sunday
+          if "kj_streak" in service_meta:
+              week_days = [(week_start_syd + timedelta(days=i)).date().isoformat() for i in range(7)]
+              days_with_data = [d for d in week_days if d in kj_by_date]
+              days_on_target = [d for d in days_with_data if kj_by_date[d] >= KJ_TARGET]
+              if len(days_with_data) == 7 and len(days_on_target) == 7:
+                  if log_completion(service_meta["kj_streak"], week_end_date):
+                      new_completions += 1
+              else:
+                  print(f"kJ streak: {len(days_on_target)}/{len(days_with_data)} days on target — not yet complete")
 
           # Saturday check-in devotion
           if "saturday_checkin" in service_meta and saturday_date:
