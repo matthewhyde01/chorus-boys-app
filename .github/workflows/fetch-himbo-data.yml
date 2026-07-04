@@ -1193,6 +1193,91 @@ jobs:
               page += 1
           print(f"Hevy: fetched {len(workouts)} workouts")
 
+          # ── Exercise template cache (id -> muscle groups) ──────────────────
+          # Hevy's exercise catalogue changes rarely, so we refresh this at most
+          # weekly and cache it locally rather than refetching every sync run.
+          TEMPLATE_CACHE_PATH = "data/hevy_exercise_templates.json"
+          TEMPLATE_CACHE_MAX_AGE = timedelta(days=7)
+
+          exercise_templates = {}
+          cache_fresh = False
+          try:
+              with open(TEMPLATE_CACHE_PATH) as f:
+                  template_cache = json.load(f)
+              cached_at = datetime.fromisoformat(template_cache["updated_at"].replace("Z", ""))
+              if datetime.utcnow() - cached_at < TEMPLATE_CACHE_MAX_AGE:
+                  exercise_templates = template_cache.get("templates", {})
+                  cache_fresh = True
+                  print(f"Hevy: using cached exercise templates ({len(exercise_templates)} exercises, cached {template_cache['updated_at']})")
+          except (FileNotFoundError, KeyError, ValueError):
+              pass
+
+          if not cache_fresh:
+              print("Hevy: refreshing exercise template cache...")
+              # Non-fatal: if this fetch fails, fall back to whatever templates we
+              # already have (possibly none) rather than taking down the whole
+              # sync — workouts/PRs/sessions/e1RM don't depend on this data.
+              try:
+                  fetched_templates = dict(exercise_templates)
+                  templates_page = 1
+                  templates_page_count = None
+                  while True:
+                      try:
+                          tr = requests.get(
+                              "https://api.hevyapp.com/v1/exercise_templates",
+                              headers=headers,
+                              params={"page": templates_page, "pageSize": 100},
+                              timeout=30,
+                          )
+                          tr.raise_for_status()
+                      except requests.exceptions.HTTPError:
+                          if tr.status_code == 404:
+                              print(f"Hevy: exercise template page {templates_page} returned 404, stopping pagination")
+                              break
+                          raise
+                      tdata = tr.json()
+                      for t in tdata.get("exercise_templates", []):
+                          fetched_templates[t["id"]] = {
+                              "primary": t.get("primary_muscle_group"),
+                              "secondary": t.get("secondary_muscle_groups") or [],
+                          }
+                      if templates_page_count is None:
+                          templates_page_count = tdata.get("page_count")
+                      if templates_page_count is not None and templates_page >= templates_page_count:
+                          break
+                      templates_page += 1
+                  exercise_templates = fetched_templates
+                  with open(TEMPLATE_CACHE_PATH, "w") as f:
+                      json.dump({"updated_at": datetime.utcnow().isoformat()+"Z", "templates": exercise_templates}, f, indent=2)
+                  print(f"Hevy: cached {len(exercise_templates)} exercise templates")
+              except Exception as e:
+                  print(f"Hevy: exercise template fetch failed (non-fatal, muscle-group volume will be skipped this run): {e}")
+
+          # Guarantee the cache file exists on disk even if this is the first-ever
+          # run and the fetch above failed, so the later "git add" of this path
+          # doesn't fail with a missing pathspec.
+          if not os.path.exists(TEMPLATE_CACHE_PATH):
+              os.makedirs("data", exist_ok=True)
+              with open(TEMPLATE_CACHE_PATH, "w") as f:
+                  json.dump({"updated_at": datetime.utcnow().isoformat()+"Z", "templates": exercise_templates}, f, indent=2)
+
+          # Consolidates Hevy's granular MuscleGroup enum (per their /v1/exercise_templates
+          # docs: chest, shoulders, biceps, triceps, forearms, quadriceps, hamstrings,
+          # calves, glutes, abductors, adductors, lats, upper_back, traps, lower_back,
+          # abdominals, cardio, neck, full_body, other) into the 6 broad categories used
+          # by the weekly volume-by-muscle-group chart. cardio/neck/full_body/other are
+          # intentionally excluded from these buckets.
+          MUSCLE_GROUP_BUCKET = {
+              "chest": "Chest",
+              "lats": "Back", "upper_back": "Back", "traps": "Back", "lower_back": "Back",
+              "shoulders": "Shoulders",
+              "biceps": "Arms", "triceps": "Arms", "forearms": "Arms",
+              "quadriceps": "Legs", "hamstrings": "Legs", "calves": "Legs", "glutes": "Legs",
+              "abductors": "Legs", "adductors": "Legs",
+              "abdominals": "Core",
+          }
+          VOLUME_BUCKETS = ["Chest", "Back", "Shoulders", "Arms", "Legs", "Core"]
+
           MUSCLE_MAP = {
               "Bench Press": "Chest", "Incline Bench Press": "Chest", "Cable Fly": "Chest",
               "Overhead Press": "Shoulders", "Lateral Raise": "Shoulders", "Arnold Press": "Shoulders",
@@ -1227,6 +1312,7 @@ jobs:
           muscle_history = {}   # {muscle: [{date, e1rm}]}
           exercise_all_time = {}  # {exercise: best_e1rm_ever_before_today}
           weekly_volume = {}    # {week_start_iso: total_kg_lifted}
+          weekly_volume_by_muscle = {}  # {week_start_iso: {bucket: kg}}
           prs = []
           sessions_this_week = 0
           recent_workouts = []
@@ -1258,6 +1344,7 @@ jobs:
               if start_dt:
                   week_start = (start_dt - timedelta(days=start_dt.weekday())).date().isoformat()
                   weekly_volume.setdefault(week_start, 0)
+                  weekly_volume_by_muscle.setdefault(week_start, {})
 
               exercise_names = []
               session_prs = []
@@ -1265,6 +1352,10 @@ jobs:
                   ex_title = ex.get("title","")
                   exercise_names.append(ex_title)
                   muscle = next((v for k, v in MUSCLE_MAP.items() if k.lower() in ex_title.lower()), None)
+
+                  tmpl = exercise_templates.get(ex.get("exercise_template_id",""), {})
+                  primary_bucket = MUSCLE_GROUP_BUCKET.get(tmpl.get("primary"))
+                  secondary_buckets = [b for b in (MUSCLE_GROUP_BUCKET.get(m) for m in tmpl.get("secondary") or []) if b]
 
                   best_this_session = 0
                   for s in ex.get("sets", []):
@@ -1277,6 +1368,16 @@ jobs:
                           # Weekly volume
                           if start_dt:
                               weekly_volume[week_start] = weekly_volume.get(week_start, 0) + wt * reps_count
+
+                              # Weekly volume by muscle group: primary gets full
+                              # credit, each secondary group gets 0.5 credit,
+                              # applied independently (not split further).
+                              set_volume = wt * reps_count
+                              bucket_totals = weekly_volume_by_muscle[week_start]
+                              if primary_bucket:
+                                  bucket_totals[primary_bucket] = bucket_totals.get(primary_bucket, 0) + set_volume
+                              for b in secondary_buckets:
+                                  bucket_totals[b] = bucket_totals.get(b, 0) + set_volume * 0.5
 
                   if best_this_session and muscle:
                       # PR detection: did this session beat the all-time best for this exercise?
@@ -1314,6 +1415,22 @@ jobs:
           # Weekly volume as sorted list
           weekly_volume_list = sorted([{"week_of": k, "volume_kg": round(v)} for k, v in weekly_volume.items()], key=lambda x: x["week_of"])
 
+          # Weekly volume by muscle group as sorted list — Chart 1 (stacked bar +
+          # total trendline). total_kg is the sum of the 6 weighted buckets, i.e.
+          # the top of the stack — it will run higher than weekly_volume's plain
+          # kg total whenever sets carry secondary-muscle credit, by design.
+          weekly_volume_by_muscle_list = []
+          for wk in sorted(weekly_volume_by_muscle.keys()):
+              buckets = weekly_volume_by_muscle[wk]
+              row = {"week_of": wk}
+              total = 0
+              for b in VOLUME_BUCKETS:
+                  v = round(buckets.get(b, 0))
+                  row[b] = v
+                  total += v
+              row["total_kg"] = total
+              weekly_volume_by_muscle_list.append(row)
+
           # Only the most recent PRs (last 7 days)
           recent_prs = [p for p in prs if p["date"] >= week_ago.date().isoformat()]
 
@@ -1326,6 +1443,7 @@ jobs:
                   "muscle_history": muscle_history,
                   "exercise_history": {},
                   "weekly_volume": weekly_volume_list,
+                  "weekly_volume_by_muscle": weekly_volume_by_muscle_list,
                   "recent_workouts": recent_workouts,
                   "recent_prs": recent_prs,
               }, f, indent=2)
@@ -1427,7 +1545,7 @@ jobs:
         run: |
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
-          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_trials.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json data/himbo_checkins.json
+          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_trials.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json data/hevy_exercise_templates.json data/himbo_checkins.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
           git pull --rebase
           git push

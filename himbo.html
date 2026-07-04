@@ -642,9 +642,9 @@
         </div>
       </div>
       <div id="hevy-pr-callout" style="display:none;margin-bottom:12px;"></div>
-      <div class="section-title" style="margin-top:1.5rem;">Strength trend — % change since 18 May</div>
+      <div class="section-title" style="margin-top:1.5rem;">1RM trend by muscle group</div>
       <div class="chart-wrap" style="height:220px;">
-        <canvas id="hevyTrendChart" role="img" aria-label="Estimated 1RM percentage change by muscle group since 18 May 2026"></canvas>
+        <canvas id="hevyTrendChart" role="img" aria-label="Estimated 1RM in kg by muscle group over time"></canvas>
       </div>
       <div id="hevy-trend-legend" class="chart-legend" style="flex-wrap:wrap;gap:8px 16px;margin-bottom:16px;"></div>
       <div class="section-title" style="margin-top:1.5rem;">Estimated 1RM by muscle group</div>
@@ -652,10 +652,11 @@
       <div id="hevy-muscle-grid" class="grid-2" style="margin-bottom:12px;">
         <div style="color:var(--text-muted);font-size:12px;font-style:italic;">Loading from Hevy…</div>
       </div>
-      <div class="section-title" style="margin-top:1.5rem;">Weekly volume</div>
-      <div class="chart-wrap" style="height:160px;margin-bottom:16px;">
-        <canvas id="hevyVolumeChart" role="img" aria-label="Total kg lifted per week"></canvas>
+      <div class="section-title" style="margin-top:1.5rem;">Weekly volume by muscle group</div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="hevyVolumeChart" role="img" aria-label="Total kg lifted per week, broken down by muscle group, with a total volume trendline"></canvas>
       </div>
+      <div id="hevy-volume-legend" class="chart-legend" style="flex-wrap:wrap;gap:8px 16px;margin-bottom:16px;"></div>
       <div class="section-title" style="margin-top:1.5rem;">Himbo on Gym Programme</div>
       <div class="metric-card pink-border" id="gym-programme-card" style="margin-bottom:16px;">
         <div class="metric-label" style="margin-bottom:8px;">The training read</div>
@@ -1748,7 +1749,7 @@
         ).join('');
       }
 
-      // §5c: Percentage-change trend chart (muscle groups, since 18 May 2026)
+      // §5c: 1RM trend chart — absolute e1RM (kg) by muscle group over time
       const CHART_MUSCLES = ['Chest','Shoulders','Biceps','Back','Quad','Hinge'];
       const MUSCLE_COLOURS = ['#E8458B','#7BAE7F','#E8C96A','#88AADD','#C46060','#A8A0D4'];
       const muscleHistory = h.muscle_history || {};
@@ -1779,12 +1780,11 @@
         const datasets = CHART_MUSCLES.map((muscle, i) => {
           const entries = weeklyHistory[muscle] || [];
           if (entries.length === 0) return null;
-          const baseline = entries[0].e1rm;
           const byWeek = Object.fromEntries(entries.map(e => [e.week, e.e1rm]));
-          let last = baseline;
+          let last = entries[0].e1rm;
           const data = allWeeks.map(w => {
             if (byWeek[w] !== undefined) last = byWeek[w];
-            return baseline > 0 ? parseFloat(((last - baseline) / baseline * 100).toFixed(1)) : null;
+            return last;
           });
           return { label: muscle, data, borderColor: MUSCLE_COLOURS[i], backgroundColor: 'transparent',
             pointRadius: 3, pointHoverRadius: 5, borderWidth: 1.8, tension: 0.3, fill: false };
@@ -1797,10 +1797,10 @@
             responsive: true, maintainAspectRatio: false,
             plugins: {
               legend: { display: false },
-              tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y > 0 ? '+' : ''}${c.parsed.y}%` } }
+              tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y} kg` } }
             },
             scales: {
-              y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, callback: v => (v > 0 ? '+' : '') + v + '%' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+              y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, callback: v => v + ' kg' }, grid: { color: 'rgba(255,255,255,0.05)' } },
               x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 8 }, grid: { display: false } }
             }
           }
@@ -1828,31 +1828,62 @@
         muscleGrid.innerHTML = '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">No gym data yet — sync needed.</div>';
       }
 
-      // §5e: Weekly volume chart
+      // §5e: Weekly volume by muscle group — stacked bar + total volume trendline
+      const VOLUME_BUCKETS = ['Chest','Back','Shoulders','Arms','Legs','Core'];
+      const VOLUME_COLOURS = ['#E8458B','#88AADD','#7BAE7F','#E8C96A','#C46060','#A8A0D4'];
       const volCtx = document.getElementById('hevyVolumeChart')?.getContext('2d');
-      if (volCtx && h.weekly_volume && h.weekly_volume.length > 0) {
-        const volData = h.weekly_volume.slice(-12);
+      if (volCtx && h.weekly_volume_by_muscle && h.weekly_volume_by_muscle.length > 0) {
+        const volData = h.weekly_volume_by_muscle.slice(-12);
         new Chart(volCtx, {
           type: 'bar',
           data: {
             labels: volData.map(v => parseLocalDate(v.week_of).toLocaleDateString('en-AU',{day:'numeric',month:'short'})),
-            datasets: [{
-              label: 'Volume (kg)',
-              data: volData.map(v => v.volume_kg),
-              backgroundColor: 'rgba(232,69,139,0.25)',
-              borderColor: '#E8458B',
-              borderWidth: 1, borderRadius: 4,
-            }]
+            datasets: [
+              ...VOLUME_BUCKETS.map((muscle, i) => ({
+                type: 'bar',
+                label: muscle,
+                data: volData.map(v => v[muscle] || 0),
+                backgroundColor: VOLUME_COLOURS[i],
+                stack: 'volume',
+                borderRadius: 2,
+              })),
+              {
+                type: 'line',
+                label: 'Total volume',
+                data: volData.map(v => v.total_kg),
+                borderColor: 'rgba(255,255,255,0.85)',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                borderDash: [4, 3],
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                pointBackgroundColor: 'rgba(255,255,255,0.85)',
+                tension: 0.3,
+                fill: false,
+                order: 0,
+              },
+            ]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toLocaleString() + ' kg' } } },
+            plugins: {
+              legend: { display: false },
+              tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y.toLocaleString()} kg` } }
+            },
             scales: {
-              y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, callback: v => v.toLocaleString() + ' kg' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-              x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } }, grid: { display: false } }
+              y: { stacked: true, ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, callback: v => v.toLocaleString() + ' kg' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+              x: { stacked: true, ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } }, grid: { display: false } }
             }
           }
         });
+
+        // Legend
+        const volLegendEl = document.getElementById('hevy-volume-legend');
+        if (volLegendEl) {
+          volLegendEl.innerHTML = VOLUME_BUCKETS.map((m, i) =>
+            `<span><span class="legend-dot" style="background:${VOLUME_COLOURS[i]};display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:4px;"></span>${m}</span>`
+          ).join('') + `<span><span class="legend-dot" style="border-top:2px dashed rgba(255,255,255,0.85);display:inline-block;width:12px;height:0;vertical-align:middle;margin-right:4px;"></span>Total volume</span>`;
+        }
       }
 
       // Recent workouts list
