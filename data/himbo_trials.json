@@ -1,16 +1,29 @@
 {
-  "updated_at": "2026-07-04T03:43:13.991753Z",
+  "updated_at": "2026-07-04T06:53:57.860510Z",
   "trials": [
     {
-      "service": "Triniful Trial \u2014 wear the best-fitting piece for Matt",
-      "tier": "Trial",
-      "mystery": "Himbo: Visibility & Self-Expression",
+      "service": "Hitting kJ target",
+      "tier": "Devotion",
+      "mystery": "Himbo: Physique",
       "status": "Active",
-      "cadence": "Ad-hoc",
+      "cadence": "Daily",
       "due_date": "",
-      "trigger_condition": "Triniful order arrives",
-      "favour_value": 3,
-      "grace_earned": 1
+      "trigger_condition": "",
+      "description": "Hit the kJ number today. The bulk doesn't build itself.",
+      "favour_value": 1,
+      "grace_earned": 0
+    },
+    {
+      "service": "Full kJ target week (7/7)",
+      "tier": "Streak",
+      "mystery": "Himbo: Physique",
+      "status": "Active",
+      "cadence": "Weekly",
+      "due_date": "",
+      "trigger_condition": "",
+      "description": "Seven for seven on the kJ number. The bulk stayed on track all week, not just the easy days.",
+      "favour_value": 5,
+      "grace_earned": 0
     },
     {
       "service": "Apollo ring + necklace \u2014 every in-office day this week",
@@ -19,29 +32,32 @@
       "status": "Active",
       "cadence": "Ad-hoc",
       "due_date": "2026-07-04",
-      "trigger_condition": "Each in-office day w/c 28 June 2026",
+      "trigger_condition": "",
+      "description": "Wear the Apollo ring and necklace to the office every in-office day this week (starting Wed 1 July). Extended from original single-day trial assigned 20 June. No skipping.",
       "favour_value": 3,
       "grace_earned": 1
     },
     {
       "service": "Wednesday midweek pulse check-in",
       "tier": "Devotion",
-      "mystery": "",
+      "mystery": "Himbo: Internal Work",
       "status": "Active",
       "cadence": "Weekly",
       "due_date": "",
       "trigger_condition": "",
+      "description": "Showed up Wednesday. Training on track, nutrition on track, any visibility wins worth naming \u2014 that's the whole ask.",
       "favour_value": 1,
       "grace_earned": 0
     },
     {
       "service": "Saturday full check-in",
       "tier": "Devotion",
-      "mystery": "",
+      "mystery": "Himbo: Internal Work",
       "status": "Active",
       "cadence": "Weekly",
       "due_date": "",
       "trigger_condition": "",
+      "description": "The real one. Visibility, joy police, physique, feeling \u2014 the whole check-in, no skipping.",
       "favour_value": 1,
       "grace_earned": 0
     },
@@ -53,6 +69,7 @@
       "cadence": "Open-ended",
       "due_date": "",
       "trigger_condition": "",
+      "description": "Wear a pink thong in the men's change room after a swim, no flinching, no rushing. Joint Trial with Eros \u2014 Himbo owns the Visibility & Self-Expression angle, Eros owns the inner game (Vulnerability & Kink Exploration), standing in it without performing composure. Logged once here to avoid double-counting Favour; Eros's Grace credit for this one is qualitative (Dante's read), not separately counted in the Compendium. No deadline, done when done.",
       "favour_value": 20,
       "grace_earned": 1
     },
@@ -63,7 +80,8 @@
       "status": "Active",
       "cadence": "Ad-hoc",
       "due_date": "",
-      "trigger_condition": "Named and articulated at a Saturday or Wednesday check-in",
+      "trigger_condition": "",
+      "description": "Look at one daily routine this week and ask \u2014 is this what I'd choose, or just what I do? Completes when named and articulated at a check-in.",
       "favour_value": 10,
       "grace_earned": 1
     },
@@ -75,6 +93,7 @@
       "cadence": "Open-ended",
       "due_date": "",
       "trigger_condition": "",
+      "description": "Active wear crop top worn at Bold & Beautiful \u2014 beyond run club, in a swim context.",
       "favour_value": 15,
       "grace_earned": 1
     },
@@ -85,7 +104,8 @@
       "status": "Active",
       "cadence": "Daily",
       "due_date": "",
-      "trigger_condition": "Strava strength/gym activity logged on a scheduled programme day",
+      "trigger_condition": "",
+      "description": "A programme day, shown up for. Chest/Shoulders/Arms, Back/Legs, full body, heavy compound \u2014 whichever one was on, he did it.",
       "favour_value": 1,
       "grace_earned": 0
     },
@@ -96,7 +116,8 @@
       "status": "Active",
       "cadence": "Daily",
       "due_date": "",
-      "trigger_condition": "Strava swim activity logged",
+      "trigger_condition": "",
+      "description": "Balmoral or Bold & Beautiful \u2014 either counts. He was in the water.",
       "favour_value": 1,
       "grace_earned": 0
     },
@@ -107,7 +128,8 @@
       "status": "Active",
       "cadence": "Weekly",
       "due_date": "",
-      "trigger_condition": "4 'Gym session' Devotion completions logged within the same week",
+      "trigger_condition": "",
+      "description": "All four programmed sessions, one week, no gaps. That's the whole programme, done.",
       "favour_value": 5,
       "grace_earned": 0
     },
@@ -118,7 +140,8 @@
       "status": "Active",
       "cadence": "Daily",
       "due_date": "",
-      "trigger_condition": "Strava run activity logged",
+      "trigger_condition": "",
+      "description": "Run Club Saturday or any other run, logged. Feet moved \u2014 that's the win.",
       "favour_value": 1,
       "grace_earned": 0
     },
@@ -129,7 +152,8 @@
       "status": "Active",
       "cadence": "Daily",
       "due_date": "",
-      "trigger_condition": "Visibility-coded item worn, surfaced via check-in or in-conversation mention",
+      "trigger_condition": "",
+      "description": "Something visibility-coded, out in the world today \u2014 jockstrap, painted nails, a pink item, whatever it was. He noticed.",
       "favour_value": 1,
       "grace_earned": 0
     },
@@ -140,10 +164,11 @@
       "status": "Active",
       "cadence": "Weekly",
       "due_date": "",
-      "trigger_condition": "Cronometer protein \u2265180g logged on all 7 days",
+      "trigger_condition": "",
+      "description": "180g+, every single day this week. Muscle needs the fuel \u2014 he brought it.",
       "favour_value": 5,
       "grace_earned": 0
     }
   ],
-  "grace_total": 7.0
+  "grace_total": 6.0
 }
