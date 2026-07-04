@@ -212,10 +212,11 @@ jobs:
               def pprop(name):
                   return prop_text(page, name)
 
-              name    = pprop("Service") or pprop("Name") or pprop("Title") or page_id
-              god     = pprop("God")
-              tier    = pprop("Tier")
-              mystery = pprop("Mystery")
+              name        = pprop("Service") or pprop("Name") or pprop("Title") or page_id
+              god         = pprop("God")
+              tier        = pprop("Tier")
+              mystery     = pprop("Mystery")
+              description = pprop("Description")
               fav     = page.get("properties",{}).get("Favour Value",{}).get("number") or 0
               grc     = page.get("properties",{}).get("Grace Earned",{}).get("number") or 0
               compact_id = page_id.replace("-","")
@@ -224,6 +225,7 @@ jobs:
                   "god":               god,
                   "tier":              tier,
                   "mystery":           mystery,
+                  "description":       description,
                   "favour_value":      float(fav),
                   "grace_earned":      float(grc),
                   "notion_service_id": compact_id,
@@ -254,12 +256,18 @@ jobs:
                   source TEXT NOT NULL,
                   notes TEXT,
                   mystery TEXT DEFAULT '',
+                  description TEXT DEFAULT '',
                   created_at TEXT DEFAULT (datetime('now'))
               )
           """)
           conn.commit()
           try:
               conn.execute("ALTER TABLE completion_log ADD COLUMN mystery TEXT DEFAULT ''")
+              conn.commit()
+          except Exception:
+              pass  # column already exists
+          try:
+              conn.execute("ALTER TABLE completion_log ADD COLUMN description TEXT DEFAULT ''")
               conn.commit()
           except Exception:
               pass  # column already exists
@@ -276,10 +284,10 @@ jobs:
                   print(f"  SKIP (duplicate): {meta['service_name']} on {date_completed}")
                   return False
               conn.execute(
-                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes, mystery) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes, mystery, description) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                   (meta["service_name"], meta["notion_service_id"], date_completed,
                    meta["god"], meta["tier"], meta["favour_value"], meta["grace_earned"],
-                   "Automated", notes, meta.get("mystery", "")),
+                   "Automated", notes, meta.get("mystery", ""), meta.get("description", "")),
               )
               conn.commit()
               print(f"  LOGGED: {meta['service_name']} on {date_completed}")
@@ -412,10 +420,11 @@ jobs:
                   "favour_value":  row[4],
                   "mystery":       row[5] or "",
                   "notes":         row[6],
+                  "description":   row[7] or "",
               }
               for row in conn.execute(
                   "SELECT service_name, god, date_completed, grace_earned, favour_value, "
-                  "COALESCE(mystery,''), notes "
+                  "COALESCE(mystery,''), notes, COALESCE(description,'') "
                   "FROM completion_log WHERE tier='Trial' ORDER BY date_completed DESC"
               ).fetchall()
           ]
@@ -472,6 +481,7 @@ jobs:
                   "favour_value":  pg.get("properties",{}).get("Favour Value",{}).get("number") or 0,
                   "grace_earned":  pg.get("properties",{}).get("Grace Earned",{}).get("number") or 0,
                   "due_date":      prop_text(pg, "Due Date"),
+                  "description":   prop_text(pg, "Description"),
               })
 
           with open("data/active_trials.json", "w") as f:

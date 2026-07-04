@@ -73,10 +73,21 @@ jobs:
                   source TEXT NOT NULL,
                   notes TEXT,
                   mystery TEXT DEFAULT '',
+                  description TEXT DEFAULT '',
                   created_at TEXT DEFAULT (datetime('now'))
               )
           """)
           conn.commit()
+          try:
+              conn.execute("ALTER TABLE completion_log ADD COLUMN mystery TEXT DEFAULT ''")
+              conn.commit()
+          except Exception:
+              pass  # column already exists
+          try:
+              conn.execute("ALTER TABLE completion_log ADD COLUMN description TEXT DEFAULT ''")
+              conn.commit()
+          except Exception:
+              pass  # column already exists
 
           # Remove the single most recent matching row (not all — a future
           # Frequency Cap > 1/day should only lose the one being undone).
@@ -160,10 +171,11 @@ jobs:
                   "favour_value":  row[4],
                   "mystery":       row[5] or "",
                   "notes":         row[6],
+                  "description":   row[7] or "",
               }
               for row in conn.execute(
                   "SELECT service_name, god, date_completed, grace_earned, favour_value, "
-                  "COALESCE(mystery,''), notes "
+                  "COALESCE(mystery,''), notes, COALESCE(description,'') "
                   "FROM completion_log WHERE tier='Trial' ORDER BY date_completed DESC"
               ).fetchall()
           ]

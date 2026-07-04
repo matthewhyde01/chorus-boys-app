@@ -165,6 +165,7 @@ jobs:
                       "status": status,
                       "due_date": get_date("Due Date"),
                       "trigger_condition": get_rich_text("Trigger Condition"),
+                      "description": get_rich_text("Description"),
                       "favour_value": get_number("Favour Value"),
                       "grace_earned": grace,
                   })

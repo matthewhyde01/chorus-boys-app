@@ -157,8 +157,9 @@
       color: var(--god-color, var(--gold));
     }
 
+    .devotion-content { flex: 1; }
+
     .devotion-name {
-      flex: 1;
       font-size: 14px;
       color: var(--text-primary);
       line-height: 1.4;
@@ -167,6 +168,25 @@
     .devotion-row.done .devotion-name {
       color: var(--text-secondary);
       text-decoration: line-through;
+    }
+
+    .devotion-meta {
+      font-size: 11px;
+      color: var(--gold-light);
+      margin-top: 3px;
+    }
+
+    .devotion-description {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+
+    .devotion-favour {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
     }
 
     .devotion-check {
@@ -441,7 +461,12 @@
           const done = completedToday.has(d.notion_service_id);
           html += `<div class="devotion-row${done ? ' done' : ''}" style="--god-color:var(${varName})" data-id="${d.notion_service_id}">
             <div class="devotion-icon">${icon}</div>
-            <div class="devotion-name">${d.service_name}</div>
+            <div class="devotion-content">
+              <div class="devotion-name">${d.service_name}</div>
+              ${d.mystery ? `<div class="devotion-meta">${d.mystery}</div>` : ''}
+              ${d.description ? `<div class="devotion-description">${d.description}</div>` : ''}
+              <div class="devotion-favour">+${d.favour_value ?? 0} Favour</div>
+            </div>
             <div class="devotion-check">${CHECK_SVG}</div>
           </div>`;
         }

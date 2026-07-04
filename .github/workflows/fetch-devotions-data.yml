@@ -82,6 +82,7 @@ jobs:
                   "service_name":      prop_text(pg, "Service"),
                   "god":               prop_text(pg, "God"),
                   "mystery":           prop_text(pg, "Mystery"),
+                  "description":       prop_text(pg, "Description"),
                   "favour_value":      prop_text(pg, "Favour Value") or 0,
                   "pool":              prop_text(pg, "Pool") or "",
                   "frequency_cap":     prop_text(pg, "Frequency Cap") or "1/day",

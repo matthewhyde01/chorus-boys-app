@@ -336,6 +336,7 @@ jobs:
                   "cadence":            prop_text(pg, "Cadence"),
                   "due_date":           prop_text(pg, "Due Date"),
                   "trigger_condition":  prop_text(pg, "Trigger Condition"),
+                  "description":        prop_text(pg, "Description"),
                   "favour_value":       prop_text(pg, "Favour Value"),
                   "grace_earned":       prop_text(pg, "Grace Earned"),
               })

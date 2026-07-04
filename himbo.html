@@ -159,78 +159,6 @@
       background: var(--border-pink);
     }
 
-    /* Completed trials accordion */
-    .ct-item {
-      border: 0.5px solid var(--border-pink);
-      border-radius: 10px;
-      margin-bottom: 8px;
-      overflow: hidden;
-    }
-
-    .ct-item summary {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      cursor: pointer;
-      list-style: none;
-      user-select: none;
-    }
-
-    .ct-item summary::-webkit-details-marker { display: none; }
-
-    .ct-item summary:hover { background: rgba(232,69,139,0.04); }
-
-    .ct-item[open] summary { border-bottom: 0.5px solid var(--border-pink); }
-
-    .ct-item-name {
-      font-size: 13px;
-      color: var(--text-primary);
-      line-height: 1.4;
-      flex: 1;
-    }
-
-    .ct-item-date {
-      font-size: 11px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .ct-item-chevron {
-      flex-shrink: 0;
-      color: var(--pink);
-      opacity: 0.5;
-      transition: transform 0.2s;
-    }
-
-    .ct-item[open] .ct-item-chevron { transform: rotate(180deg); }
-
-    .ct-item-body {
-      padding: 12px 14px;
-      background: rgba(232,69,139,0.03);
-    }
-
-    .ct-item-body-row {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
-      line-height: 1.5;
-    }
-
-    .ct-item-body-row:last-child { margin-bottom: 0; }
-
-    .ct-item-body-label {
-      font-family: 'Cinzel', serif;
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--pink);
-      opacity: 0.7;
-      margin-right: 6px;
-    }
-
     /* METRIC GRID */
     .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
@@ -1573,6 +1501,9 @@
             ch.mystery  ? `<span style="color:var(--gold-light);">${ch.mystery}</span>`         : '',
             ch.due_date ? `<span style="color:var(--text-muted);">Due ${ch.due_date}</span>`    : '',
           ].filter(Boolean).join(' · ');
+          const description = ch.description
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.5;">${ch.description}</div>`
+            : '';
           const trigger = ch.trigger_condition
             ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${ch.trigger_condition}</div>`
             : '';
@@ -1588,6 +1519,7 @@
                 <div class="c-text">${ch.service || 'Unnamed'}</div>${completePill}
               </div>
               ${meta ? `<div style="font-size:10px;margin-top:3px;">${meta}</div>` : ''}
+              ${description}
               ${trigger}
               ${lastDateHtml}
               ${toggleBtn}
@@ -1683,6 +1615,9 @@
 
         const dueHtml = dueToday.length ? dueToday.map(ch => {
           const meta = ch.mystery ? `<div style="font-size:10px;margin-top:3px;color:var(--gold-light);">${ch.mystery}</div>` : '';
+          const description = ch.description
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.5;">${ch.description}</div>`
+            : '';
           const trigger = ch.trigger_condition
             ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${ch.trigger_condition}</div>`
             : '';
@@ -1691,6 +1626,7 @@
             <div style="flex:1;">
               <div class="c-text">${ch.service || 'Unnamed'}</div>
               ${meta}
+              ${description}
               ${trigger}
             </div>
           </div>`;
@@ -1776,20 +1712,23 @@
             ctContainer.innerHTML = allTrials.map(t => {
               const d = new Date(t.date_completed + 'T00:00:00');
               const dateStr = d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
-              const details = [
-                t.mystery  ? `<div class="ct-item-body-row"><span class="ct-item-body-label">Mystery</span>${t.mystery}</div>` : '',
-                `<div class="ct-item-body-row"><span class="ct-item-body-label">Completed</span>${dateStr}</div>`,
-                `<div class="ct-item-body-row"><span class="ct-item-body-label">Reward</span>+${t.grace_earned} Grace · +${t.favour_value} Favour</div>`,
-                t.notes    ? `<div class="ct-item-body-row"><span class="ct-item-body-label">Notes</span>${t.notes}</div>` : '',
-              ].filter(Boolean).join('');
-              return `<details class="ct-item">
-                <summary>
-                  <span class="ct-item-name">${t.service_name}</span>
-                  <span class="ct-item-date">${d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                  <svg class="ct-item-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </summary>
-                <div class="ct-item-body">${details}</div>
-              </details>`;
+              const meta = t.mystery ? `<div style="font-size:10px;margin-top:3px;color:var(--gold-light);">${t.mystery}</div>` : '';
+              const description = t.description
+                ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.5;">${t.description}</div>`
+                : '';
+              const notes = t.notes
+                ? `<div style="font-size:10px;color:var(--text-muted);margin-top:3px;font-style:italic;">${t.notes}</div>`
+                : '';
+              return `<div class="challenge-item done" style="margin-bottom:6px;">
+                <span class="c-dot done"></span>
+                <div style="flex:1;">
+                  <div class="c-text">${t.service_name}</div>
+                  ${meta}
+                  ${description}
+                  <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">Completed ${dateStr} · +${t.grace_earned} Grace · +${t.favour_value} Favour</div>
+                  ${notes}
+                </div>
+              </div>`;
             }).join('');
           }
         }

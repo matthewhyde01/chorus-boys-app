@@ -88,6 +88,7 @@ jobs:
           service_name  = prop_text("Service") or prop_text("Name") or page_id_compact
           god           = prop_text("God")
           mystery       = (page.get("properties", {}).get("Mystery", {}).get("select") or {}).get("name", "")
+          description   = prop_text("Description")
           favour_value  = float(page.get("properties",{}).get("Favour Value",{}).get("number") or 0)
           frequency_cap = prop_text("Frequency Cap") or "1/day"
 
@@ -115,12 +116,18 @@ jobs:
                   source TEXT NOT NULL,
                   notes TEXT,
                   mystery TEXT DEFAULT '',
+                  description TEXT DEFAULT '',
                   created_at TEXT DEFAULT (datetime('now'))
               )
           """)
           conn.commit()
           try:
               conn.execute("ALTER TABLE completion_log ADD COLUMN mystery TEXT DEFAULT ''")
+              conn.commit()
+          except Exception:
+              pass  # column already exists
+          try:
+              conn.execute("ALTER TABLE completion_log ADD COLUMN description TEXT DEFAULT ''")
               conn.commit()
           except Exception:
               pass  # column already exists
@@ -134,8 +141,8 @@ jobs:
               print(f"Frequency Cap reached ({existing_today}/{cap_per_day}) — skipping SQLite write")
           else:
               conn.execute(
-                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes, mystery) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                  (service_name, page_id_compact, date_completed, god, "Devotion", favour_value, grace_earned, "Manual", notes, mystery),
+                  "INSERT INTO completion_log (service_name, notion_service_id, date_completed, god, tier, favour_value, grace_earned, source, notes, mystery, description) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                  (service_name, page_id_compact, date_completed, god, "Devotion", favour_value, grace_earned, "Manual", notes, mystery, description),
               )
               conn.commit()
               print(f"SQLite: logged {service_name} on {date_completed}")
@@ -209,10 +216,11 @@ jobs:
                   "favour_value":  row[4],
                   "mystery":       row[5] or "",
                   "notes":         row[6],
+                  "description":   row[7] or "",
               }
               for row in conn.execute(
                   "SELECT service_name, god, date_completed, grace_earned, favour_value, "
-                  "COALESCE(mystery,''), notes "
+                  "COALESCE(mystery,''), notes, COALESCE(description,'') "
                   "FROM completion_log WHERE tier='Trial' ORDER BY date_completed DESC"
               ).fetchall()
           ]
