@@ -95,10 +95,13 @@ jobs:
           # Devotions never earn Grace — only Trials do.
           grace_earned = 0.0
 
-          m = re.match(r"\s*(\d+)\s*/\s*day", frequency_cap, re.IGNORECASE)
-          cap_per_day = int(m.group(1)) if m else 1
+          if frequency_cap.strip().lower() == "unlimited":
+              cap_per_day = None  # no cap — repeatable as many times as it happens
+          else:
+              m = re.match(r"\s*(\d+)\s*/\s*day", frequency_cap, re.IGNORECASE)
+              cap_per_day = int(m.group(1)) if m else 1
 
-          print(f"Devotion: {service_name} | {god} | mystery={mystery} | favour={favour_value} | cap={cap_per_day}/day")
+          print(f"Devotion: {service_name} | {god} | mystery={mystery} | favour={favour_value} | cap={cap_per_day or 'unlimited'}/day")
 
           # ── 2. Write completion to SQLite (respecting Frequency Cap) ─────────
           os.makedirs("data", exist_ok=True)
@@ -137,7 +140,7 @@ jobs:
               (page_id_compact, date_completed),
           ).fetchone()[0]
 
-          if existing_today >= cap_per_day:
+          if cap_per_day is not None and existing_today >= cap_per_day:
               print(f"Frequency Cap reached ({existing_today}/{cap_per_day}) — skipping SQLite write")
           else:
               conn.execute(

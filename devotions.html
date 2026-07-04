@@ -209,6 +209,45 @@
     .devotion-check svg { opacity: 0; transition: opacity 0.15s ease; }
     .devotion-row.done .devotion-check svg { opacity: 1; }
 
+    /* Repeatable ("unlimited") items get a tally counter instead of a checkbox —
+       distinct glyph, not just colour, so the difference reads at a glance. */
+    .devotion-counter {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid var(--god-color, var(--border-gold));
+      color: var(--god-color, var(--gold));
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      transition: transform 0.15s ease;
+    }
+
+    .devotion-row:active .devotion-counter { transform: scale(0.9); }
+
+    .devotion-counter-badge {
+      position: absolute;
+      top: -7px;
+      right: -7px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--god-color, var(--gold));
+      color: #0D0A14;
+      font-size: 9px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
     .empty-state {
       color: var(--text-muted);
       font-family: 'Cormorant Garamond', serif;
@@ -321,6 +360,48 @@
     function sydneyDisplayDate(d = new Date()) {
       return new Intl.DateTimeFormat('en-AU', { timeZone: SYDNEY, weekday: 'long', day: 'numeric', month: 'long' }).format(d);
     }
+    // Monday..Sunday date strings for the current Sydney week (matches
+    // tally-grace.yml's week window) — used for 1/week items.
+    function sydneyWeekDates(d = new Date()) {
+      const weekdayIdx = { Monday:0, Tuesday:1, Wednesday:2, Thursday:3, Friday:4, Saturday:5, Sunday:6 }[sydneyWeekday(d)];
+      const [y, m, day] = sydneyDateStr(d).split('-').map(Number);
+      const monday = new Date(Date.UTC(y, m - 1, day - weekdayIdx));
+      return Array.from({ length: 7 }, (_, i) => new Date(monday.getTime() + i * 86400000).toISOString().slice(0, 10));
+    }
+
+    // ── Frequency Cap → interaction mode. Generic on the field value, not on
+    // any particular service name, so new "unlimited"/"N/week" items just work. ──
+    function parseFrequencyCap(freqCap) {
+      const s = (freqCap || '').trim().toLowerCase();
+      if (s === 'unlimited') return { mode: 'unlimited', cap: Infinity };
+      let m = s.match(/^(\d+)\s*\/\s*week/);
+      if (m) return { mode: 'weekly', cap: parseInt(m[1], 10) };
+      m = s.match(/^(\d+)\s*\/\s*day/);
+      if (m) return { mode: 'daily', cap: parseInt(m[1], 10) };
+      return { mode: 'daily', cap: 1 }; // default, matches current behaviour
+    }
+
+    // Per-item completion state: daily/weekly are checkbox-like (done or not,
+    // scoped to today vs the current Sydney week); unlimited is a running count.
+    function computeItemState(d, completionsByItem, todayStr, weekDates) {
+      const freq = parseFrequencyCap(d.frequency_cap);
+      const itemCompletions = completionsByItem[d.notion_service_id] || [];
+
+      if (freq.mode === 'unlimited') {
+        const todayCount = itemCompletions.filter(c => c.date_completed === todayStr).length;
+        return { mode: 'unlimited', count: todayCount };
+      }
+      if (freq.mode === 'weekly') {
+        const weekCompletions = itemCompletions.filter(c => weekDates.includes(c.date_completed));
+        return {
+          mode: 'weekly',
+          done: weekCompletions.length >= freq.cap,
+          completedDate: weekCompletions.length ? weekCompletions[0].date_completed : todayStr,
+        };
+      }
+      const todayCount = itemCompletions.filter(c => c.date_completed === todayStr).length;
+      return { mode: 'daily', done: todayCount >= freq.cap, completedDate: todayStr };
+    }
 
     // ── Deterministic seeded pool selection ──────────────────────────────────
     function hashSeed(str) {
@@ -358,35 +439,72 @@
       setTimeout(() => { status.style.display = 'none'; }, 5000);
     }
 
-    // ── Complete / undo a devotion — tapping a checked row undoes it, in case
-    // of an accidental tap. Blocked while a request is in flight so a rapid
-    // double-tap can't race complete against undo. ──────────────────────────
-    function toggleDevotion(row, devotion, todayStr) {
-      if (row.dataset.pending === '1') return;
-      const wasDone = row.classList.contains('done');
-      const action  = wasDone ? 'undo-devotion' : 'complete-devotion';
-
-      row.dataset.pending = '1';
-      row.classList.toggle('done');
-
-      fetch(RELAY_URL, {
+    function postRelay(action, devotion, dateCompleted) {
+      return fetch(RELAY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action,
           notion_service_id:  devotion.notion_service_id,
           service_name:       devotion.service_name,
-          date_completed:     todayStr,
+          date_completed:     dateCompleted,
           notes:              '',
         }),
       }).then(r => {
         if (!r.ok) return r.text().then(t => { throw new Error(t || `HTTP ${r.status}`); });
-      }).catch(e => {
-        row.classList.toggle('done'); // revert the optimistic flip
-        showError(`Couldn't ${wasDone ? 'undo' : 'log'} "${devotion.service_name}" — try again. (${e.message})`);
-      }).finally(() => {
-        row.dataset.pending = '';
       });
+    }
+
+    // ── Unlimited items: every tap logs its own completion and bumps a running
+    // count — never a done/undo toggle. ──────────────────────────────────────
+    function tapCounter(row, devotion, todayStr) {
+      if (row.dataset.pending === '1') return;
+      row.dataset.pending = '1';
+
+      const counterEl = row.querySelector('.devotion-counter');
+      let badge = counterEl.querySelector('.devotion-counter-badge');
+      const nextCount = (badge ? parseInt(badge.textContent, 10) : 0) + 1;
+      if (badge) {
+        badge.textContent = nextCount;
+      } else {
+        badge = document.createElement('span');
+        badge.className = 'devotion-counter-badge';
+        badge.textContent = nextCount;
+        counterEl.appendChild(badge);
+      }
+
+      postRelay('complete-devotion', devotion, todayStr)
+        .catch(e => {
+          const b = counterEl.querySelector('.devotion-counter-badge');
+          if (b) {
+            const cur = parseInt(b.textContent, 10);
+            if (cur <= 1) b.remove(); else b.textContent = cur - 1;
+          }
+          showError(`Couldn't log "${devotion.service_name}" — try again. (${e.message})`);
+        })
+        .finally(() => { row.dataset.pending = ''; });
+    }
+
+    // ── Daily/weekly items: tapping a checked row undoes it, in case of an
+    // accidental tap — undo targets the actual date it was completed on, which
+    // for a weekly item may not be today. Blocked while a request is in flight
+    // so a rapid double-tap can't race complete against undo. ────────────────
+    function tapCheckbox(row, devotion, todayStr) {
+      if (row.dataset.pending === '1') return;
+      const wasDone = row.classList.contains('done');
+      const action  = wasDone ? 'undo-devotion' : 'complete-devotion';
+      const dateForRequest = wasDone ? (row.dataset.completedDate || todayStr) : todayStr;
+
+      row.dataset.pending = '1';
+      row.classList.toggle('done');
+      if (!wasDone) row.dataset.completedDate = todayStr;
+
+      postRelay(action, devotion, dateForRequest)
+        .catch(e => {
+          row.classList.toggle('done'); // revert the optimistic flip
+          showError(`Couldn't ${wasDone ? 'undo' : 'log'} "${devotion.service_name}" — try again. (${e.message})`);
+        })
+        .finally(() => { row.dataset.pending = ''; });
     }
 
     // ── Build the page ────────────────────────────────────────────────────────
@@ -412,13 +530,14 @@
         return;
       }
 
-      const allDevotions   = devotionsData.devotions || [];
-      const pools          = devotionsData.pools || {};
-      const completedToday = new Set(
-        (graceData.devotion_completions || [])
-          .filter(c => c.date_completed === todayStr)
-          .map(c => c.notion_service_id)
-      );
+      const allDevotions = devotionsData.devotions || [];
+      const pools        = devotionsData.pools || {};
+      const weekDates    = sydneyWeekDates(now);
+
+      const completionsByItem = {};
+      for (const c of (graceData.devotion_completions || [])) {
+        (completionsByItem[c.notion_service_id] = completionsByItem[c.notion_service_id] || []).push(c);
+      }
 
       // Filter to today's weekday
       const eligible = allDevotions.filter(d => Array.isArray(d.days) && d.days.includes(weekday));
@@ -450,6 +569,7 @@
       const byGod = {};
       for (const d of todaysList) (byGod[d.god] = byGod[d.god] || []).push(d);
 
+      const states = {};
       let html = '';
       for (const { key, varName } of GODS) {
         const items = byGod[key];
@@ -458,8 +578,16 @@
         html += `<section class="god-section">
           <div class="god-section-title" style="--god-color:var(${varName})">${key}</div>`;
         for (const d of items) {
-          const done = completedToday.has(d.notion_service_id);
-          html += `<div class="devotion-row${done ? ' done' : ''}" style="--god-color:var(${varName})" data-id="${d.notion_service_id}">
+          const state = computeItemState(d, completionsByItem, todayStr, weekDates);
+          states[d.notion_service_id] = state;
+
+          const action = state.mode === 'unlimited'
+            ? `<div class="devotion-counter">+${state.count > 0 ? `<span class="devotion-counter-badge">${state.count}</span>` : ''}</div>`
+            : `<div class="devotion-check">${CHECK_SVG}</div>`;
+          const rowClass = state.mode !== 'unlimited' && state.done ? ' done' : '';
+          const completedDateAttr = state.mode !== 'unlimited' ? ` data-completed-date="${state.completedDate}"` : '';
+
+          html += `<div class="devotion-row${rowClass}" style="--god-color:var(${varName})" data-id="${d.notion_service_id}"${completedDateAttr}>
             <div class="devotion-icon">${icon}</div>
             <div class="devotion-content">
               <div class="devotion-name">${d.service_name}</div>
@@ -467,17 +595,23 @@
               ${d.description ? `<div class="devotion-description">${d.description}</div>` : ''}
               <div class="devotion-favour">+${d.favour_value ?? 0} Favour</div>
             </div>
-            <div class="devotion-check">${CHECK_SVG}</div>
+            ${action}
           </div>`;
         }
         html += `</section>`;
       }
       listEl.innerHTML = html;
 
-      // Wire tap handlers
+      // Wire tap handlers — mode decides which interaction a row gets
       for (const d of todaysList) {
         const row = listEl.querySelector(`[data-id="${d.notion_service_id}"]`);
-        if (row) row.addEventListener('click', () => toggleDevotion(row, d, todayStr));
+        if (!row) continue;
+        const mode = states[d.notion_service_id].mode;
+        if (mode === 'unlimited') {
+          row.addEventListener('click', () => tapCounter(row, d, todayStr));
+        } else {
+          row.addEventListener('click', () => tapCheckbox(row, d, todayStr));
+        }
       }
     }
 
