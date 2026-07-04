@@ -1,14 +1,14 @@
 {
-  "updated_at": "2026-07-04T06:58:32.962158Z",
-  "favour_total": 135.0,
+  "updated_at": "2026-07-04T08:15:51.419304Z",
+  "favour_total": 136.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
       "favour_earned": 45.0,
       "completions_by_mystery": {
-        "Himbo: Visibility & Self-Expression": 2.0,
         "Himbo: Physique": 0.0,
+        "Himbo: Visibility & Self-Expression": 2.0,
         "Himbo: Internal Work": 0
       }
     },
@@ -17,9 +17,9 @@
       "grace_threshold": 12,
       "favour_earned": 80.0,
       "completions_by_mystery": {
+        "Eros: Sexual Challenges": 3.0,
         "Eros: Kink Exploration": 2.0,
-        "Eros: Vulnerability": 0,
-        "Eros: Sexual Challenges": 3.0
+        "Eros: Vulnerability": 0
       }
     },
     "Hestio": {
@@ -30,6 +30,16 @@
         "Hestio: Family": 1.0,
         "Hestio: The Hearth": 0,
         "Hestio: Friends": 0
+      }
+    },
+    "Hermes": {
+      "grace_total": 0.0,
+      "grace_threshold": 9,
+      "favour_earned": 1.0,
+      "completions_by_mystery": {
+        "Hermes: Creative Expression": 0,
+        "Hermes: Presence & Enough": 0,
+        "Hermes: Flow Practice": 0.0
       }
     }
   },
@@ -126,6 +136,12 @@
       "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
       "service_name": "Saturday full check-in",
       "god": "Himbo",
+      "date_completed": "2026-07-04"
+    },
+    {
+      "notion_service_id": "385db4862bcd81d69f93fb087dc3c547",
+      "service_name": "15-minute flow block",
+      "god": "Hermes",
       "date_completed": "2026-07-04"
     },
     {
