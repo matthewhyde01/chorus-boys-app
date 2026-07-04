@@ -1,21 +1,14 @@
 {
-  "updated_at": "2026-07-04T05:30:04.459470Z",
+  "updated_at": "2026-07-04T06:58:33.218647Z",
   "trials": [
-    {
-      "notion_service_id": "38cdb4862bcd819385d2f3fb2b39a531",
-      "service_name": "Triniful Trial \u2014 wear the best-fitting piece for Matt",
-      "god": "Himbo",
-      "favour_value": 3,
-      "grace_earned": 1,
-      "due_date": ""
-    },
     {
       "notion_service_id": "38cdb4862bcd81d6bff0d23262646225",
       "service_name": "Apollo ring + necklace \u2014 every in-office day this week",
       "god": "Himbo",
       "favour_value": 3,
       "grace_earned": 1,
-      "due_date": "2026-07-04"
+      "due_date": "2026-07-04",
+      "description": "Wear the Apollo ring and necklace to the office every in-office day this week (starting Wed 1 July). Extended from original single-day trial assigned 20 June. No skipping."
     },
     {
       "notion_service_id": "385db4862bcd8125b80cd8f48cec7d16",
@@ -23,7 +16,8 @@
       "god": "Himbo",
       "favour_value": 20,
       "grace_earned": 1,
-      "due_date": ""
+      "due_date": "",
+      "description": "Wear a pink thong in the men's change room after a swim, no flinching, no rushing. Joint Trial with Eros \u2014 Himbo owns the Visibility & Self-Expression angle, Eros owns the inner game (Vulnerability & Kink Exploration), standing in it without performing composure. Logged once here to avoid double-counting Favour; Eros's Grace credit for this one is qualitative (Dante's read), not separately counted in the Compendium. No deadline, done when done."
     },
     {
       "notion_service_id": "385db4862bcd81278d4ddf1500f2a7d5",
@@ -31,7 +25,8 @@
       "god": "Himbo",
       "favour_value": 10,
       "grace_earned": 1,
-      "due_date": ""
+      "due_date": "",
+      "description": "Look at one daily routine this week and ask \u2014 is this what I'd choose, or just what I do? Completes when named and articulated at a check-in."
     },
     {
       "notion_service_id": "385db4862bcd8176b517d8530617cf8e",
@@ -39,7 +34,8 @@
       "god": "Himbo",
       "favour_value": 15,
       "grace_earned": 1,
-      "due_date": ""
+      "due_date": "",
+      "description": "Active wear crop top worn at Bold & Beautiful \u2014 beyond run club, in a swim context."
     },
     {
       "notion_service_id": "385db4862bcd816bb802e5857782ab5e",
@@ -47,7 +43,8 @@
       "god": "Hermes",
       "favour_value": 15,
       "grace_earned": 1,
-      "due_date": ""
+      "due_date": "",
+      "description": "Return to performing \u2014 singing or musical theatre in some form. No deadline, a door left open."
     },
     {
       "notion_service_id": "385db4862bcd81a795a4da812af9378f",
@@ -55,7 +52,17 @@
       "god": "Hermes",
       "favour_value": 10,
       "grace_earned": 1,
-      "due_date": ""
+      "due_date": "",
+      "description": "Noticing Trial \u2014 when the analytical brain is running commentary, just notice it, clock it, don't fight it, keep going. Completes when named and articulated at a check-in. Set 14 June 2026."
+    },
+    {
+      "notion_service_id": "38ddb4862bcd816c838ee7f37963eea0",
+      "service_name": "Triniful order \u2014 wear it for Matt",
+      "god": "Eros",
+      "favour_value": 15,
+      "grace_earned": 1,
+      "due_date": "",
+      "description": "When the Triniful order arrives, wear something from it for Matt \u2014 in the room, on purpose. He gets to use you in it. No skipping."
     },
     {
       "notion_service_id": "38ddb4862bcd81a2903ffc98475ceb3a",
@@ -63,7 +70,8 @@
       "god": "Eros",
       "favour_value": 25,
       "grace_earned": 1,
-      "due_date": ""
+      "due_date": "2026-07-05",
+      "description": "Be used by Dan, Ash, and Matt together next weekend while locked. First time with men other than Matt B in the dynamic."
     },
     {
       "notion_service_id": "385db4862bcd812fa9aefeae576f246e",
@@ -71,7 +79,8 @@
       "god": "Hestio",
       "favour_value": 15,
       "grace_earned": 1,
-      "due_date": ""
+      "due_date": "",
+      "description": "Reconnect with a WAAPA friend beyond Morgy. No deadline \u2014 when the right moment appears."
     },
     {
       "notion_service_id": "385db4862bcd81d7be35da894290cd73",
@@ -79,7 +88,8 @@
       "god": "Hestio",
       "favour_value": 15,
       "grace_earned": 1,
-      "due_date": ""
+      "due_date": "",
+      "description": "A number of people around a table that Matt cooked for \u2014 intentional, not just D&D. When it happens naturally."
     }
   ]
 }

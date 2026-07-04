@@ -1,14 +1,14 @@
 {
-  "updated_at": "2026-07-04T06:55:58.217263Z",
-  "favour_total": 134.0,
+  "updated_at": "2026-07-04T06:58:32.962158Z",
+  "favour_total": 135.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
-      "favour_earned": 44.0,
+      "favour_earned": 45.0,
       "completions_by_mystery": {
-        "Himbo: Physique": 0.0,
         "Himbo: Visibility & Self-Expression": 2.0,
+        "Himbo: Physique": 0.0,
         "Himbo: Internal Work": 0
       }
     },
@@ -17,9 +17,9 @@
       "grace_threshold": 12,
       "favour_earned": 80.0,
       "completions_by_mystery": {
-        "Eros: Sexual Challenges": 3.0,
         "Eros: Kink Exploration": 2.0,
-        "Eros: Vulnerability": 0
+        "Eros: Vulnerability": 0,
+        "Eros: Sexual Challenges": 3.0
       }
     },
     "Hestio": {
@@ -27,9 +27,9 @@
       "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
+        "Hestio: Family": 1.0,
         "Hestio: The Hearth": 0,
-        "Hestio: Friends": 0,
-        "Hestio: Family": 1.0
+        "Hestio: Friends": 0
       }
     }
   },
@@ -167,6 +167,12 @@
     {
       "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
       "service_name": "Swim session",
+      "god": "Himbo",
+      "date_completed": "2026-06-29"
+    },
+    {
+      "notion_service_id": "393db4862bcd815e9219f6b9348b9b78",
+      "service_name": "Hitting kJ target",
       "god": "Himbo",
       "date_completed": "2026-06-29"
     },
