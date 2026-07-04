@@ -145,8 +145,7 @@
 
     .devotion-row:hover { border-color: var(--god-color, var(--border-gold)); }
     .devotion-row:active { transform: scale(0.99); }
-    .devotion-row.done { opacity: 0.5; cursor: default; }
-    .devotion-row.done:hover { border-color: var(--border); }
+    .devotion-row.done { opacity: 0.5; }
 
     .devotion-icon {
       width: 22px;
@@ -339,16 +338,22 @@
       setTimeout(() => { status.style.display = 'none'; }, 5000);
     }
 
-    // ── Complete a devotion ───────────────────────────────────────────────────
+    // ── Complete / undo a devotion — tapping a checked row undoes it, in case
+    // of an accidental tap. Blocked while a request is in flight so a rapid
+    // double-tap can't race complete against undo. ──────────────────────────
     function toggleDevotion(row, devotion, todayStr) {
-      if (row.classList.contains('done')) return; // already logged today — no double-tap
-      row.classList.add('done');
+      if (row.dataset.pending === '1') return;
+      const wasDone = row.classList.contains('done');
+      const action  = wasDone ? 'undo-devotion' : 'complete-devotion';
+
+      row.dataset.pending = '1';
+      row.classList.toggle('done');
 
       fetch(RELAY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action:             'complete-devotion',
+          action,
           notion_service_id:  devotion.notion_service_id,
           service_name:       devotion.service_name,
           date_completed:     todayStr,
@@ -357,8 +362,10 @@
       }).then(r => {
         if (!r.ok) return r.text().then(t => { throw new Error(t || `HTTP ${r.status}`); });
       }).catch(e => {
-        row.classList.remove('done');
-        showError(`Couldn't log "${devotion.service_name}" — try again. (${e.message})`);
+        row.classList.toggle('done'); // revert the optimistic flip
+        showError(`Couldn't ${wasDone ? 'undo' : 'log'} "${devotion.service_name}" — try again. (${e.message})`);
+      }).finally(() => {
+        row.dataset.pending = '';
       });
     }
 

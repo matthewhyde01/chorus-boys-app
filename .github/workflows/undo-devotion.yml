@@ -1,0 +1,203 @@
+name: Undo Devotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      notion_service_id:
+        description: 'Notion page ID of the Devotion (32-char hex, no dashes)'
+        required: true
+        type: string
+      service_name:
+        description: 'Devotion name (passed from devotions.html, used in commit message)'
+        required: true
+        type: string
+      date_completed:
+        description: 'Date the completion being undone was logged for (YYYY-MM-DD, Sydney local)'
+        required: true
+        type: string
+      notes:
+        description: 'Unused — kept so the same request shape works for complete/undo'
+        required: false
+        type: string
+
+jobs:
+  undo-devotion:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Remove completion and re-export
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_SERVICE_ID: ${{ inputs.notion_service_id }}
+          DATE_COMPLETED: ${{ inputs.date_completed }}
+        run: |
+          python - <<'EOF'
+          import requests, json, os, sqlite3
+          from datetime import datetime
+
+          notion_key = os.environ["NOTION_API_KEY"].strip()
+          page_id_compact = os.environ["NOTION_SERVICE_ID"].strip()
+          date_completed  = os.environ["DATE_COMPLETED"].strip()
+
+          notion_headers = {
+              "Authorization": f"Bearer {notion_key}",
+              "Notion-Version": "2022-06-28",
+              "content-type": "application/json",
+          }
+
+          os.makedirs("data", exist_ok=True)
+          conn = sqlite3.connect("data/grace.db")
+          conn.execute("""
+              CREATE TABLE IF NOT EXISTS completion_log (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  service_name TEXT NOT NULL,
+                  notion_service_id TEXT NOT NULL,
+                  date_completed TEXT NOT NULL,
+                  god TEXT NOT NULL,
+                  tier TEXT NOT NULL,
+                  favour_value REAL DEFAULT 0,
+                  grace_earned REAL DEFAULT 0,
+                  source TEXT NOT NULL,
+                  notes TEXT,
+                  mystery TEXT DEFAULT '',
+                  created_at TEXT DEFAULT (datetime('now'))
+              )
+          """)
+          conn.commit()
+
+          # Remove the single most recent matching row (not all — a future
+          # Frequency Cap > 1/day should only lose the one being undone).
+          deleted = conn.execute(
+              """DELETE FROM completion_log WHERE id IN (
+                     SELECT id FROM completion_log
+                     WHERE notion_service_id=? AND date_completed=? AND tier='Devotion'
+                     ORDER BY id DESC LIMIT 1
+                 )""",
+              (page_id_compact, date_completed),
+          ).rowcount
+          conn.commit()
+          print(f"Undo: removed {deleted} row(s) for {page_id_compact} on {date_completed}")
+
+          # ── Recalculate and export grace.json (same shape as complete-devotion.yml) ──
+          CHALLENGES_DB = "1345c915-686b-4efd-939c-363c53c5315d"
+          all_svc_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHALLENGES_DB}/query",
+              headers=notion_headers,
+              json={"page_size": 100},
+              timeout=30,
+          )
+
+          def sc_prop_text(pg, name):
+              p = pg.get("properties", {}).get(name, {})
+              pt = p.get("type", "")
+              if pt == "title":     return " ".join(t.get("plain_text","") for t in p.get("title",[]))
+              if pt == "rich_text": return " ".join(t.get("plain_text","") for t in p.get("rich_text",[]))
+              if pt == "select":    return (p.get("select") or {}).get("name","")
+              return ""
+
+          all_mysteries = {}
+          if all_svc_r.ok:
+              for pg in all_svc_r.json().get("results", []):
+                  g = sc_prop_text(pg, "God")
+                  m = sc_prop_text(pg, "Mystery")
+                  if g and m:
+                      all_mysteries.setdefault(g, set()).add(m)
+
+          GRACE_THRESHOLDS = {
+              "Himbo":  12,
+              "Eros":   12,
+              "Hermes":  9,
+              "Hestio":  9,
+              "Apollo": 12,
+          }
+
+          gods_in_log = [row[0] for row in conn.execute(
+              "SELECT DISTINCT god FROM completion_log WHERE god IS NOT NULL AND god != ''"
+          ).fetchall()]
+
+          gods_data = {}
+          for g in gods_in_log:
+              grace_total  = conn.execute(
+                  "SELECT COALESCE(SUM(grace_earned),0) FROM completion_log WHERE god=?", (g,)
+              ).fetchone()[0]
+              favour_total = conn.execute(
+                  "SELECT COALESCE(SUM(favour_value),0) FROM completion_log WHERE god=?", (g,)
+              ).fetchone()[0]
+              mystery_counts = {m: 0 for m in all_mysteries.get(g, set())}
+              for m, grace in conn.execute(
+                  "SELECT mystery, COALESCE(SUM(grace_earned),0) FROM completion_log WHERE god=? AND COALESCE(mystery,'')!='' GROUP BY mystery",
+                  (g,)
+              ).fetchall():
+                  mystery_counts[m] = round(grace, 2)
+              gods_data[g] = {
+                  "grace_total":            round(grace_total, 2),
+                  "grace_threshold":        GRACE_THRESHOLDS.get(g, 0),
+                  "favour_earned":          round(favour_total, 2),
+                  "completions_by_mystery": mystery_counts,
+              }
+
+          favour_grand_total = round(sum(g["favour_earned"] for g in gods_data.values()), 2)
+
+          completed_trials = [
+              {
+                  "service_name":  row[0],
+                  "god":           row[1],
+                  "date_completed":row[2],
+                  "grace_earned":  row[3],
+                  "favour_value":  row[4],
+                  "mystery":       row[5] or "",
+                  "notes":         row[6],
+              }
+              for row in conn.execute(
+                  "SELECT service_name, god, date_completed, grace_earned, favour_value, "
+                  "COALESCE(mystery,''), notes "
+                  "FROM completion_log WHERE tier='Trial' ORDER BY date_completed DESC"
+              ).fetchall()
+          ]
+
+          devotion_completions = [
+              {
+                  "notion_service_id": row[0],
+                  "service_name":      row[1],
+                  "god":               row[2],
+                  "date_completed":    row[3],
+              }
+              for row in conn.execute(
+                  "SELECT notion_service_id, service_name, god, date_completed "
+                  "FROM completion_log WHERE tier='Devotion' ORDER BY date_completed DESC LIMIT 500"
+              ).fetchall()
+          ]
+
+          with open("data/grace.json", "w") as f:
+              json.dump({
+                  "updated_at":           datetime.utcnow().isoformat() + "Z",
+                  "favour_total":         favour_grand_total,
+                  "gods":                 gods_data,
+                  "completed_trials":     completed_trials,
+                  "devotion_completions": devotion_completions,
+              }, f, indent=2)
+          print(f"grace.json updated — favour_total={favour_grand_total}")
+          conn.close()
+          EOF
+
+      - name: Commit data files
+        run: |
+          git config user.name "Dante"
+          git config user.email "dante@chorus-boys"
+          git add data/grace.db data/grace.json
+          git diff --staged --quiet || git commit -m "chore: devotion undone — ${{ inputs.service_name }} on ${{ inputs.date_completed }}"
+          git pull --rebase
+          git push
