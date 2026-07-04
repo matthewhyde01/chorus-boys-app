@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-04T00:40:37.561903Z",
+  "updated_at": "2026-07-04T01:32:27.995119Z",
   "trials": [
     {
       "service": "Sauna",
@@ -38,16 +38,6 @@
       "status": "Planned",
       "due_date": null,
       "trigger_condition": "Activates when Triniful order arrives. Completes when worn for Matt.",
-      "favour_value": 15,
-      "grace_earned": 1
-    },
-    {
-      "service": "Locked for the week",
-      "tier": "Trial",
-      "mystery": "Eros: Kink Exploration",
-      "status": "Active",
-      "due_date": null,
-      "trigger_condition": "Completed at end of week, confirmed at next check-in",
       "favour_value": 15,
       "grace_earned": 1
     },
@@ -122,5 +112,5 @@
       "grace_earned": 0
     }
   ],
-  "grace_total": 4
+  "grace_total": 5
 }
