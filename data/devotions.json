@@ -1,25 +1,23 @@
 {
-  "updated_at": "2026-07-04T00:00:00.000Z",
+  "updated_at": "2026-07-04T05:28:30.607805Z",
   "devotions": [
     {
-      "notion_service_id": "384db4862bcd81afbb4be3f33e4305b2",
-      "service_name": "Visibility-coded item worn",
-      "god": "Himbo",
-      "mystery": "Himbo: Visibility & Self-Expression",
-      "favour_value": 1,
-      "pool": "himbo-random",
-      "frequency_cap": "1/day",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    },
-    {
-      "notion_service_id": "385db4862bcd8116aaa0d56f0905d90e",
-      "service_name": "Sunday check-in",
+      "notion_service_id": "393db4862bcd81ab8305df7dad8638d8",
+      "service_name": "Permission asked",
       "god": "Eros",
-      "mystery": "",
+      "mystery": "Eros: Vulnerability",
       "favour_value": 1,
-      "pool": "",
-      "frequency_cap": "1/week",
-      "days": []
+      "pool": "eros-random",
+      "frequency_cap": "1/day",
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
     },
     {
       "notion_service_id": "385db4862bcd811f8c56d4f49d5bd9a5",
@@ -29,43 +27,21 @@
       "favour_value": 1,
       "pool": "hestio-random",
       "frequency_cap": "1/day",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
     },
     {
       "notion_service_id": "385db4862bcd81228597fa8f63cf3070",
       "service_name": "Wednesday midweek pulse check-in",
       "god": "Hestio",
-      "mystery": "",
-      "favour_value": 1,
-      "pool": "",
-      "frequency_cap": "1/week",
-      "days": []
-    },
-    {
-      "notion_service_id": "385db4862bcd8131bf8ce2a5d3431051",
-      "service_name": "Eros-coded item worn",
-      "god": "Eros",
-      "mystery": "Eros: Kink Exploration",
-      "favour_value": 1,
-      "pool": "eros-random",
-      "frequency_cap": "1/day",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    },
-    {
-      "notion_service_id": "385db4862bcd815b8664ceecb9ee7a20",
-      "service_name": "Serving Matt B or another dom",
-      "god": "Eros",
-      "mystery": "Eros: Vulnerability",
-      "favour_value": 1,
-      "pool": "eros-random",
-      "frequency_cap": "1/day",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    },
-    {
-      "notion_service_id": "385db4862bcd8169abdafb9e2850a66b",
-      "service_name": "Sunday full check-in",
-      "god": "Hermes",
-      "mystery": "",
+      "mystery": "Hestio: The Hearth",
       "favour_value": 1,
       "pool": "",
       "frequency_cap": "1/week",
@@ -79,27 +55,71 @@
       "favour_value": 1,
       "pool": "hestio-random",
       "frequency_cap": "1/day",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
     },
     {
       "notion_service_id": "385db4862bcd817db342f3ab0c28cc90",
       "service_name": "Sunday full check-in",
       "god": "Hestio",
-      "mystery": "",
+      "mystery": "Hestio: The Hearth",
       "favour_value": 1,
       "pool": "",
       "frequency_cap": "1/week",
       "days": []
     },
     {
-      "notion_service_id": "385db4862bcd8186ba9eccbb6c90fdaf",
-      "service_name": "Wednesday midweek pulse check-in",
-      "god": "Himbo",
-      "mystery": "",
+      "notion_service_id": "385db4862bcd8116aaa0d56f0905d90e",
+      "service_name": "Sunday check-in",
+      "god": "Eros",
+      "mystery": "Eros: Vulnerability",
       "favour_value": 1,
       "pool": "",
       "frequency_cap": "1/week",
       "days": []
+    },
+    {
+      "notion_service_id": "385db4862bcd8131bf8ce2a5d3431051",
+      "service_name": "Eros-coded item worn",
+      "god": "Eros",
+      "mystery": "Eros: Kink Exploration",
+      "favour_value": 1,
+      "pool": "eros-random",
+      "frequency_cap": "1/day",
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
+    },
+    {
+      "notion_service_id": "385db4862bcd815b8664ceecb9ee7a20",
+      "service_name": "Serving Matt B or another dom",
+      "god": "Eros",
+      "mystery": "Eros: Vulnerability",
+      "favour_value": 1,
+      "pool": "eros-random",
+      "frequency_cap": "1/day",
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
     },
     {
       "notion_service_id": "385db4862bcd81a39755ec661bb42ebc",
@@ -109,13 +129,31 @@
       "favour_value": 1,
       "pool": "eros-random",
       "frequency_cap": "1/day",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
     },
     {
       "notion_service_id": "385db4862bcd81b1b5e9f388b7fd6d21",
       "service_name": "Wednesday midweek pulse check-in",
       "god": "Eros",
-      "mystery": "",
+      "mystery": "Eros: Vulnerability",
+      "favour_value": 1,
+      "pool": "",
+      "frequency_cap": "1/week",
+      "days": []
+    },
+    {
+      "notion_service_id": "385db4862bcd8169abdafb9e2850a66b",
+      "service_name": "Sunday full check-in",
+      "god": "Hermes",
+      "mystery": "Hermes: Presence & Enough",
       "favour_value": 1,
       "pool": "",
       "frequency_cap": "1/week",
@@ -129,13 +167,31 @@
       "favour_value": 1,
       "pool": "hermes-random",
       "frequency_cap": "1/day",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
     },
     {
       "notion_service_id": "385db4862bcd81e684a3cce641bd1b9a",
       "service_name": "Wednesday midweek pulse check-in",
       "god": "Hermes",
-      "mystery": "",
+      "mystery": "Hermes: Presence & Enough",
+      "favour_value": 1,
+      "pool": "",
+      "frequency_cap": "1/week",
+      "days": []
+    },
+    {
+      "notion_service_id": "385db4862bcd8186ba9eccbb6c90fdaf",
+      "service_name": "Wednesday midweek pulse check-in",
+      "god": "Himbo",
+      "mystery": "Himbo: Internal Work",
       "favour_value": 1,
       "pool": "",
       "frequency_cap": "1/week",
@@ -145,27 +201,35 @@
       "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
       "service_name": "Saturday full check-in",
       "god": "Himbo",
-      "mystery": "",
+      "mystery": "Himbo: Internal Work",
       "favour_value": 1,
       "pool": "",
       "frequency_cap": "1/week",
       "days": []
     },
     {
-      "notion_service_id": "393db4862bcd81ab8305df7dad8638d8",
-      "service_name": "Permission asked",
-      "god": "Eros",
-      "mystery": "Eros: Vulnerability",
+      "notion_service_id": "384db4862bcd81afbb4be3f33e4305b2",
+      "service_name": "Visibility-coded item worn",
+      "god": "Himbo",
+      "mystery": "Himbo: Visibility & Self-Expression",
       "favour_value": 1,
-      "pool": "eros-random",
+      "pool": "himbo-random",
       "frequency_cap": "1/day",
-      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
     }
   ],
   "pools": {
-    "eros-random": "",
-    "himbo-random": "",
-    "hestio-random": "",
-    "hermes-random": ""
+    "eros-random": null,
+    "himbo-random": null,
+    "hestio-random": null,
+    "hermes-random": null
   }
 }
