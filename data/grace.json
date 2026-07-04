@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-07-04T06:54:45.612442Z",
-  "favour_total": 135.0,
+  "updated_at": "2026-07-04T06:55:58.217263Z",
+  "favour_total": 134.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
@@ -8,8 +8,8 @@
       "favour_earned": 44.0,
       "completions_by_mystery": {
         "Himbo: Physique": 0.0,
-        "Himbo: Internal Work": 0,
-        "Himbo: Visibility & Self-Expression": 2.0
+        "Himbo: Visibility & Self-Expression": 2.0,
+        "Himbo: Internal Work": 0
       }
     },
     "Eros": {
@@ -18,18 +18,18 @@
       "favour_earned": 80.0,
       "completions_by_mystery": {
         "Eros: Sexual Challenges": 3.0,
-        "Eros: Vulnerability": 0,
-        "Eros: Kink Exploration": 2.0
+        "Eros: Kink Exploration": 2.0,
+        "Eros: Vulnerability": 0
       }
     },
     "Hestio": {
       "grace_total": 1.0,
       "grace_threshold": 9,
-      "favour_earned": 11.0,
+      "favour_earned": 10.0,
       "completions_by_mystery": {
-        "Hestio: Family": 1.0,
         "Hestio: The Hearth": 0,
-        "Hestio: Friends": 0
+        "Hestio: Friends": 0,
+        "Hestio: Family": 1.0
       }
     }
   },
@@ -126,12 +126,6 @@
       "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
       "service_name": "Saturday full check-in",
       "god": "Himbo",
-      "date_completed": "2026-07-04"
-    },
-    {
-      "notion_service_id": "385db4862bcd811f8c56d4f49d5bd9a5",
-      "service_name": "Family contact",
-      "god": "Hestio",
       "date_completed": "2026-07-04"
     },
     {
