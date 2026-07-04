@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-04T02:01:23.286732Z",
+  "updated_at": "2026-07-04T03:43:41.052555Z",
   "sessions_this_week": 4,
   "muscle_best": {
     "Chest": {
@@ -200,6 +200,48 @@
     {
       "week_of": "2026-06-29",
       "volume_kg": 20124
+    }
+  ],
+  "weekly_volume_by_muscle": [
+    {
+      "week_of": "2026-06-08",
+      "Chest": 700,
+      "Back": 4785,
+      "Shoulders": 1460,
+      "Arms": 4890,
+      "Legs": 0,
+      "Core": 0,
+      "total_kg": 11835
+    },
+    {
+      "week_of": "2026-06-15",
+      "Chest": 3105,
+      "Back": 15295,
+      "Shoulders": 3618,
+      "Arms": 9382,
+      "Legs": 16368,
+      "Core": 0,
+      "total_kg": 47768
+    },
+    {
+      "week_of": "2026-06-22",
+      "Chest": 3272,
+      "Back": 15505,
+      "Shoulders": 3724,
+      "Arms": 9527,
+      "Legs": 18960,
+      "Core": 0,
+      "total_kg": 50988
+    },
+    {
+      "week_of": "2026-06-29",
+      "Chest": 3438,
+      "Back": 10020,
+      "Shoulders": 3405,
+      "Arms": 8434,
+      "Legs": 14840,
+      "Core": 0,
+      "total_kg": 40137
     }
   ],
   "recent_workouts": [

@@ -1,0 +1,2640 @@
+{
+  "updated_at": "2026-07-04T03:43:41.047661Z",
+  "templates": {
+    "3BC06AD3": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "B4F2FF72": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "99D5F10E": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "5E0DDACE": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "43573BB8": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "A69FF221": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "D4A2FE7E": {
+      "primary": "chest",
+      "secondary": [
+        "upper_back",
+        "shoulders",
+        "lats"
+      ]
+    },
+    "5BFF35BA": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "4F5866F8": {
+      "primary": "lower_back",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "A05C064D": {
+      "primary": "lower_back",
+      "secondary": []
+    },
+    "091737FA": {
+      "primary": "lower_back",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "F51D9080": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "E8D86EE8": {
+      "primary": "shoulders",
+      "secondary": [
+        "upper_back"
+      ]
+    },
+    "084A67CA": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "B3B1D947": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "2DBCA395": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "DDB29047": {
+      "primary": "forearms",
+      "secondary": []
+    },
+    "3D1CDC75": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "CD6DC8E5": {
+      "primary": "triceps",
+      "secondary": [
+        "shoulders",
+        "chest"
+      ]
+    },
+    "79D0BB3A": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "99C1F2AD": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "35B51B87": {
+      "primary": "triceps",
+      "secondary": [
+        "chest",
+        "shoulders"
+      ]
+    },
+    "3601968B": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "0FBF7195": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "E644F828": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "EA820646": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "55E6546F": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "23E92538": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "EB813C91": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "A5AC6449": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "ADA8623C": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "37FCC2BB": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "AF328E3D": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "0B4C1902": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "A41C7261": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "594450D2": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "BD0AD077": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "shoulders"
+      ]
+    },
+    "A0D8FA1B": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "56092DD1": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "calves"
+      ]
+    },
+    "38FC1AB9": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "0F24286A": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "B5D3A742": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "BB792A36": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "115CC72C": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "86B00DDE": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "9DCE2D64": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "c884695c-e04a-4f1f-a520-1fc987b79f94": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "CC55119B": {
+      "primary": "abdominals",
+      "secondary": [
+        "chest",
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "23A48484": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "651F844C": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "8C331CD8": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "lower_back"
+      ]
+    },
+    "92D858EA": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "A2D838BD": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "47B9DF13": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "91237BDD": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "6FCD7755": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "E9E4089F": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "29472BE1": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "DDB7C19F": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "12017185": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "78683336": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "720B0D70": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "EAC7D9C5": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "7EB3F7C3": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "914F3A96": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "B582299E": {
+      "primary": "shoulders",
+      "secondary": [
+        "upper_back"
+      ]
+    },
+    "6A8D3193": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "F21D5693": {
+      "primary": "shoulders",
+      "secondary": [
+        "upper_back"
+      ]
+    },
+    "29083183": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "D23C609B": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "023943F1": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "CC016611": {
+      "primary": "glutes",
+      "secondary": []
+    },
+    "10D76E8F": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "ABB00838": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "9E09CEC3": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "D3095577": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "652FEA39": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "E23F1F2B": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "724CDE60": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "32C4D4A2": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "DCF3B31B": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "EB43ADD4": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "D928C232": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "D39EC9EB": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings",
+        "adductors"
+      ]
+    },
+    "D8F7F851": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "D8911FC4": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "B9380898": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "forearms"
+      ]
+    },
+    "99507114": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "lower_back",
+        "upper_back",
+        "lats",
+        "traps"
+      ]
+    },
+    "C6272009": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "lower_back",
+        "upper_back",
+        "lats",
+        "traps"
+      ]
+    },
+    "5F4E6DD3": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "lower_back",
+        "upper_back",
+        "lats",
+        "traps"
+      ]
+    },
+    "FA5D0DE1": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "20870ED5": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "lower_back",
+        "upper_back",
+        "lats",
+        "traps"
+      ]
+    },
+    "B923B230": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "lower_back",
+        "upper_back",
+        "lats",
+        "traps"
+      ]
+    },
+    "DA0F0470": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "18487FA7": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "FAF31231": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "FFC106CB": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "A351AED7": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "BC10A922": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "B2398CD1": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "C43825EA": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "6575F52D": {
+      "primary": "triceps",
+      "secondary": [
+        "chest",
+        "shoulders"
+      ]
+    },
+    "7DA843A3": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "D950429E": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "AFC29472": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "B7192800": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "f03065c5-67ab-4c35-b09f-59316b200f30": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "F1E57334": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "F3717B0E": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "F72FA239": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "BF6ECE89": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "A01BE509": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "3303376C": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "01A35BF9": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "BE640BA0": {
+      "primary": "shoulders",
+      "secondary": [
+        "biceps"
+      ]
+    },
+    "50C613D0": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "867AC3B6": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "2AF8B552": {
+      "primary": "glutes",
+      "secondary": []
+    },
+    "D53F2886": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "756EE329": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "A57D38D5": {
+      "primary": "triceps",
+      "secondary": [
+        "shoulders"
+      ]
+    },
+    "2FA77B28": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "207DC636": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings",
+        "calves"
+      ]
+    },
+    "F6948F17": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings"
+      ]
+    },
+    "0E608350": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "30F03BF0": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "47B036EF": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "BD86EFD5": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "DBB91A3C": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "8293E554": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "796E8E2C": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "5046D0A9": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "1283BBA6": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "CDA23948": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps"
+      ]
+    },
+    "49C922A1": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "adductors",
+        "quadriceps"
+      ]
+    },
+    "68B83EE0": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes"
+      ]
+    },
+    "CBA02382": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings"
+      ]
+    },
+    "987234AB": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings"
+      ]
+    },
+    "3D0C7C75": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "4180C405": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes",
+        "lower_back",
+        "upper_back",
+        "lats"
+      ]
+    },
+    "05487216": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "AC5A4C58": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "1E42FD5F": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "1D4B3D6B": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "36E8F14E": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "7E3BC8B6": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "BE3615CF": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "90B04F96": {
+      "primary": "shoulders",
+      "secondary": [
+        "chest",
+        "triceps"
+      ]
+    },
+    "BD4E7E53": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "08590920": {
+      "primary": "abdominals",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "F8356514": {
+      "primary": "abdominals",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "F4E77594": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "567FB505": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "BE89C631": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "150E076B": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "C9CCB878": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "023947AB": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "1C34A172": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "C469EA70": {
+      "primary": "abductors",
+      "secondary": []
+    },
+    "F4B4C6EE": {
+      "primary": "abductors",
+      "secondary": []
+    },
+    "22578A94": {
+      "primary": "adductors",
+      "secondary": []
+    },
+    "8BEBFED6": {
+      "primary": "adductors",
+      "secondary": []
+    },
+    "92B8C7E1": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps"
+      ]
+    },
+    "D57C2EC7": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "adductors"
+      ]
+    },
+    "DA5430FC": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "adductors"
+      ]
+    },
+    "68CE0B9B": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "adductors"
+      ]
+    },
+    "291ABA92": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "adductors"
+      ]
+    },
+    "970ADF87": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "50DFDFAB": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "07B38369": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "3A6FA3D1": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "D3E2AB55": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "FBF92739": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "39C99849": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "425805F4": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "24706DCD": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "BC3492DA": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "91FAFBA3": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "AA1EB7D8": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "32B0B590": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "D410F649": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "74103F24": {
+      "primary": "triceps",
+      "secondary": [
+        "chest",
+        "shoulders"
+      ]
+    },
+    "991833C2": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "5CC07A1F": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "calves"
+      ]
+    },
+    "040BA2E3": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "BA3DE542": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "70D4EBBF": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "calves"
+      ]
+    },
+    "55BA475A": {
+      "primary": "shoulders",
+      "secondary": [
+        "traps",
+        "chest",
+        "abdominals"
+      ]
+    },
+    "F99C211D": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "4E239ED8": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "A127DA73": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "4288G454": {
+      "primary": "shoulders",
+      "secondary": [
+        "traps",
+        "upper_back"
+      ]
+    },
+    "9B13BA4B": {
+      "primary": "full_body",
+      "secondary": [
+        "traps"
+      ]
+    },
+    "6433CD93": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "89304423": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "F8A0FCCA": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "5F8903BF": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "A91838C0": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "D82EA543": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "B74A95BB": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "98237BA2": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "923874CA": {
+      "primary": "abdominals",
+      "secondary": [
+        "shoulders",
+        "chest",
+        "upper_back",
+        "traps",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "D7D7FCCE": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "983274DD": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "EC02979E": {
+      "primary": "glutes",
+      "secondary": [
+        "abductors"
+      ]
+    },
+    "07EBC4DC": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "calves"
+      ]
+    },
+    "DC59D143": {
+      "primary": "glutes",
+      "secondary": [
+        "abductors"
+      ]
+    },
+    "F2A37357": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "abductors"
+      ]
+    },
+    "DF200976": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "BE289E45": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "422B08F1": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "D5D0354D": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "D731CCA8": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "abductors"
+      ]
+    },
+    "D2FE7B2E": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "6A6C31A5": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "4E5257DE": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "473CF5B8": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "57377fb0-ebc2-437c-9fa1-503435a75dfc": {
+      "primary": "lats",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "75A4F6C4": {
+      "primary": "quadriceps",
+      "secondary": []
+    },
+    "0EB695C9": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "C7973E0E": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "0482DA98": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "293483AD": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "8A2E6481": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "6D54A050": {
+      "primary": "abdominals",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "5E1A7777": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "6E6EE645": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "B537D09F": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "BD5935CF": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "B8127AD1": {
+      "primary": "hamstrings",
+      "secondary": [
+        "calves"
+      ]
+    },
+    "09C9F635": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "22FEDCA4": {
+      "primary": "neck",
+      "secondary": []
+    },
+    "31B8DA0F": {
+      "primary": "neck",
+      "secondary": []
+    },
+    "0910BD28": {
+      "primary": "neck",
+      "secondary": []
+    },
+    "D6A73CF2": {
+      "primary": "neck",
+      "secondary": []
+    },
+    "C732C341": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "F49E31D6": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "9F9C164B": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "F60BDDF8": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "108D7A14": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes"
+      ]
+    },
+    "DBE341AA": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "B140095E": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "582ADA23": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "4C6721B9": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "shoulders",
+        "triceps",
+        "upper_back"
+      ]
+    },
+    "54E60954": {
+      "primary": "shoulders",
+      "secondary": [
+        "traps"
+      ]
+    },
+    "7B8D84E8": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps",
+        "abdominals"
+      ]
+    },
+    "6AC96645": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "B09A1304": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "2CFED196": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "B5EFBF9C": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "FBEE8279": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "adductors"
+      ]
+    },
+    "CE1054CE": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "018ADC12": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "30E293E3": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "0EFE8162": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps",
+        "chest"
+      ]
+    },
+    "EC2510CD": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "942BAD12": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "3FF6A22E": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "C6C9B8A0": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "31436F5D": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps",
+        "abdominals"
+      ]
+    },
+    "9283ABD5": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "DBF9273A": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "982734D4": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "9373FSD1": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "C628D768": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "E22F9358": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "4F942934": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "FAB6EB2F": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "1E9A6B8E": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "84A77566": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "67280085": {
+      "primary": "lats",
+      "secondary": [
+        "chest",
+        "upper_back",
+        "triceps"
+      ]
+    },
+    "B123DD01": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "chest",
+        "triceps"
+      ]
+    },
+    "1B2B1E7C": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "2C37EC5E": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "56808FD2": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "729237D1": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "542F3CD5": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps",
+        "quadriceps"
+      ]
+    },
+    "392887AA": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "947DAC23": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "19372ABC": {
+      "primary": "chest",
+      "secondary": [
+        "triceps",
+        "shoulders"
+      ]
+    },
+    "FE389074": {
+      "primary": "upper_back",
+      "secondary": [
+        "glutes",
+        "hamstrings",
+        "lower_back",
+        "lats",
+        "traps"
+      ]
+    },
+    "C315DC2A": {
+      "primary": "shoulders",
+      "secondary": [
+        "upper_back"
+      ]
+    },
+    "E5988A0A": {
+      "primary": "shoulders",
+      "secondary": [
+        "upper_back"
+      ]
+    },
+    "D8281C62": {
+      "primary": "shoulders",
+      "secondary": [
+        "upper_back"
+      ]
+    },
+    "1ADF8723": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings"
+      ]
+    },
+    "7FD2EC3E": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "1B89CA1B": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "7952B5CD": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "112FC6B7": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "9F48F858": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "B567DD46": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "9264ADA1": {
+      "primary": "shoulders",
+      "secondary": [
+        "upper_back"
+      ]
+    },
+    "1FF4097B": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "046E25A2": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps"
+      ]
+    },
+    "8B5BED30": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "7C0028C3": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "lower_back"
+      ]
+    },
+    "C284D923": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "818BA121": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "FFDA283B": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "99B49684": {
+      "primary": "abdominals",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "D8460FA6": {
+      "primary": "forearms",
+      "secondary": []
+    },
+    "51A0EDAA": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "5F09F0FC": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "AEA56BDC": {
+      "primary": "chest",
+      "secondary": [
+        "shoulders",
+        "triceps"
+      ]
+    },
+    "2B4B7310": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes",
+        "lower_back",
+        "upper_back",
+        "lats"
+      ]
+    },
+    "72CFFAD5": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes",
+        "lower_back",
+        "upper_back",
+        "lats"
+      ]
+    },
+    "0B9B92BA": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes",
+        "lower_back",
+        "upper_back",
+        "lats"
+      ]
+    },
+    "234897AB": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "9273BA17": {
+      "primary": "lats",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "0222DB42": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "AC1BB830": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "BB83BDDE": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "2982AA23": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "C7AE420A": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "forearms"
+      ]
+    },
+    "DF3BDB9C": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "7E93E23F": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "F1D60854": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "C3BCABB3": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "traps",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "0393F233": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "062AB91A": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "6B4C797E": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "5122E7D9": {
+      "primary": "triceps",
+      "secondary": [
+        "chest",
+        "shoulders"
+      ]
+    },
+    "8BAB2735": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "C01F58D1": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "9372FFAA": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "11A123F3": {
+      "primary": "hamstrings",
+      "secondary": [
+        "calves"
+      ]
+    },
+    "91AF29E0": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "9930DF71": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "1006DF48": {
+      "primary": "forearms",
+      "secondary": []
+    },
+    "1DF4A847": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "9237BAD1": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "234BC743": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "95F2E076": {
+      "primary": "forearms",
+      "secondary": []
+    },
+    "9202CC23": {
+      "primary": "forearms",
+      "secondary": []
+    },
+    "878CD1D0": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "059E835D": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "502FCE31": {
+      "primary": "shoulders",
+      "secondary": [
+        "chest",
+        "triceps"
+      ]
+    },
+    "0B841777": {
+      "primary": "traps",
+      "secondary": [
+        "neck"
+      ]
+    },
+    "FFABC123": {
+      "primary": "traps",
+      "secondary": [
+        "neck"
+      ]
+    },
+    "ABEC557F": {
+      "primary": "traps",
+      "secondary": [
+        "neck"
+      ]
+    },
+    "19A38071": {
+      "primary": "traps",
+      "secondary": [
+        "neck"
+      ]
+    },
+    "742E5BD5": {
+      "primary": "traps",
+      "secondary": [
+        "neck"
+      ]
+    },
+    "37F9EDA7": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "026FD047": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "E3EDA509": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "8372BBCC": {
+      "primary": "chest",
+      "secondary": []
+    },
+    "D0C4A899": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "B33B526E": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "1837BA23": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps",
+        "chest"
+      ]
+    },
+    "DE68C825": {
+      "primary": "shoulders",
+      "secondary": []
+    },
+    "2EE45F81": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "8347DFD1": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "552AB030": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "629AE73D": {
+      "primary": "quadriceps",
+      "secondary": []
+    },
+    "CBC0D834": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps"
+      ]
+    },
+    "487B3755": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps"
+      ]
+    },
+    "D1CD146F": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps"
+      ]
+    },
+    "3FD83744": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "93472AC1": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes",
+        "lower_back",
+        "upper_back",
+        "lats"
+      ]
+    },
+    "937292AB": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes",
+        "lower_back"
+      ]
+    },
+    "238BA231": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "E51CCBE5": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "5DA40761": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "B05C2C29": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "F5DEF1EB": {
+      "primary": "quadriceps",
+      "secondary": []
+    },
+    "022DF610": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "9237BA12": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "24A809EF": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "5D99A2FA": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "84325755": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "875F585F": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "68F8A292": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "7D1BD41D": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "7757171F": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "FB09C938": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "911A58D3": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "2348AB72": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "90427D4A": {
+      "primary": "biceps",
+      "secondary": []
+    },
+    "C10A5AC9": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "213AB238": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "E764B907": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "20C1A3CB": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "9283BABA": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "F1258206": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "D04AC939": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "9694DA61": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "DCFF3E9F": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "CC35A01F": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "A8814C06": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "DDCC3821": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "B82D6418": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "4377A52B": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "4377A52C": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "ACB2751D": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings"
+      ]
+    },
+    "06745E58": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "E53CCBE5": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "6DA40660": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "E05C2C38": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "AA52E8D2": {
+      "primary": "calves",
+      "secondary": []
+    },
+    "6120CAAB": {
+      "primary": "hamstrings",
+      "secondary": [
+        "calves"
+      ]
+    },
+    "073032BB": {
+      "primary": "shoulders",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "28927A36": {
+      "primary": "shoulders",
+      "secondary": [
+        "upper_back"
+      ]
+    },
+    "128A2381": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "EE2938D1": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "D2387AB1": {
+      "primary": "lats",
+      "secondary": [
+        "triceps"
+      ]
+    },
+    "2A48E443": {
+      "primary": "hamstrings",
+      "secondary": [
+        "glutes",
+        "lower_back",
+        "upper_back",
+        "lats",
+        "traps"
+      ]
+    },
+    "527DA061": {
+      "primary": "other",
+      "secondary": []
+    },
+    "7593855D": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "D20D7BBE": {
+      "primary": "glutes",
+      "secondary": [
+        "hamstrings",
+        "quadriceps",
+        "adductors",
+        "lower_back",
+        "upper_back",
+        "lats",
+        "traps"
+      ]
+    },
+    "3F5F8D40": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "adductors",
+        "hamstrings"
+      ]
+    },
+    "6622E5A0": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "adductors"
+      ]
+    },
+    "05293BCA": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "adductors",
+        "hamstrings"
+      ]
+    },
+    "5E10D0E6": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "adductors",
+        "hamstrings"
+      ]
+    },
+    "218DA87C": {
+      "primary": "lower_back",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "B60A678F": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "08A2974E": {
+      "primary": "upper_back",
+      "secondary": [
+        "lats",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "90E506D5": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "10313AFD": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "B94E35E1": {
+      "primary": "abdominals",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "75BAC5C3": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "FBB62888": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "243710DE": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "28BB4A95": {
+      "primary": "triceps",
+      "secondary": [
+        "chest",
+        "shoulders"
+      ]
+    },
+    "4B4BF8C2": {
+      "primary": "triceps",
+      "secondary": [
+        "chest",
+        "shoulders"
+      ]
+    },
+    "10347BAC": {
+      "primary": "triceps",
+      "secondary": [
+        "chest",
+        "shoulders"
+      ]
+    },
+    "2F8D3067": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "21310F5F": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "3765684D": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "3092FADD": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "6182EE83": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "EC3B69A3": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "6127A3AD": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "CDC472B1": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "93A552C6": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "94B7239B": {
+      "primary": "triceps",
+      "secondary": []
+    },
+    "7AB9A362": {
+      "primary": "shoulders",
+      "secondary": [
+        "traps",
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "286C1D0B": {
+      "primary": "shoulders",
+      "secondary": [
+        "traps",
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "797F0782": {
+      "primary": "shoulders",
+      "secondary": [
+        "traps",
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "72880C57": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "6BE68B62": {
+      "primary": "abdominals",
+      "secondary": []
+    },
+    "72297E8C": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    },
+    "33EDD7DB": {
+      "primary": "cardio",
+      "secondary": []
+    },
+    "32HKJ34K": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "A733CC5B": {
+      "primary": "quadriceps",
+      "secondary": [
+        "glutes",
+        "hamstrings"
+      ]
+    },
+    "F30A4F01": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes"
+      ]
+    },
+    "A1F47ACC": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "C8706C80": {
+      "primary": "quadriceps",
+      "secondary": [
+        "abdominals"
+      ]
+    },
+    "79EF4E4F": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "B31EB524": {
+      "primary": "triceps",
+      "secondary": [
+        "chest",
+        "shoulders"
+      ]
+    },
+    "7C50F118": {
+      "primary": "lats",
+      "secondary": [
+        "upper_back",
+        "biceps",
+        "forearms"
+      ]
+    },
+    "0E4523F4": {
+      "primary": "forearms",
+      "secondary": [
+        "shoulders"
+      ]
+    },
+    "8C9D2928": {
+      "primary": "full_body",
+      "secondary": []
+    },
+    "40C6A9FC": {
+      "primary": "quadriceps",
+      "secondary": [
+        "hamstrings",
+        "glutes",
+        "biceps"
+      ]
+    },
+    "123EE239": {
+      "primary": "biceps",
+      "secondary": [
+        "forearms"
+      ]
+    }
+  }
+}
