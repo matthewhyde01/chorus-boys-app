@@ -1017,17 +1017,31 @@ jobs:
           # Paginate workouts
           workouts = []
           page = 1
+          page_count = None
           while True:
-              r = requests.get(
-                  "https://api.hevyapp.com/v1/workouts",
-                  headers=headers,
-                  params={"page": page, "pageSize": 10, "since": since},
-                  timeout=30,
-              )
-              r.raise_for_status()
+              try:
+                  r = requests.get(
+                      "https://api.hevyapp.com/v1/workouts",
+                      headers=headers,
+                      params={"page": page, "pageSize": 10, "since": since},
+                      timeout=30,
+                  )
+                  r.raise_for_status()
+              except requests.exceptions.HTTPError as e:
+                  if r.status_code == 404:
+                      # Hevy returns a flat 404 once you request a page past the end
+                      # instead of an empty 200 — treat it as "no more pages".
+                      print(f"Hevy: page {page} returned 404, stopping pagination")
+                      break
+                  raise
               data = r.json()
               batch = data.get("workouts", [])
               workouts.extend(batch)
+              if page_count is None:
+                  page_count = data.get("page_count")
+              # Primary stop condition: we've reached the last known page.
+              if page_count is not None and page >= page_count:
+                  break
               if len(batch) < 10:
                   break
               page += 1
