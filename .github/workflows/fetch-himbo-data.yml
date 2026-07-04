@@ -824,7 +824,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python - <<'EOF'
-          import requests, json, os
+          import requests, json, os, re
           from datetime import datetime, timedelta
 
           api_key = os.environ["ANTHROPIC_API_KEY"].strip()
@@ -838,7 +838,8 @@ jobs:
 
           voice_brief = voice.get("voice_brief", "")
           system_prompt = (voice_brief + "\n\n" if voice_brief else "") + \
-              "Write a 4–5 sentence summary of this workout for Patroclus. Go beyond describing the numbers — interpret them. Was this a hard effort or recovery work? How does the suffer score reflect what his body went through? What does this activity mean in the context of the week's training? Speak directly to him, warm and a little dramatic. No emojis. No markdown."
+              "Write a 4–5 sentence summary of this workout for Patroclus. Go beyond describing the numbers — interpret them. Was this a hard effort or recovery work? How does the suffer score reflect what his body went through? What does this activity mean in the context of the week's training? Speak directly to him, warm and a little dramatic. No emojis. No markdown. " \
+              "Only cite numeric figures (distance, time, pace, heart rate, elevation, suffer score, kudos) that are given to you below — never compute, estimate, or restate one differently."
 
           cutoff = datetime.utcnow() - timedelta(days=14)
           activities = [
@@ -955,9 +956,14 @@ jobs:
                       lines.append(f"  {day_str} — {a['name']} ({sport}, {dist_str}{hr})")
                   return "\n".join(lines)
 
+              this_week_summary = week_summary(this_week)
+              last_week_summary = week_summary(last_week)
               commentary_prompt = (
-                  f"This week ({len(this_week)} activities):\n{week_summary(this_week)}\n\n"
-                  f"Last week ({len(last_week)} activities):\n{week_summary(last_week)}"
+                  f"This week ({len(this_week)} activities):\n{this_week_summary}\n\n"
+                  f"Last week ({len(last_week)} activities):\n{last_week_summary}\n\n"
+                  "The figures above are the only numeric facts you may cite. Do not compute, "
+                  "estimate, or restate any distance or heart-rate number differently from how "
+                  "it appears above."
               )
 
               commentary_resp = requests.post(
@@ -980,6 +986,31 @@ jobs:
               commentary_resp.raise_for_status()
               text_blocks = [b["text"] for b in commentary_resp.json()["content"] if b.get("type") == "text"]
               commentary_text = "".join(text_blocks).strip()
+
+              # Sanity check: flag and discard any commentary citing a distance or
+              # heart-rate figure that doesn't appear in the real activity data.
+              ground_truth_text = this_week_summary + "\n" + last_week_summary
+              allowed_km = {round(float(m), 1) for m in re.findall(r'(\d+(?:\.\d+)?)\s*km\b', ground_truth_text, re.IGNORECASE)}
+              allowed_m  = {round(float(m)) for m in re.findall(r'(\d+(?:\.\d+)?)m\b', ground_truth_text, re.IGNORECASE)}
+              allowed_bpm = {round(float(m)) for m in re.findall(r'(\d+(?:\.\d+)?)\s*bpm\b', ground_truth_text, re.IGNORECASE)}
+
+              week_mismatches = []
+              for m in re.findall(r'(\d+(?:\.\d+)?)\s*km\b', commentary_text, re.IGNORECASE):
+                  v = round(float(m), 1)
+                  if allowed_km and not any(abs(v - a) <= 0.15 for a in allowed_km):
+                      week_mismatches.append(f"{m} km")
+              for m in re.findall(r'(\d+(?:\.\d+)?)m\b', commentary_text, re.IGNORECASE):
+                  v = round(float(m))
+                  if allowed_m and not any(abs(v - a) <= 2 for a in allowed_m):
+                      week_mismatches.append(f"{m} m")
+              for m in re.findall(r'(\d+(?:\.\d+)?)\s*bpm\b', commentary_text, re.IGNORECASE):
+                  v = round(float(m))
+                  if allowed_bpm and not any(abs(v - a) <= 2 for a in allowed_bpm):
+                      week_mismatches.append(f"{m} bpm")
+              if week_mismatches:
+                  print(f"Weekly commentary: figure mismatch detected {week_mismatches} — "
+                        f"allowed km={allowed_km}, m={allowed_m}, bpm={allowed_bpm}. Discarding generated text.")
+                  commentary_text = ""
           except Exception as e:
               print(f"Commentary error: {e}")
               commentary_text = ""
@@ -1002,29 +1033,64 @@ jobs:
               if active_kj > 0:
                   metrics_lines.append(f"Active energy (Strava): {round(active_kj)} kJ.")
 
-              # Try to read HRV and VO2 from activity.json if available
+              # Read HRV and VO2 from activity.json (Apple Health export) if available.
+              # Rows must be sorted by their own date field, not trusted file order —
+              # index 0 is NOT guaranteed to be the latest reading.
+              hrv_latest = hrv_avg7 = vo2_latest = None
               try:
                   import csv as csv_mod, io as io_mod
+
+                  def parse_activity_dt(s):
+                      s = s.strip()
+                      for fmt in ("%d %b %Y at %I:%M %p", "%d %b %Y at %I:%M%p"):
+                          try:
+                              return datetime.strptime(s, fmt)
+                          except ValueError:
+                              continue
+                      return datetime.min
+
                   with open("data/activity.json") as f:
                       act_csv = f.read()
                   act_reader = csv_mod.DictReader(io_mod.StringIO(act_csv))
-                  hrv_vals, vo2_vals = [], []
+                  hrv_rows, vo2_rows = [], []
                   for row in act_reader:
                       t = row.get("type","")
+                      dt = parse_activity_dt(row.get("date",""))
                       if t in ("Heart Rate Variability","HRV","HeartRateVariability"):
-                          try: hrv_vals.append(float(row.get("value","")))
+                          try: hrv_rows.append((dt, float(row.get("value",""))))
                           except: pass
                       if t in ("VO2 Max","VO2Max","Cardio Fitness","CardioFitness"):
-                          try: vo2_vals.append(float(row.get("value","")))
+                          try:
+                              v = float(row.get("value",""))
+                              if v > 0:  # 0 = no reading that day, not a real value
+                                  vo2_rows.append((dt, v))
                           except: pass
+                  hrv_rows.sort(key=lambda x: x[0])
+                  vo2_rows.sort(key=lambda x: x[0])
+                  hrv_vals = [v for _, v in hrv_rows]
+                  vo2_vals = [v for _, v in vo2_rows]
+
                   if hrv_vals:
-                      metrics_lines.append(f"HRV latest: {round(hrv_vals[0])} ms, 7d avg: {round(sum(hrv_vals[:7])/min(len(hrv_vals),7))} ms.")
+                      hrv_latest = round(hrv_vals[-1])
+                      hrv_avg7 = round(sum(hrv_vals[-7:]) / min(len(hrv_vals), 7))
+                      metrics_lines.append(f"HRV latest: {hrv_latest} ms, 7d avg: {hrv_avg7} ms.")
                   if vo2_vals:
-                      metrics_lines.append(f"VO2 Max: {vo2_vals[0]:.1f} mL/kg/min.")
+                      vo2_latest = round(vo2_vals[-1], 1)
+                      metrics_lines.append(f"VO2 Max: {vo2_latest} mL/kg/min.")
               except Exception as e:
                   print(f"activity.json read (non-fatal): {e}")
 
               metrics_prompt = "\n".join(metrics_lines)
+
+              # Hard constraint: the model may only cite the exact figures we just
+              # computed — same fix pattern as the sleep-narrative date anchor.
+              metrics_prompt += (
+                  "\n\nThe figures above are the only numeric facts you may cite. "
+                  "Do not compute, estimate, or restate any number differently from how "
+                  "it appears above — if you're unsure, describe it qualitatively instead "
+                  "of inventing a figure."
+              )
+
               metrics_resp = requests.post(
                   "https://api.anthropic.com/v1/messages",
                   headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
@@ -1046,6 +1112,25 @@ jobs:
               metrics_resp.raise_for_status()
               text_blocks = [b["text"] for b in metrics_resp.json()["content"] if b.get("type") == "text"]
               metrics_commentary = "".join(text_blocks).strip()
+
+              # Sanity check: flag and discard any commentary citing an HRV (ms) or
+              # VO2 Max (mL/kg/min) figure that doesn't match the real computed value —
+              # same failure class as the sleep-narrative date mismatch.
+              metric_mismatches = []
+              for m in re.findall(r'(\d+(?:\.\d+)?)\s*ms\b', metrics_commentary, re.IGNORECASE):
+                  v = round(float(m))
+                  allowed = {x for x in (hrv_latest, hrv_avg7) if x is not None}
+                  if allowed and not any(abs(v - a) <= 1 for a in allowed):
+                      metric_mismatches.append(f"{m} ms")
+              for m in re.findall(r'(\d+(?:\.\d+)?)\s*mL/kg/min\b', metrics_commentary, re.IGNORECASE):
+                  v = float(m)
+                  if vo2_latest is not None and abs(v - vo2_latest) > 0.5:
+                      metric_mismatches.append(f"{m} mL/kg/min")
+              if metric_mismatches:
+                  print(f"Metrics commentary: figure mismatch detected {metric_mismatches} — "
+                        f"real values were HRV latest={hrv_latest}, HRV 7d avg={hrv_avg7}, VO2={vo2_latest}. "
+                        "Discarding generated text.")
+                  metrics_commentary = ""
           except Exception as e:
               print(f"Metrics commentary error: {e}")
               metrics_commentary = ""
@@ -1065,7 +1150,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python - <<'EOF'
-          import requests, json, os
+          import requests, json, os, re
           from datetime import datetime, timedelta
 
           api_key = os.environ["HEVY_API_KEY"].strip()
@@ -1277,6 +1362,10 @@ jobs:
                   "\n".join(muscle_lines),
                   f"Most recent workout: {recent_workouts[0]['title']} ({recent_workouts[0]['date']}, {recent_workouts[0]['duration_min']} min)" if recent_workouts else "",
               ]))
+              gym_prompt += (
+                  "\n\nThe figures above are the only numeric facts you may cite. Do not compute, "
+                  "estimate, or restate any number differently from how it appears above."
+              )
 
               gym_resp = requests.post(
                   "https://api.anthropic.com/v1/messages",
@@ -1299,7 +1388,26 @@ jobs:
               gym_resp.raise_for_status()
               text_blocks = [b["text"] for b in gym_resp.json()["content"] if b.get("type") == "text"]
               gym_commentary = "".join(text_blocks).strip()
-              print(f"Gym commentary generated ({len(gym_commentary)} chars)")
+
+              # Sanity check: flag and discard any commentary citing a kg or session
+              # figure that doesn't match the real computed values.
+              allowed_kg = {round(float(m.replace(",", ""))) for m in re.findall(r'([\d,]+(?:\.\d+)?)\s*kg\b', gym_prompt, re.IGNORECASE)}
+              allowed_sessions = {sessions_this_week, 4}  # 4 = Scott's fixed programme target
+              gym_mismatches = []
+              for m in re.findall(r'([\d,]+(?:\.\d+)?)\s*kg\b', gym_commentary, re.IGNORECASE):
+                  v = round(float(m.replace(",", "")))
+                  if allowed_kg and not any(abs(v - a) <= 1 for a in allowed_kg):
+                      gym_mismatches.append(f"{m} kg")
+              for m in re.findall(r'(\d+)\s*sessions?\b', gym_commentary, re.IGNORECASE):
+                  v = int(m)
+                  if not any(v == a for a in allowed_sessions):
+                      gym_mismatches.append(f"{m} sessions")
+              if gym_mismatches:
+                  print(f"Gym commentary: figure mismatch detected {gym_mismatches} — "
+                        f"allowed kg={allowed_kg}, sessions={allowed_sessions}. Discarding generated text.")
+                  gym_commentary = ""
+              else:
+                  print(f"Gym commentary generated ({len(gym_commentary)} chars)")
           except Exception as e:
               print(f"Gym commentary error (non-fatal): {e}")
 
