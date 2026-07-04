@@ -521,6 +521,30 @@ jobs:
               print(f"Sleep: bucketed {len(bucketed_summary)} nights")
               voice_context = full_text[:1500]
 
+              # period_start/period_end are the actual first/last night in the bucket —
+              # the single source of truth for any date range the narrative states.
+              # Passing these explicitly stops the model from inventing its own
+              # "the week started on..." anchor that doesn't match the real data window.
+              period_start = recent_nights[0] if recent_nights else None
+              period_end = recent_nights[-1] if recent_nights else None
+
+              def fmt_day(d):
+                  # No leading zero, portable across platforms (avoids the
+                  # Linux-only "%-d" strftime extension).
+                  return f"{d.day} {d.strftime('%B')}"
+
+              if period_start and period_end:
+                  anchor_instruction = (
+                      f"This write-up covers a rolling window of the last {len(recent_nights)} tracked nights, "
+                      f"from {fmt_day(period_start)} to {fmt_day(period_end)} — this is not "
+                      "necessarily a calendar week. If you reference when this stretch started, you must say "
+                      f"exactly '{fmt_day(period_start)}' — never invent, guess, or shift this date. "
+                      "Prefer relative phrasing (e.g. 'earlier in the stretch', 'by midweek') over restating exact "
+                      "dates you weren't given.\n\n"
+                  )
+              else:
+                  anchor_instruction = ""
+
               sleep_analysis = claude_call(
                   f"You are Himbo — the warm, mischievous, specific voice for Matt's wellness dashboard. "
                   f"Here is context about who Himbo is:\n{voice_context}\n\n"
@@ -529,6 +553,7 @@ jobs:
                   "do not use phrases like 'let me work through this' or 'let me re-examine.' "
                   "The data you are given is already correctly grouped by night — do not re-derive or question the grouping. "
                   "Write the final summary directly.\n\n"
+                  + anchor_instruction +
                   "Write a short response (3–4 sentences) about Matt's sleep over the last 7 nights. "
                   "Be specific to the actual numbers in the data. "
                   "His sleep context: target bedtime 8:30pm. Interventions he's trying: "
@@ -540,6 +565,42 @@ jobs:
                   model="claude-sonnet-4-6",
                   max_tokens=300,
               )
+
+              # Sanity check: the narrative shouldn't state a date outside the real
+              # data window. Flag loudly and drop the text rather than ship a
+              # self-contradicting summary (e.g. "week started on 27 June" while
+              # also citing sleep on the 22nd).
+              if period_start and period_end:
+                  month_names = "|".join(MONTHS.keys())
+                  mismatches = []
+                  for day_s, month_s in re.findall(
+                      rf'\b(\d{{1,2}})(?:st|nd|rd|th)?\s+({month_names})\b', sleep_analysis, re.IGNORECASE
+                  ):
+                      month_num = MONTHS[month_s.lower()]
+                      candidates = set()
+                      for year in {period_start.year, period_end.year}:
+                          try:
+                              candidates.add(datetime(year, month_num, int(day_s)).date())
+                          except ValueError:
+                              pass
+                      if candidates and not any(period_start <= d <= period_end for d in candidates):
+                          mismatches.append(f"{day_s} {month_s}")
+                  # Bare ordinal-day mentions (e.g. "the 22nd") not paired with a month —
+                  # assume they refer to the same month(s) as the real window.
+                  for day_s in re.findall(r'\bthe (\d{1,2})(?:st|nd|rd|th)\b', sleep_analysis, re.IGNORECASE):
+                      candidates = set()
+                      for year in {period_start.year, period_end.year}:
+                          for month_num in {period_start.month, period_end.month}:
+                              try:
+                                  candidates.add(datetime(year, month_num, int(day_s)).date())
+                              except ValueError:
+                                  pass
+                      if candidates and not any(period_start <= d <= period_end for d in candidates):
+                          mismatches.append(f"the {day_s}")
+                  if mismatches:
+                      print(f"Sleep AI: narrative date mismatch detected {mismatches} — "
+                            f"window was {period_start} to {period_end}. Discarding generated text.")
+                      sleep_analysis = ""
           except FileNotFoundError:
               sleep_analysis = "No sleep data synced yet — check back after your next export."
           except Exception as e:
