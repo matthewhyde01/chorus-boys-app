@@ -1,6 +1,30 @@
 {
-  "updated_at": "2026-07-04T06:53:57.860510Z",
+  "updated_at": "2026-07-04T14:00:50.360345Z",
   "trials": [
+    {
+      "service": "Two runs, one week",
+      "tier": "Streak",
+      "mystery": "Himbo: Physique",
+      "status": "Active",
+      "cadence": "Weekly",
+      "due_date": "",
+      "trigger_condition": "",
+      "description": "Complete two run sessions in one week. Get out there and pound that pavement. Crop top highly encouraged. ",
+      "favour_value": 4,
+      "grace_earned": 0
+    },
+    {
+      "service": "Swim 8000m ",
+      "tier": "Streak",
+      "mystery": "Himbo: Physique",
+      "status": "Active",
+      "cadence": "Weekly",
+      "due_date": "",
+      "trigger_condition": "",
+      "description": "Swim 8000 metres in 7 days and prove that you\u2019re the subbie aquatic Himbo we both know you are. ",
+      "favour_value": 8,
+      "grace_earned": 0
+    },
     {
       "service": "Hitting kJ target",
       "tier": "Devotion",
@@ -31,9 +55,9 @@
       "mystery": "Himbo: Visibility & Self-Expression",
       "status": "Active",
       "cadence": "Ad-hoc",
-      "due_date": "2026-07-04",
+      "due_date": "2026-07-11",
       "trigger_condition": "",
-      "description": "Wear the Apollo ring and necklace to the office every in-office day this week (starting Wed 1 July). Extended from original single-day trial assigned 20 June. No skipping.",
+      "description": "Wear the Apollo ring and necklace to the office every in-office day this week. No skipping. Extended again into the following week (from 4 July) \u2014 the 1 July week only had two real office days (sick Thu/Fri), Monday was missed by accident despite packing it, Wednesday was worn, and it went to Thursday's work dinner unprompted. Not a full pass on the letter of it, but not avoidance either \u2014 carrying forward for a real full week.",
       "favour_value": 3,
       "grace_earned": 1
     },
