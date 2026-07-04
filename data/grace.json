@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-04T03:44:39.129423Z",
+  "updated_at": "2026-07-04T05:15:31.505710Z",
   "favour_total": 134.0,
   "gods": {
     "Himbo": {
@@ -7,8 +7,8 @@
       "grace_threshold": 12,
       "favour_earned": 44.0,
       "completions_by_mystery": {
-        "Himbo: Physique": 0.0,
         "Himbo: Visibility & Self-Expression": 2.0,
+        "Himbo: Physique": 0.0,
         "Himbo: Internal Work": 0
       }
     },
@@ -27,9 +27,9 @@
       "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
-        "Hestio: Family": 1.0,
+        "Hestio: The Hearth": 0,
         "Hestio: Friends": 0,
-        "Hestio: The Hearth": 0
+        "Hestio: Family": 1.0
       }
     }
   },
