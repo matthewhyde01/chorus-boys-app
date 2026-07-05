@@ -181,27 +181,59 @@ jobs:
               }, f, indent=2)
           print(f"Trials written: {len(trials_data)} active/planned, {grace_total} Grace earned")
 
-          # ── Step 3: Extract most recent Reflection Log entry ──────────────────
-          print("Extracting Reflection Log entry...")
-          page_excerpt = full_text[:6000]
-          reflection_entry = claude_call(
-              "You are a precise text extractor. Your only job is to find and return text verbatim from the document provided. "
-              "Do not summarise, paraphrase, interpret, or add any commentary. "
-              "Do not include any preamble, explanation, or meta-commentary in your response. "
-              "Return only the content requested — nothing else.",
-              f"Find the most recent dated entry under the Reflection Log section of this Notion page. "
-              f"Return its content as close to verbatim as possible — light formatting cleanup only "
-              f"(strip markdown bold markers, keep paragraph breaks). "
-              f"Do not summarise, paraphrase, or add commentary. "
-              f"Do not include the date heading itself. "
-              f"Return only the entry text.\n\nPage content:\n\n{page_excerpt}",
-              model="claude-haiku-4-5-20251001",
-              max_tokens=1500,
+          # ── Step 3: Pull most recent Check-In entry from Eros Check-Ins database ──
+          print("Querying Eros Check-Ins for most recent entry...")
+
+          EROS_CHECKINS_DB_ID = "74e2c76ef4dd41faa56fd7eb8f3789d8"
+
+          r = requests.post(
+              f"https://api.notion.com/v1/databases/{EROS_CHECKINS_DB_ID}/query",
+              headers={**notion_headers, "Content-Type": "application/json"},
+              json={
+                  "sorts": [{"property": "Date", "direction": "descending"}],
+                  "page_size": 1,
+              },
           )
+          r.raise_for_status()
+          results = r.json().get("results", [])
+
+          def get_rich_text(props, key):
+              t = props.get(key, {}).get("rich_text", [])
+              return "".join(x.get("plain_text", "") for x in t)
+
+          def get_date(props, key):
+              d = props.get(key, {}).get("date")
+              return d.get("start") if d else None
+
+          def get_select(props, key):
+              s = props.get(key, {}).get("select")
+              return s.get("name") if s else None
+
+          if results:
+              props = results[0]["properties"]
+              sexual = get_rich_text(props, "Dante: Sexual Challenges Read")
+              kink = get_rich_text(props, "Dante: Kink Exploration Read")
+              vuln = get_rich_text(props, "Dante: Vulnerability Read")
+              trial = get_rich_text(props, "Trial Assigned")
+
+              # Same shape as before ({"entry": "..."}) so the frontend doesn't need
+              # to change — just assembling it from real data instead of an LLM guess.
+              entry_parts = []
+              if sexual:
+                  entry_parts.append(f"Sexual Challenges: {sexual}")
+              if kink:
+                  entry_parts.append(f"Kink Exploration: {kink}")
+              if vuln:
+                  entry_parts.append(f"Vulnerability: {vuln}")
+              if trial:
+                  entry_parts.append(f"Trial Assigned: {trial}")
+              reflection_entry = "\n\n".join(entry_parts) if entry_parts else "No entry recorded yet."
+          else:
+              reflection_entry = "No Check-In entries found."
 
           with open("data/eros_reflection.json", "w") as f:
               json.dump({"updated_at": datetime.utcnow().isoformat() + "Z", "entry": reflection_entry}, f, indent=2)
-          print(f"Reflection entry written ({len(reflection_entry)} chars)")
+          print(f"Reflection entry written from Check-Ins database ({len(reflection_entry)} chars)")
           EOF
 
       - name: Commit data files
