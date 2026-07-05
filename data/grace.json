@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-07-04T08:16:22.807014Z",
-  "favour_total": 137.0,
+  "updated_at": "2026-07-05T04:53:49.740716Z",
+  "favour_total": 162.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
       "favour_earned": 45.0,
       "completions_by_mystery": {
-        "Himbo: Internal Work": 0,
+        "Himbo: Physique": 0.0,
         "Himbo: Visibility & Self-Expression": 2.0,
-        "Himbo: Physique": 0.0
+        "Himbo: Internal Work": 0
       }
     },
     "Eros": {
-      "grace_total": 5.0,
+      "grace_total": 6.0,
       "grace_threshold": 12,
-      "favour_earned": 81.0,
+      "favour_earned": 106.0,
       "completions_by_mystery": {
         "Eros: Vulnerability": 0,
-        "Eros: Sexual Challenges": 3.0,
-        "Eros: Kink Exploration": 2.0
+        "Eros: Kink Exploration": 2.0,
+        "Eros: Sexual Challenges": 4.0
       }
     },
     "Hestio": {
@@ -28,8 +28,8 @@
       "favour_earned": 10.0,
       "completions_by_mystery": {
         "Hestio: The Hearth": 0,
-        "Hestio: Family": 1.0,
-        "Hestio: Friends": 0
+        "Hestio: Friends": 0,
+        "Hestio: Family": 1.0
       }
     },
     "Hermes": {
@@ -37,13 +37,23 @@
       "grace_threshold": 9,
       "favour_earned": 1.0,
       "completions_by_mystery": {
-        "Hermes: Flow Practice": 0.0,
         "Hermes: Presence & Enough": 0,
-        "Hermes: Creative Expression": 0
+        "Hermes: Creative Expression": 0,
+        "Hermes: Flow Practice": 0.0
       }
     }
   },
   "completed_trials": [
+    {
+      "service_name": "Dan, Ash & Matt",
+      "god": "Eros",
+      "date_completed": "2026-07-05",
+      "grace_earned": 1.0,
+      "favour_value": 25.0,
+      "mystery": "Eros: Sexual Challenges",
+      "notes": "Served all three tonight, Matt B, Dan, and Ash, while locked the whole time. They tag-teamed me, taking turns using me. It was a lot \u2014 properly worn out by the end. Wasn't quiet about it either: lots of moaning, \"fuck yes,\" waving my butt at them. Definitely felt like a proper subby toy the whole way through. First time with that many men using me.",
+      "description": "Be used by Dan, Ash, and Matt together while locked. Be a good toy for all three men to tick this one off."
+    },
     {
       "service_name": "Locked for the week",
       "god": "Eros",
