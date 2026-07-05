@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-04T06:58:05.632398Z",
+  "updated_at": "2026-07-05T06:16:37.632934Z",
   "trials": [
     {
       "service": "Permission asked",
@@ -52,19 +52,8 @@
       "status": "Active",
       "due_date": null,
       "trigger_condition": "",
-      "description": "When the Triniful order arrives, wear something from it for Matt \u2014 in the room, on purpose. He gets to use you in it. No skipping.",
+      "description": "When the Triniful order arrives, wear something from it for Matt. He gets to use you in it. No skipping.",
       "favour_value": 15,
-      "grace_earned": 1
-    },
-    {
-      "service": "Dan, Ash & Matt",
-      "tier": "Trial",
-      "mystery": "Eros: Sexual Challenges",
-      "status": "Active",
-      "due_date": "2026-07-05",
-      "trigger_condition": "",
-      "description": "Be used by Dan, Ash, and Matt together next weekend while locked. First time with men other than Matt B in the dynamic.",
-      "favour_value": 25,
       "grace_earned": 1
     },
     {
@@ -134,5 +123,5 @@
       "grace_earned": 0
     }
   ],
-  "grace_total": 5
+  "grace_total": 6
 }
