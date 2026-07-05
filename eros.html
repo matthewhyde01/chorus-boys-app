@@ -414,6 +414,16 @@
 
   <main class="main">
 
+    <section class="section" aria-label="Eros on this week">
+      <div class="section-title">Eros on this week</div>
+      <div class="metric-card rose-border">
+        <div id="reflection-updated" style="font-size:10px;color:var(--text-muted);margin-bottom:8px;"></div>
+        <div id="reflection-text" style="font-size:13px;line-height:1.7;color:var(--text-secondary);font-style:italic;">Loading…</div>
+      </div>
+    </section>
+
+    <hr>
+
     <section class="section" aria-label="Trials">
       <div class="section-title">Trials</div>
       <div id="trials-container">
@@ -500,11 +510,48 @@
 
     // ── Trials (from eros_trials.json) ───────────────────────────────────────
 
-    const [trialsRes, devCatalogRes, graceRes] = await Promise.allSettled([
+    const [trialsRes, devCatalogRes, graceRes, reflectionRes] = await Promise.allSettled([
       fetch('data/eros_trials.json').then(r => r.json()),
       fetch('data/devotions.json').then(r => r.json()),
       fetch('data/grace.json').then(r => r.json()),
+      fetch('data/eros_reflection.json').then(r => r.json()),
     ]);
+
+    // ── Eros on this week (from eros_reflection.json) ─────────────────────────
+
+    if (reflectionRes.status === 'fulfilled') try {
+      const rdata = reflectionRes.value;
+      const entry = rdata.entry || '';
+      const textEl = document.getElementById('reflection-text');
+      const updatedEl = document.getElementById('reflection-updated');
+
+      if (rdata.updated_at) {
+        updatedEl.textContent = 'Updated ' + new Date(rdata.updated_at).toLocaleDateString('en-AU', {
+          day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+        });
+      }
+
+      const FALLBACKS = new Set(['No entry recorded yet.', 'No Check-In entries found.', '']);
+      if (FALLBACKS.has(entry.trim())) {
+        textEl.textContent = entry || 'No entry recorded yet.';
+        textEl.style.fontStyle = 'italic';
+        textEl.style.color = 'var(--text-secondary)';
+      } else {
+        const parts = entry.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+        textEl.innerHTML = parts.map(p => {
+          const idx = p.indexOf(':');
+          if (idx === -1) return `<div style="margin-bottom:12px;">${p}</div>`;
+          const label = p.slice(0, idx).trim();
+          const rest = p.slice(idx + 1).trim();
+          return `<div style="margin-bottom:12px;"><strong style="color:var(--rose-light);">${label}:</strong> ${rest}</div>`;
+        }).join('');
+        textEl.style.fontStyle = 'normal';
+        textEl.style.color = 'var(--text-primary)';
+      }
+    } catch (e) {
+      console.error('Reflection:', e);
+      document.getElementById('reflection-text').textContent = 'Could not load this week\'s reflection.';
+    }
 
     try {
       if (trialsRes.status !== 'fulfilled') throw new Error('eros_trials.json failed');
