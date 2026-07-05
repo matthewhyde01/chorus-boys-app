@@ -108,8 +108,10 @@ jobs:
           run_dates  = sorted({strava_date(a) for a in strava_activities if a.get("sport_type") in RUN_TYPES})
           swim_dates = sorted({strava_date(a) for a in strava_activities if a.get("sport_type") in SWIM_TYPES})
           gym_count  = len([a for a in strava_activities if a.get("sport_type") in GYM_TYPES])
+          run_count  = len(run_dates)
+          swim_metres = sum(a.get("distance") or 0 for a in strava_activities if a.get("sport_type") in SWIM_TYPES)
           print(f"Gym days: {gym_dates}, Run days: {run_dates}, Swim days: {swim_dates}")
-          print(f"Gym session count: {gym_count}")
+          print(f"Gym session count: {gym_count}, Run day count: {run_count}, Swim metres: {swim_metres}")
 
           # ── Notion check-ins for this week ───────────────────────────────────
           ci_r = requests.post(
@@ -200,6 +202,8 @@ jobs:
               "wednesday_pulse": "385db486-2bcd-8186-ba9e-ccbb6c90fdaf",
               "kj_devotion":     "393db486-2bcd-815e-9219-f6b9348b9b78",
               "kj_streak":       "393db486-2bcd-815e-93d2-da25c212d103",
+              "two_runs_streak": "393db486-2bcd-801c-9293-e7ae03048b32",
+              "swim_streak":     "393db486-2bcd-8064-927f-c8f1ef8f67c9",
           }
 
           def fetch_service_meta(page_id):
@@ -323,6 +327,16 @@ jobs:
               if log_completion(service_meta["gym_streak"], week_end_date):
                   new_completions += 1
 
+          # Two runs, one week (2+ run days) — date = week end Sunday
+          if "two_runs_streak" in service_meta and run_count >= 2:
+              if log_completion(service_meta["two_runs_streak"], week_end_date):
+                  new_completions += 1
+
+          # Swim 8000m (8000+ metres in the week) — date = week end Sunday
+          if "swim_streak" in service_meta and swim_metres >= 8000:
+              if log_completion(service_meta["swim_streak"], week_end_date):
+                  new_completions += 1
+
           # Protein streak (180g+ every day, 7/7) — date = week end Sunday
           if "protein_streak" in service_meta:
               week_days = [(week_start_syd + timedelta(days=i)).date().isoformat() for i in range(7)]
@@ -441,9 +455,10 @@ jobs:
                   "service_name":      row[1],
                   "god":               row[2],
                   "date_completed":    row[3],
+                  "description":       row[4] or "",
               }
               for row in conn.execute(
-                  "SELECT notion_service_id, service_name, god, date_completed "
+                  "SELECT notion_service_id, service_name, god, date_completed, COALESCE(description,'') "
                   "FROM completion_log WHERE tier='Devotion' ORDER BY date_completed DESC LIMIT 500"
               ).fetchall()
           ]

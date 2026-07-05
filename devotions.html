@@ -230,6 +230,39 @@
 
     .devotion-row:active .devotion-counter { transform: scale(0.9); }
 
+    .devotion-counter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .devotion-counter-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid var(--god-color, var(--border-gold));
+      color: var(--god-color, var(--gold));
+      background: transparent;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      font-family: inherit;
+    }
+
+    .devotion-counter-btn:active { transform: scale(0.9); }
+
+    .devotion-counter-btn:disabled {
+      opacity: 0.25;
+      cursor: default;
+    }
+
     .devotion-counter-badge {
       position: absolute;
       top: -7px;
@@ -456,12 +489,16 @@
     }
 
     // ── Unlimited items: every tap logs its own completion and bumps a running
-    // count — never a done/undo toggle. ──────────────────────────────────────
+    // count — never a done/undo toggle. A separate minus button undoes the most
+    // recent tap for today, via the same undo-devotion path daily/weekly items
+    // use — the backend already removes a single row (id DESC LIMIT 1), not the
+    // whole day's count, so this stays correct even at count > 1. ─────────────
     function tapCounter(row, devotion, todayStr) {
       if (row.dataset.pending === '1') return;
       row.dataset.pending = '1';
 
       const counterEl = row.querySelector('.devotion-counter');
+      const minusBtn  = row.querySelector('.devotion-counter-btn.minus');
       let badge = counterEl.querySelector('.devotion-counter-badge');
       const nextCount = (badge ? parseInt(badge.textContent, 10) : 0) + 1;
       if (badge) {
@@ -472,15 +509,52 @@
         badge.textContent = nextCount;
         counterEl.appendChild(badge);
       }
+      if (minusBtn) minusBtn.disabled = false;
 
       postRelay('complete-devotion', devotion, todayStr)
         .catch(e => {
           const b = counterEl.querySelector('.devotion-counter-badge');
           if (b) {
             const cur = parseInt(b.textContent, 10);
-            if (cur <= 1) b.remove(); else b.textContent = cur - 1;
+            if (cur <= 1) { b.remove(); if (minusBtn) minusBtn.disabled = true; }
+            else b.textContent = cur - 1;
           }
           showError(`Couldn't log "${devotion.service_name}" — try again. (${e.message})`);
+        })
+        .finally(() => { row.dataset.pending = ''; });
+    }
+
+    function tapCounterDecrement(row, devotion, todayStr) {
+      if (row.dataset.pending === '1') return;
+
+      const counterEl = row.querySelector('.devotion-counter');
+      const minusBtn  = row.querySelector('.devotion-counter-btn.minus');
+      const badge     = counterEl.querySelector('.devotion-counter-badge');
+      const curCount  = badge ? parseInt(badge.textContent, 10) : 0;
+      if (curCount <= 0) return;
+
+      row.dataset.pending = '1';
+      const nextCount = curCount - 1;
+      if (nextCount <= 0) {
+        if (badge) badge.remove();
+        if (minusBtn) minusBtn.disabled = true;
+      } else if (badge) {
+        badge.textContent = nextCount;
+      }
+
+      postRelay('undo-devotion', devotion, todayStr)
+        .catch(e => {
+          const b = counterEl.querySelector('.devotion-counter-badge');
+          if (b) {
+            b.textContent = parseInt(b.textContent, 10) + 1;
+          } else {
+            const nb = document.createElement('span');
+            nb.className = 'devotion-counter-badge';
+            nb.textContent = curCount;
+            counterEl.appendChild(nb);
+          }
+          if (minusBtn) minusBtn.disabled = false;
+          showError(`Couldn't remove a completion for "${devotion.service_name}" — try again. (${e.message})`);
         })
         .finally(() => { row.dataset.pending = ''; });
     }
@@ -582,7 +656,10 @@
           states[d.notion_service_id] = state;
 
           const action = state.mode === 'unlimited'
-            ? `<div class="devotion-counter">+${state.count > 0 ? `<span class="devotion-counter-badge">${state.count}</span>` : ''}</div>`
+            ? `<div class="devotion-counter-group">
+                 <button type="button" class="devotion-counter-btn minus" aria-label="Remove one completion"${state.count > 0 ? '' : ' disabled'}>&minus;</button>
+                 <div class="devotion-counter">+${state.count > 0 ? `<span class="devotion-counter-badge">${state.count}</span>` : ''}</div>
+               </div>`
             : `<div class="devotion-check">${CHECK_SVG}</div>`;
           const rowClass = state.mode !== 'unlimited' && state.done ? ' done' : '';
           const completedDateAttr = state.mode !== 'unlimited' ? ` data-completed-date="${state.completedDate}"` : '';
@@ -609,6 +686,13 @@
         const mode = states[d.notion_service_id].mode;
         if (mode === 'unlimited') {
           row.addEventListener('click', () => tapCounter(row, d, todayStr));
+          const minusBtn = row.querySelector('.devotion-counter-btn.minus');
+          if (minusBtn) {
+            minusBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              tapCounterDecrement(row, d, todayStr);
+            });
+          }
         } else {
           row.addEventListener('click', () => tapCheckbox(row, d, todayStr));
         }

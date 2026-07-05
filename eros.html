@@ -650,9 +650,15 @@
         const completedHtml = completedRecent.length ? completedRecent.map(c => {
           const d = new Date(c.date_completed + 'T00:00:00');
           const label = d.toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' });
+          const description = c.description
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.5;">${c.description}</div>`
+            : '';
           return `<div class="challenge-item done" style="margin-bottom:6px;">
             <span class="c-dot done"></span>
-            <div style="flex:1;"><div class="c-text">${c.service_name}</div></div>
+            <div style="flex:1;">
+              <div class="c-text">${c.service_name}</div>
+              ${description}
+            </div>
             <span style="font-size:10px;color:var(--text-muted);">${label}</span>
           </div>`;
         }).join('') : '<div style="color:var(--text-muted);font-size:12px;font-style:italic;">Nothing completed in the last 7 days.</div>';

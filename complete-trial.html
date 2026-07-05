@@ -200,6 +200,14 @@
       color: var(--gold-light);
     }
 
+    .trial-preview .description {
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
     .submit-btn {
       width: 100%;
       background: linear-gradient(135deg, rgba(201,150,58,0.15), rgba(201,150,58,0.08));
@@ -353,6 +361,7 @@
           <div class="trial-preview" id="trial-preview">
             <div class="god-name" id="preview-god"></div>
             <div class="reward" id="preview-reward"></div>
+            <div class="description" id="preview-description"></div>
           </div>
         </div>
 
@@ -461,6 +470,7 @@
         document.getElementById('preview-god').textContent = t.god;
         document.getElementById('preview-reward').innerHTML =
           `Grace <strong>+${t.grace_earned}</strong> &nbsp;·&nbsp; Favour <strong>+${t.favour_value}</strong>`;
+        document.getElementById('preview-description').textContent = t.description || '';
       } else {
         trialPreview.style.display = 'none';
       }

@@ -369,21 +369,51 @@ jobs:
               }, f, indent=2)
           print(f"Trials: {len(challenges_list)} active, grace_total={grace_total}")
 
-          print("Generating Joy Police card...")
-          # Extract all dated Saturday entries, parse dates, sort, take most recent 2
           MONTHS = {"january":1,"february":2,"march":3,"april":4,"may":5,"june":6,
                     "july":7,"august":8,"september":9,"october":10,"november":11,"december":12}
-          raw_blocks = re.findall(
-              r'(Saturday\s+\d+\s+\w+\s+\d{4}.*?)(?=Saturday\s+\d+\s+\w+\s+\d{4}|$)',
-              full_text, re.DOTALL | re.IGNORECASE
+
+          print("Generating Joy Police card...")
+          # Pull the most recent 2 Saturday Full Check-In entries directly from the
+          # Himbo Check-Ins database by Type + Date properties, rather than regexing
+          # page titles for a "Saturday D Month YYYY" pattern — that pattern depended
+          # on Matt renaming each entry's title to match, and broke silently (falling
+          # back to older entries) the moment a submission kept its default Notion
+          # title (e.g. "New submission") instead of being renamed.
+          CHECKINS_DB_ID = "79579bf4d6ea49f692e793e8773b1811"
+
+          def ci_prop_text(page, name):
+              p = page.get("properties", {}).get(name, {})
+              pt = p.get("type", "")
+              if pt == "title":     return " ".join(t.get("plain_text","") for t in p.get("title",[]))
+              if pt == "rich_text": return " ".join(t.get("plain_text","") for t in p.get("rich_text",[]))
+              if pt == "select":    return (p.get("select") or {}).get("name","")
+              if pt == "date":      return (p.get("date") or {}).get("start","")
+              return ""
+
+          ci_r = requests.post(
+              f"https://api.notion.com/v1/databases/{CHECKINS_DB_ID}/query",
+              headers={**notion_headers, "content-type": "application/json"},
+              json={
+                  "filter": {"property": "Type", "select": {"equals": "Saturday Full Check-In"}},
+                  "sorts": [{"property": "Date", "direction": "descending"}],
+                  "page_size": 2,
+              },
+              timeout=30,
           )
-          def parse_sat_date(block):
-              m = re.match(r'Saturday\s+(\d+)\s+(\w+)\s+(\d{4})', block.strip(), re.IGNORECASE)
-              if not m: return datetime.min
-              mon = MONTHS.get(m.group(2).lower(), 0)
-              return datetime(int(m.group(3)), mon, int(m.group(1))) if mon else datetime.min
-          dated = sorted(raw_blocks, key=parse_sat_date)
-          recent_entries = "\n\n---\n\n".join(b.strip() for b in dated[-2:])[:3000] if dated else ""
+          recent_checkins = []
+          if ci_r.ok:
+              for pg in ci_r.json().get("results", []):
+                  joy_text = ci_prop_text(pg, "Joy Police")
+                  date_val = ci_prop_text(pg, "Date")
+                  if joy_text:
+                      recent_checkins.append({"date": date_val, "joy_police": joy_text})
+          else:
+              print(f"Himbo Check-Ins query failed: {ci_r.status_code} {ci_r.text[:200]}")
+
+          recent_checkins.sort(key=lambda c: c["date"])  # ascending, so most recent is last
+          recent_entries = "\n\n---\n\n".join(
+              f"Saturday {c['date']}:\n{c['joy_police']}" for c in recent_checkins
+          )[:3000]
 
           if recent_entries:
               voice_context = full_text[:1500]
@@ -1348,6 +1378,7 @@ jobs:
                   weekly_volume_by_muscle.setdefault(week_start, {})
 
               exercise_names = []
+              exercise_detail = []
               session_prs = []
               for ex in w.get("exercises", []):
                   ex_title = ex.get("title","")
@@ -1359,13 +1390,18 @@ jobs:
                   secondary_buckets = [b for b in (MUSCLE_GROUP_BUCKET.get(m) for m in tmpl.get("secondary") or []) if b]
 
                   best_this_session = 0
+                  best_weight = 0
+                  best_reps = 0
                   for s in ex.get("sets", []):
                       if s.get("type") == "warmup": continue
                       wt = s.get("weight_kg") or 0
                       reps_count = s.get("reps") or 0
                       if wt and reps_count:
                           e1rm = epley(wt, reps_count)
-                          best_this_session = max(best_this_session, e1rm)
+                          if e1rm > best_this_session:
+                              best_this_session = e1rm
+                              best_weight = wt
+                              best_reps = reps_count
                           # Weekly volume
                           if start_dt:
                               weekly_volume[week_start] = weekly_volume.get(week_start, 0) + wt * reps_count
@@ -1379,6 +1415,9 @@ jobs:
                                   bucket_totals[primary_bucket] = bucket_totals.get(primary_bucket, 0) + set_volume
                               for b in secondary_buckets:
                                   bucket_totals[b] = bucket_totals.get(b, 0) + set_volume * 0.5
+
+                  if best_this_session:
+                      exercise_detail.append({"exercise": ex_title, "top_weight_kg": round(best_weight, 1), "top_reps": best_reps})
 
                   if best_this_session and muscle:
                       # PR detection: did this session beat the all-time best for this exercise?
@@ -1399,7 +1438,15 @@ jobs:
 
               if len(recent_workouts) < 5 or (start_dt and start_dt >= week_ago):
                   recent_workouts = [r for r in recent_workouts if r.get("date","") != start_str[:10] or r.get("title") != w.get("name","")]
-                  recent_workouts.append({"title": w.get("name","Workout"), "date": start_str[:10], "duration_min": dur, "exercises": list(dict.fromkeys(exercise_names))})
+                  recent_workouts.append({
+                      "id": w.get("id"),
+                      "title": w.get("name","Workout"),
+                      "date": start_str[:10],
+                      "duration_min": dur,
+                      "exercises": list(dict.fromkeys(exercise_names)),
+                      "exercise_detail": exercise_detail,
+                      "prs": session_prs,
+                  })
 
           # Keep only last 5 recent workouts, most recent first
           recent_workouts = sorted(recent_workouts, key=lambda x: x["date"], reverse=True)[:5]
@@ -1474,7 +1521,7 @@ jobs:
                   vol_line += f" (prev week: {prev_vol['volume_kg']:,} kg)"
 
               gym_prompt = "\n".join(filter(None, [
-                  f"Gym sessions this week: {sessions_this_week} (Scott's programme target: 4).",
+                  f"Gym sessions in the last 7 days: {sessions_this_week} (Scott's programme target: 4).",
                   "\n".join(pr_lines) if pr_lines else "No new PRs this week.",
                   vol_line,
                   "Top estimated 1RMs:",
@@ -1542,11 +1589,92 @@ jobs:
           print("Gym commentary written to himbo_commentary.json")
           EOF
 
+      - name: Generate workout summaries
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python - <<'EOF'
+          import requests, json, os
+
+          api_key = os.environ["ANTHROPIC_API_KEY"].strip()
+          if not api_key:
+              raise ValueError("Secret ANTHROPIC_API_KEY is not set")
+
+          with open("data/hevy.json") as f:
+              hevy = json.load(f)
+          try:
+              with open("data/himbo_voice.json") as f:
+                  voice_brief = json.load(f).get("voice_brief", "")
+          except Exception:
+              voice_brief = ""
+
+          system_prompt = (voice_brief + "\n\n" if voice_brief else "") + (
+              "Write a 3-4 sentence summary of this Hevy gym session for Patroclus. "
+              "Reference the actual exercises, top sets, and any PRs given below — go beyond "
+              "listing them, interpret what the session says about his training. Warm, a little "
+              "dramatic, direct address. No emojis. No markdown. "
+              "Only cite numeric figures (weight, reps, e1RM) that are given to you below — "
+              "never compute, estimate, or restate one differently."
+          )
+
+          summaries = {}
+          try:
+              with open("data/workout_summaries.json") as f:
+                  summaries = json.load(f)
+          except FileNotFoundError:
+              pass
+
+          for w in hevy.get("recent_workouts", []):
+              wid = w.get("id")
+              if not wid or wid in summaries:
+                  continue
+
+              lines = [f"Workout: {w['title']}", f"Date: {w['date']}"]
+              if w.get("duration_min"):
+                  lines.append(f"Duration: {w['duration_min']} min")
+              detail = w.get("exercise_detail") or []
+              if detail:
+                  lines.append("Top sets:")
+                  for d in detail:
+                      lines.append(f"  {d['exercise']}: {d['top_weight_kg']} kg x {d['top_reps']}")
+              session_prs = w.get("prs") or []
+              if session_prs:
+                  lines.append("New PRs this session:")
+                  for p in session_prs:
+                      lines.append(f"  {p['exercise']}: {p['e1rm']} kg e1RM (was {p['prev']} kg)")
+
+              context = "\n".join(lines)
+
+              resp = requests.post(
+                  "https://api.anthropic.com/v1/messages",
+                  headers={
+                      "x-api-key": api_key,
+                      "anthropic-version": "2023-06-01",
+                      "content-type": "application/json",
+                  },
+                  json={
+                      "model": "claude-sonnet-4-6",
+                      "max_tokens": 400,
+                      "system": system_prompt,
+                      "messages": [{"role": "user", "content": context}],
+                  },
+                  timeout=30,
+              )
+              resp.raise_for_status()
+              text = resp.json()["content"][0]["text"]
+              summaries[wid] = text
+              print(f"Summarized workout: {w['title']} ({w['date']})")
+
+          with open("data/workout_summaries.json", "w") as f:
+              json.dump(summaries, f, indent=2)
+          print(f"Done. {len(summaries)} total workout summaries stored.")
+          EOF
+
       - name: Commit data files
         run: |
           git config user.name "Dante"
           git config user.email "dante@chorus-boys"
-          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_trials.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json data/hevy_exercise_templates.json data/himbo_checkins.json
+          git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_trials.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json data/hevy_exercise_templates.json data/himbo_checkins.json data/workout_summaries.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
           git pull --rebase
           git push
