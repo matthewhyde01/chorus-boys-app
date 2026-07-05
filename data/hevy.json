@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-04T14:01:24.815374Z",
+  "updated_at": "2026-07-05T02:01:45.175508Z",
   "sessions_this_week": 4,
   "muscle_best": {
     "Chest": {
@@ -30,7 +30,7 @@
     "Hinge": {
       "e1rm": 107.9,
       "exercise": "Deadlift (Trap bar)",
-      "date": "2026-06-27"
+      "date": "2026-07-04"
     }
   },
   "muscle_history": {
@@ -158,6 +158,10 @@
       {
         "date": "2026-07-02",
         "e1rm": 168.0
+      },
+      {
+        "date": "2026-07-04",
+        "e1rm": 24.0
       }
     ],
     "Hinge": [
@@ -180,6 +184,10 @@
       {
         "date": "2026-07-02",
         "e1rm": 101.3
+      },
+      {
+        "date": "2026-07-04",
+        "e1rm": 107.9
       }
     ]
   },
@@ -199,7 +207,7 @@
     },
     {
       "week_of": "2026-06-29",
-      "volume_kg": 20124
+      "volume_kg": 24518
     }
   ],
   "weekly_volume_by_muscle": [
@@ -236,15 +244,28 @@
     {
       "week_of": "2026-06-29",
       "Chest": 3438,
-      "Back": 10020,
-      "Shoulders": 3405,
-      "Arms": 8434,
-      "Legs": 14840,
+      "Back": 15895,
+      "Shoulders": 3949,
+      "Arms": 10084,
+      "Legs": 19240,
       "Core": 0,
-      "total_kg": 40137
+      "total_kg": 52606
     }
   ],
   "recent_workouts": [
+    {
+      "title": "Workout",
+      "date": "2026-07-04",
+      "duration_min": 64,
+      "exercises": [
+        "Deadlift (Trap bar)",
+        "Chin Up",
+        "Dumbbell Push Press",
+        "Bulgarian Split Squat",
+        "Bent Over Row (Barbell)",
+        "Farmers Walk"
+      ]
+    },
     {
       "title": "Workout",
       "date": "2026-07-03",
@@ -291,19 +312,6 @@
     },
     {
       "title": "Workout",
-      "date": "2026-06-27",
-      "duration_min": 47,
-      "exercises": [
-        "Deadlift (Trap bar)",
-        "Chin Up",
-        "Dumbbell Push Press",
-        "Bulgarian Split Squat",
-        "Bent Over Row (Barbell)",
-        "Farmers Walk"
-      ]
-    },
-    {
-      "title": "Workout",
       "date": "2026-06-21",
       "duration_min": 40,
       "exercises": [
@@ -340,6 +348,12 @@
       "e1rm": 19.6,
       "prev": 16.8,
       "date": "2026-07-03"
+    },
+    {
+      "exercise": "Bulgarian Split Squat",
+      "e1rm": 24.0,
+      "prev": 21.3,
+      "date": "2026-07-04"
     }
   ]
 }
