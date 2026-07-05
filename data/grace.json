@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-07-05T06:22:52.150373Z",
-  "favour_total": 173.0,
+  "updated_at": "2026-07-05T06:24:03.642627Z",
+  "favour_total": 174.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
       "favour_earned": 53.0,
       "completions_by_mystery": {
-        "Himbo: Visibility & Self-Expression": 2.0,
         "Himbo: Internal Work": 0,
+        "Himbo: Visibility & Self-Expression": 2.0,
         "Himbo: Physique": 0.0
       }
     },
     "Eros": {
       "grace_total": 6.0,
       "grace_threshold": 12,
-      "favour_earned": 109.0,
+      "favour_earned": 110.0,
       "completions_by_mystery": {
-        "Eros: Sexual Challenges": 4.0,
+        "Eros: Kink Exploration": 2.0,
         "Eros: Vulnerability": 0.0,
-        "Eros: Kink Exploration": 2.0
+        "Eros: Sexual Challenges": 4.0
       }
     },
     "Hestio": {
@@ -27,9 +27,9 @@
       "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
-        "Hestio: Family": 1.0,
+        "Hestio: Friends": 0,
         "Hestio: The Hearth": 0,
-        "Hestio: Friends": 0
+        "Hestio: Family": 1.0
       }
     },
     "Hermes": {
@@ -170,6 +170,13 @@
       "god": "Himbo",
       "date_completed": "2026-07-05",
       "description": "Balmoral or Bold & Beautiful \u2014 either counts. He was in the water."
+    },
+    {
+      "notion_service_id": "385db4862bcd815b8664ceecb9ee7a20",
+      "service_name": "Serving Matt B or another dom",
+      "god": "Eros",
+      "date_completed": "2026-07-05",
+      "description": "Serving Matt B, or another dom. Full presence. No performance."
     },
     {
       "notion_service_id": "385db4862bcd815b8664ceecb9ee7a20",
