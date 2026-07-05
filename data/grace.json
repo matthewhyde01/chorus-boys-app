@@ -1,15 +1,15 @@
 {
-  "updated_at": "2026-07-05T04:55:44.091971Z",
-  "favour_total": 165.0,
+  "updated_at": "2026-07-05T05:14:21.088499Z",
+  "favour_total": 172.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
-      "favour_earned": 46.0,
+      "favour_earned": 53.0,
       "completions_by_mystery": {
         "Himbo: Internal Work": 0,
-        "Himbo: Visibility & Self-Expression": 2.0,
-        "Himbo: Physique": 0.0
+        "Himbo: Physique": 0.0,
+        "Himbo: Visibility & Self-Expression": 2.0
       }
     },
     "Eros": {
@@ -17,9 +17,9 @@
       "grace_threshold": 12,
       "favour_earned": 108.0,
       "completions_by_mystery": {
+        "Eros: Vulnerability": 0.0,
         "Eros: Sexual Challenges": 4.0,
-        "Eros: Kink Exploration": 2.0,
-        "Eros: Vulnerability": 0.0
+        "Eros: Kink Exploration": 2.0
       }
     },
     "Hestio": {
@@ -27,8 +27,8 @@
       "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
-        "Hestio: Friends": 0,
         "Hestio: Family": 1.0,
+        "Hestio: Friends": 0,
         "Hestio: The Hearth": 0
       }
     },
@@ -37,8 +37,8 @@
       "grace_threshold": 9,
       "favour_earned": 1.0,
       "completions_by_mystery": {
-        "Hermes: Flow Practice": 0.0,
         "Hermes: Creative Expression": 0,
+        "Hermes: Flow Practice": 0.0,
         "Hermes: Presence & Enough": 0
       }
     }
@@ -152,6 +152,18 @@
       "notion_service_id": "385db4862bcd815b8664ceecb9ee7a20",
       "service_name": "Serving Matt B or another dom",
       "god": "Eros",
+      "date_completed": "2026-07-05"
+    },
+    {
+      "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
+      "service_name": "Gym session (programme day)",
+      "god": "Himbo",
+      "date_completed": "2026-07-05"
+    },
+    {
+      "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
+      "service_name": "Swim session",
+      "god": "Himbo",
       "date_completed": "2026-07-05"
     },
     {
