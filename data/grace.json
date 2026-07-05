@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-05T05:14:21.088499Z",
+  "updated_at": "2026-07-05T06:15:15.842251Z",
   "favour_total": 172.0,
   "gods": {
     "Himbo": {
@@ -8,8 +8,8 @@
       "favour_earned": 53.0,
       "completions_by_mystery": {
         "Himbo: Internal Work": 0,
-        "Himbo: Physique": 0.0,
-        "Himbo: Visibility & Self-Expression": 2.0
+        "Himbo: Visibility & Self-Expression": 2.0,
+        "Himbo: Physique": 0.0
       }
     },
     "Eros": {
@@ -27,9 +27,9 @@
       "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
-        "Hestio: Family": 1.0,
+        "Hestio: The Hearth": 0,
         "Hestio: Friends": 0,
-        "Hestio: The Hearth": 0
+        "Hestio: Family": 1.0
       }
     },
     "Hermes": {
@@ -140,133 +140,155 @@
       "notion_service_id": "384db4862bcd81afbb4be3f33e4305b2",
       "service_name": "Visibility-coded item worn",
       "god": "Himbo",
-      "date_completed": "2026-07-05"
+      "date_completed": "2026-07-05",
+      "description": "Something visibility-coded, out in the world today \u2014 jockstrap, painted nails, a pink item, whatever it was. He noticed."
     },
     {
       "notion_service_id": "385db4862bcd8131bf8ce2a5d3431051",
       "service_name": "Eros-coded item worn",
       "god": "Eros",
-      "date_completed": "2026-07-05"
+      "date_completed": "2026-07-05",
+      "description": "Something Eros-coded, carried through the day. Thong, cage \u2014 whatever he chose."
     },
     {
       "notion_service_id": "385db4862bcd815b8664ceecb9ee7a20",
       "service_name": "Serving Matt B or another dom",
       "god": "Eros",
-      "date_completed": "2026-07-05"
+      "date_completed": "2026-07-05",
+      "description": "Serving Matt B, or another dom. Full presence. No performance."
     },
     {
       "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
       "service_name": "Gym session (programme day)",
       "god": "Himbo",
-      "date_completed": "2026-07-05"
+      "date_completed": "2026-07-05",
+      "description": "A programme day, shown up for. Chest/Shoulders/Arms, Back/Legs, full body, heavy compound \u2014 whichever one was on, he did it."
     },
     {
       "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
       "service_name": "Swim session",
       "god": "Himbo",
-      "date_completed": "2026-07-05"
+      "date_completed": "2026-07-05",
+      "description": "Balmoral or Bold & Beautiful \u2014 either counts. He was in the water."
     },
     {
       "notion_service_id": "384db4862bcd81a0bd4ef2f45d072662",
       "service_name": "Run session",
       "god": "Himbo",
-      "date_completed": "2026-07-04"
+      "date_completed": "2026-07-04",
+      "description": ""
     },
     {
       "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
       "service_name": "Saturday full check-in",
       "god": "Himbo",
-      "date_completed": "2026-07-04"
+      "date_completed": "2026-07-04",
+      "description": ""
     },
     {
       "notion_service_id": "385db4862bcd81d69f93fb087dc3c547",
       "service_name": "15-minute flow block",
       "god": "Hermes",
-      "date_completed": "2026-07-04"
+      "date_completed": "2026-07-04",
+      "description": "Any flow block counts \u2014 piano, a row of knitting, reading, a moment of reflection. The showing up is the practice, not which door it came through."
     },
     {
       "notion_service_id": "385db4862bcd8131bf8ce2a5d3431051",
       "service_name": "Eros-coded item worn",
       "god": "Eros",
-      "date_completed": "2026-07-04"
+      "date_completed": "2026-07-04",
+      "description": "Something Eros-coded, carried through the day. Thong, cage \u2014 whatever he chose."
     },
     {
       "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
       "service_name": "Gym session (programme day)",
       "god": "Himbo",
-      "date_completed": "2026-07-03"
+      "date_completed": "2026-07-03",
+      "description": ""
     },
     {
       "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
       "service_name": "Swim session",
       "god": "Himbo",
-      "date_completed": "2026-07-03"
+      "date_completed": "2026-07-03",
+      "description": ""
     },
     {
       "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
       "service_name": "Gym session (programme day)",
       "god": "Himbo",
-      "date_completed": "2026-07-02"
+      "date_completed": "2026-07-02",
+      "description": ""
     },
     {
       "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
       "service_name": "Swim session",
       "god": "Himbo",
-      "date_completed": "2026-07-02"
+      "date_completed": "2026-07-02",
+      "description": ""
     },
     {
       "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
       "service_name": "Swim session",
       "god": "Himbo",
-      "date_completed": "2026-06-30"
+      "date_completed": "2026-06-30",
+      "description": ""
     },
     {
       "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
       "service_name": "Gym session (programme day)",
       "god": "Himbo",
-      "date_completed": "2026-06-29"
+      "date_completed": "2026-06-29",
+      "description": ""
     },
     {
       "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
       "service_name": "Swim session",
       "god": "Himbo",
-      "date_completed": "2026-06-29"
+      "date_completed": "2026-06-29",
+      "description": ""
     },
     {
       "notion_service_id": "393db4862bcd815e9219f6b9348b9b78",
       "service_name": "Hitting kJ target",
       "god": "Himbo",
-      "date_completed": "2026-06-29"
+      "date_completed": "2026-06-29",
+      "description": "Hit the kJ number today. The bulk doesn't build itself."
     },
     {
       "notion_service_id": "384db4862bcd81a0bd4ef2f45d072662",
       "service_name": "Run session",
       "god": "Himbo",
-      "date_completed": "2026-06-27"
+      "date_completed": "2026-06-27",
+      "description": ""
     },
     {
       "notion_service_id": "385db4862bcd81e99ccdd7e4a959109e",
       "service_name": "Saturday full check-in",
       "god": "Himbo",
-      "date_completed": "2026-06-27"
+      "date_completed": "2026-06-27",
+      "description": ""
     },
     {
       "notion_service_id": "385db4862bcd8186ba9eccbb6c90fdaf",
       "service_name": "Wednesday midweek pulse check-in",
       "god": "Himbo",
-      "date_completed": "2026-06-25"
+      "date_completed": "2026-06-25",
+      "description": ""
     },
     {
       "notion_service_id": "384db4862bcd81009d1df2eb0a2d2545",
       "service_name": "Gym session (programme day)",
       "god": "Himbo",
-      "date_completed": "2026-06-22"
+      "date_completed": "2026-06-22",
+      "description": ""
     },
     {
       "notion_service_id": "384db4862bcd8120a2f1c748f8b1e635",
       "service_name": "Swim session",
       "god": "Himbo",
-      "date_completed": "2026-06-22"
+      "date_completed": "2026-06-22",
+      "description": ""
     }
   ]
 }
