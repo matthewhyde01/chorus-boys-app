@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-07-05T04:55:12.926675Z",
-  "favour_total": 163.0,
+  "updated_at": "2026-07-05T04:55:31.445373Z",
+  "favour_total": 164.0,
   "gods": {
     "Himbo": {
       "grace_total": 2.0,
       "grace_threshold": 12,
       "favour_earned": 46.0,
       "completions_by_mystery": {
-        "Himbo: Internal Work": 0,
         "Himbo: Visibility & Self-Expression": 2.0,
-        "Himbo: Physique": 0.0
+        "Himbo: Physique": 0.0,
+        "Himbo: Internal Work": 0
       }
     },
     "Eros": {
       "grace_total": 6.0,
       "grace_threshold": 12,
-      "favour_earned": 106.0,
+      "favour_earned": 107.0,
       "completions_by_mystery": {
+        "Eros: Vulnerability": 0,
         "Eros: Kink Exploration": 2.0,
-        "Eros: Sexual Challenges": 4.0,
-        "Eros: Vulnerability": 0
+        "Eros: Sexual Challenges": 4.0
       }
     },
     "Hestio": {
@@ -27,8 +27,8 @@
       "grace_threshold": 9,
       "favour_earned": 10.0,
       "completions_by_mystery": {
-        "Hestio: The Hearth": 0,
         "Hestio: Friends": 0,
+        "Hestio: The Hearth": 0,
         "Hestio: Family": 1.0
       }
     },
@@ -37,8 +37,8 @@
       "grace_threshold": 9,
       "favour_earned": 1.0,
       "completions_by_mystery": {
-        "Hermes: Creative Expression": 0,
         "Hermes: Presence & Enough": 0,
+        "Hermes: Creative Expression": 0,
         "Hermes: Flow Practice": 0.0
       }
     }
@@ -140,6 +140,12 @@
       "notion_service_id": "384db4862bcd81afbb4be3f33e4305b2",
       "service_name": "Visibility-coded item worn",
       "god": "Himbo",
+      "date_completed": "2026-07-05"
+    },
+    {
+      "notion_service_id": "385db4862bcd8131bf8ce2a5d3431051",
+      "service_name": "Eros-coded item worn",
+      "god": "Eros",
       "date_completed": "2026-07-05"
     },
     {
