@@ -10,6 +10,10 @@ on:
 # fresh (refreshed whenever the Service Compendium changes), not exactly at
 # midnight.
 
+concurrency:
+  group: chorus-boys-app-main-push
+  cancel-in-progress: false
+
 jobs:
   fetch-data:
     runs-on: ubuntu-latest
@@ -124,5 +128,10 @@ jobs:
           git config user.email "dante@chorus-boys"
           git add data/devotions.json
           git diff --staged --quiet || git commit -m "chore: fetch devotions data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
-          git pull --rebase
-          git push
+
+      - name: Push with retry
+        run: |
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break
+            sleep $((RANDOM % 10 + 5))
+          done

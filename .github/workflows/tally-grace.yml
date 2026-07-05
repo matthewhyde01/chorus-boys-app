@@ -6,6 +6,10 @@ on:
 # Triggered by iOS Shortcut "Grace Tally" on demand.
 # Typically run Saturday morning before check-in, but any time is valid.
 
+concurrency:
+  group: chorus-boys-app-main-push
+  cancel-in-progress: false
+
 jobs:
   tally:
     runs-on: ubuntu-latest
@@ -500,5 +504,10 @@ jobs:
           git config user.email "dante@chorus-boys"
           git add data/grace.db data/grace.json data/active_trials.json
           git diff --staged --quiet || git commit -m "chore: grace tally [$(date -u '+%Y-%m-%d %H:%M')] UTC"
-          git pull --rebase
-          git push
+
+      - name: Push with retry
+        run: |
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break
+            sleep $((RANDOM % 10 + 5))
+          done
