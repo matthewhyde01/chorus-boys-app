@@ -8,6 +8,10 @@ on:
 # 2. Chorus Boys Sync — manual Home Screen shortcut (iOS)
 # No internal GitHub cron schedule — all scheduling handled externally.
 
+concurrency:
+  group: chorus-boys-app-main-push
+  cancel-in-progress: false
+
 jobs:
   fetch-data:
     runs-on: ubuntu-latest
@@ -1676,5 +1680,10 @@ jobs:
           git config user.email "dante@chorus-boys"
           git add data/strava.json data/withings.json data/himbo_voice.json data/activity_summaries.json data/himbo_trials.json data/himbo_joy.json data/himbo_sleep_ai.json data/himbo_commentary.json data/hevy.json data/hevy_exercise_templates.json data/himbo_checkins.json data/workout_summaries.json
           git diff --staged --quiet || git commit -m "chore: update himbo data [$(date -u '+%Y-%m-%d %H:%M')] UTC"
-          git pull --rebase
-          git push
+
+      - name: Push with retry
+        run: |
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break
+            sleep $((RANDOM % 10 + 5))
+          done

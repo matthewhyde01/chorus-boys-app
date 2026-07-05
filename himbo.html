@@ -868,20 +868,18 @@
 
     // ── Parallel fetch ────────────────────────────────────────────────────────
 
-    const [wRes, sRes, slRes, nutRes, actRes, voiceRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, gymAiRes, checkinsRes, graceRes, devCatalogRes, workoutSummariesRes] = await Promise.allSettled([
+    const [wRes, sRes, slRes, nutRes, actRes, summariesRes, trialsRes, joyRes, sleepAiRes, commentaryRes, hevyRes, checkinsRes, graceRes, devCatalogRes, workoutSummariesRes] = await Promise.allSettled([
       fetch('data/withings.json').then(r => r.json()),
       fetch('data/strava.json').then(r => r.json()),
       fetch('data/sleep.json').then(r => r.text()),
       fetch('data/nutrition.json').then(r => r.text()),
       fetch('data/activity.json').then(r => r.text()),
-      fetch('data/himbo_voice.json').then(r => r.json()),
       fetch('data/activity_summaries.json').then(r => r.json()),
       fetch('data/himbo_trials.json').then(r => r.json()),
       fetch('data/himbo_joy.json').then(r => r.json()),
       fetch('data/himbo_sleep_ai.json').then(r => r.json()),
       fetch('data/himbo_commentary.json').then(r => r.json()),
       fetch('data/hevy.json').then(r => r.json()),
-      fetch('data/himbo_gym_ai.json').then(r => r.json()),
       fetch('data/himbo_checkins.json').then(r => r.json()),
       fetch('data/grace.json').then(r => r.json()),
       fetch('data/devotions.json').then(r => r.json()),

@@ -3,7 +3,7 @@ name: Grace Tally
 on:
   workflow_dispatch:
 
-# Triggered by iOS Shortcut "Grace Tally" on demand.
+# Triggered by iOS Shortcut "Tally Grace" on demand.
 # Typically run Saturday morning before check-in, but any time is valid.
 
 concurrency:
