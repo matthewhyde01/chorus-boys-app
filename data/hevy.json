@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-07-09T02:01:32.343629Z",
-  "sessions_this_week": 5,
+  "updated_at": "2026-07-09T03:14:09.998442Z",
+  "sessions_this_week": 4,
   "muscle_best": {
     "Chest": {
       "e1rm": 76.0,
@@ -509,49 +509,41 @@
       ]
     },
     {
-      "id": "3ca1160e-17d2-450d-92f4-95bf0a9b51c0",
+      "id": "d6803b28-df74-4464-bca5-26fb85adb803",
       "title": "Workout",
-      "date": "2026-07-02",
-      "duration_min": 48,
+      "date": "2026-06-21",
+      "duration_min": 40,
       "exercises": [
-        "Pull Up",
-        "Lat Pulldown - Reverse Grip",
-        "Squat (Barbell)",
-        "Romanian Deadlift (Barbell)",
-        "Leg Press Horizontal (Machine)",
-        "Walking Lunge (Dumbbell)",
-        "Hanging Knee Raise"
+        "Deadlift (Trap bar)",
+        "Chin Up",
+        "Dumbbell Push Press",
+        "Bulgarian Split Squat",
+        "Bent Over Row (Barbell)",
+        "Farmers Walk"
       ],
       "exercise_detail": [
         {
-          "exercise": "Lat Pulldown - Reverse Grip",
-          "top_weight_kg": 60,
-          "top_reps": 12
+          "exercise": "Deadlift (Trap bar)",
+          "top_weight_kg": 92.5,
+          "top_reps": 5
         },
         {
-          "exercise": "Squat (Barbell)",
-          "top_weight_kg": 90,
+          "exercise": "Dumbbell Push Press",
+          "top_weight_kg": 16,
           "top_reps": 8
         },
         {
-          "exercise": "Romanian Deadlift (Barbell)",
-          "top_weight_kg": 80,
-          "top_reps": 8
+          "exercise": "Bulgarian Split Squat",
+          "top_weight_kg": 16,
+          "top_reps": 10
         },
         {
-          "exercise": "Leg Press Horizontal (Machine)",
-          "top_weight_kg": 120,
-          "top_reps": 12
+          "exercise": "Bent Over Row (Barbell)",
+          "top_weight_kg": 55,
+          "top_reps": 10
         }
       ],
-      "prs": [
-        {
-          "exercise": "Leg Press Horizontal (Machine)",
-          "e1rm": 168.0,
-          "prev": 154.0,
-          "date": "2026-07-02"
-        }
-      ]
+      "prs": []
     }
   ],
   "recent_prs": [
