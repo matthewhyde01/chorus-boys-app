@@ -1,11 +1,99 @@
 {
-  "updated_at": "2026-07-09T14:00:48.475338Z",
+  "updated_at": "2026-07-10T02:00:48.979869Z",
   "measures": {
     "status": 0,
     "body": {
-      "updatetime": 1783451202,
+      "updatetime": 1783626479,
       "timezone": "Australia/Sydney",
       "measuregrps": [
+        {
+          "grpid": 7970104623,
+          "attrib": 0,
+          "date": 1783626407,
+          "created": 1783626479,
+          "modified": 1783626479,
+          "category": 1,
+          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "measures": [
+            {
+              "value": 81240,
+              "type": 1,
+              "unit": -3,
+              "algo": 218300672,
+              "fm": 128
+            },
+            {
+              "value": 6335,
+              "type": 76,
+              "unit": -2,
+              "algo": 218300672,
+              "fm": 128,
+              "position": 6
+            },
+            {
+              "value": 4446,
+              "type": 77,
+              "unit": -2,
+              "algo": 218300672,
+              "fm": 128,
+              "position": 6
+            },
+            {
+              "value": 17910,
+              "type": 6,
+              "unit": -3
+            }
+          ],
+          "modelid": 16,
+          "model": "Body Smart",
+          "comment": null,
+          "timezone": "Australia/Sydney"
+        },
+        {
+          "grpid": 7969850551,
+          "attrib": 0,
+          "date": 1783537524,
+          "created": 1783619564,
+          "modified": 1783619564,
+          "category": 1,
+          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "measures": [
+            {
+              "value": 80960,
+              "type": 1,
+              "unit": -3,
+              "algo": 218300672,
+              "fm": 128
+            },
+            {
+              "value": 6358,
+              "type": 76,
+              "unit": -2,
+              "algo": 218300672,
+              "fm": 128,
+              "position": 6
+            },
+            {
+              "value": 4456,
+              "type": 77,
+              "unit": -2,
+              "algo": 218300672,
+              "fm": 128,
+              "position": 6
+            },
+            {
+              "value": 17330,
+              "type": 6,
+              "unit": -3
+            }
+          ],
+          "modelid": 16,
+          "model": "Body Smart",
+          "comment": null,
+          "timezone": "Australia/Sydney"
+        },
         {
           "grpid": 7961570186,
           "attrib": 0,
@@ -1249,50 +1337,6 @@
             },
             {
               "value": 16864,
-              "type": 6,
-              "unit": -3
-            }
-          ],
-          "modelid": 16,
-          "model": "Body Smart",
-          "comment": null,
-          "timezone": "Australia/Sydney"
-        },
-        {
-          "grpid": 7851729746,
-          "attrib": 0,
-          "date": 1781031849,
-          "created": 1781104316,
-          "modified": 1781104316,
-          "category": 1,
-          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
-          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
-          "measures": [
-            {
-              "value": 79841,
-              "type": 1,
-              "unit": -3,
-              "algo": 218300672,
-              "fm": 128
-            },
-            {
-              "value": 6262,
-              "type": 76,
-              "unit": -2,
-              "algo": 218300672,
-              "fm": 128,
-              "position": 6
-            },
-            {
-              "value": 4373,
-              "type": 77,
-              "unit": -2,
-              "algo": 218300672,
-              "fm": 128,
-              "position": 6
-            },
-            {
-              "value": 17422,
               "type": 6,
               "unit": -3
             }

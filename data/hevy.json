@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-09T14:01:32.355800Z",
+  "updated_at": "2026-07-10T02:01:28.363045Z",
   "sessions_this_week": 4,
   "muscle_best": {
     "Chest": {
@@ -547,12 +547,6 @@
     }
   ],
   "recent_prs": [
-    {
-      "exercise": "Leg Press Horizontal (Machine)",
-      "e1rm": 168.0,
-      "prev": 154.0,
-      "date": "2026-07-02"
-    },
     {
       "exercise": "Incline Bench Press (Dumbbell)",
       "e1rm": 34.7,
