@@ -1,74 +1,6 @@
 {
-  "updated_at": "2026-07-10T14:00:46.350534Z",
+  "updated_at": "2026-07-11T02:00:48.274086Z",
   "activities": [
-    {
-      "resource_state": 2,
-      "athlete": {
-        "id": 7234187,
-        "id_str": "7234187",
-        "resource_state": 1
-      },
-      "name": "Naremburn loops \ud83c\udfc3\ud83c\udffb\u200d\u2642\ufe0f",
-      "distance": 13115.5,
-      "moving_time": 4468,
-      "elapsed_time": 5035,
-      "total_elevation_gain": 245.0,
-      "type": "Run",
-      "sport_type": "Run",
-      "workout_type": null,
-      "device_name": "Apple Watch Series 9",
-      "id": 19078376296,
-      "id_str": "19078376296",
-      "start_date": "2026-06-26T20:33:44Z",
-      "start_date_local": "2026-06-27T06:33:44Z",
-      "timezone": "(GMT+10:00) Australia/Sydney",
-      "utc_offset": 36000.0,
-      "location_city": null,
-      "location_state": null,
-      "location_country": null,
-      "achievement_count": 5,
-      "kudos_count": 2,
-      "comment_count": 0,
-      "athlete_count": 1,
-      "photo_count": 0,
-      "map": {
-        "id": "a19078376296",
-        "summary_polyline": "rlnmEeb~y[?LDP\\d@FN@ZEn@Ux@u@vAUh@k@bB[dAUlCAl@GZCj@G\\Gv@IXKNI\\OzB?fBFh@Np@R`@JHLDj@FDBAJFA\\NHNDf@ALS^If@UjEYlBWzC@f@Kb@@XBJVXPZj@P`@TxDf@bA@\\Fb@D`APn@P`@AbADf@Dn@RRLTD`AVjAPx@?`AHx@XFH@HCr@o@tGKb@KHuCdA_@NSBe@GqB][IeBMcB[aAIcBWsB_@sDe@wAWOEGG?[\\uDRiDJg@HSLMNKJAz@@~Bb@~@Nx@FPF@AEKFgAM{@W}Ao@kCa@yC{@uE]sAWc@De@i@Gu@Oc@EIOYaAIq@AyAFeATgBRo@F_@PsBLuBPuAl@mBJ{@`@sAF_@d@m@d@aAHY?OAI[[GS?i@Hy@Gn@Sn@GF}@Bk@AYEYIM?SJU@GDS`@U|A{@jDY|@SdAYhA]zEWxB[pBQlBEx@?p@Il@?d@O`BSbDMzAEJMT[XQ@gAMGBE^G@GAn@JpAJRHBLMnA[pDGvBStBOtBYbDIPAd@W`Ec@jFUzCi@dFIZEBI?}AS[MGORgDA}@Bm@R}C`AeK@SAGICcAKuC_@gAK_AU}BY{BSsFy@c@Ci@KK?KFIf@IbB?PDDJFP@fABz@Ft@LHB@DGBm@JoC[YAKFI`@g@`HQrAGJO@iACYG]MaAGG@SfCC`AM~AOjAGp@K~B[~CC|@GJKBiCUCD?HBFFDzALjANf@Dt@NpAN\\CbAk@TITCbAC`ADfDDL@HJDXA|@BtAErC@FJ@LC@CIsCJyCBMDEXCzAAx@DG^KtDAqBBaABYFGHCbBE^@LBjA@`AEn@@x@CvGDrBIp@D^AREh@[`@KnAs@`J}FnCmB\\_@DI?KQkAAc@f@iGL{@LGjABr@E|AFJCDGL}Bj@oH@]AGC?@SToAFiBTeDBs@GEg@Ey@MSCYBOE[Se@Sg@_@YKk@i@_Ak@{B{A[Yg@m@e@wBEOW_@?IDSu@QOIq@MOOOWM[Gc@G{A@w@JsAn@qCLqBFiATyBl@uBTmAJ_@JQRm@t@gAXs@DWEKF[LYbAaDd@yBFc@d@_Bd@mBHw@?eBI_@CEUI]EIBEJM~@YbASvAcBbK",
-        "resource_state": 2
-      },
-      "trainer": false,
-      "commute": false,
-      "manual": false,
-      "private": false,
-      "visibility": "followers_only",
-      "flagged": false,
-      "gear_id": null,
-      "start_latlng": [
-        -33.83002,
-        151.219716
-      ],
-      "end_latlng": [
-        -33.83019,
-        151.220258
-      ],
-      "average_speed": 2.935,
-      "max_speed": 4.924,
-      "has_heartrate": true,
-      "average_heartrate": 159.2,
-      "max_heartrate": 187.0,
-      "heartrate_opt_out": false,
-      "display_hide_heartrate_option": true,
-      "elev_high": 102.2,
-      "elev_low": 0.0,
-      "upload_id": 20193247212,
-      "upload_id_str": "20193247212",
-      "external_id": "9205FAAA-A4A0-4B1D-971B-56006D15BF4F.fit",
-      "from_accepted_tag": false,
-      "pr_count": 1,
-      "total_photo_count": 0,
-      "has_kudoed": false,
-      "suffer_score": 183.0
-    },
     {
       "resource_state": 2,
       "athlete": {
@@ -1337,6 +1269,74 @@
       "pr_count": 0,
       "total_photo_count": 2,
       "has_kudoed": false
+    },
+    {
+      "resource_state": 2,
+      "athlete": {
+        "id": 7234187,
+        "id_str": "7234187",
+        "resource_state": 1
+      },
+      "name": "Mosman circuit \ud83c\udfc3\ud83c\udffb\u200d\u2642\ufe0f",
+      "distance": 13306.9,
+      "moving_time": 4470,
+      "elapsed_time": 4744,
+      "total_elevation_gain": 196.2,
+      "type": "Run",
+      "sport_type": "Run",
+      "workout_type": null,
+      "device_name": "Apple Watch Series 9",
+      "id": 19261252767,
+      "id_str": "19261252767",
+      "start_date": "2026-07-10T20:34:40Z",
+      "start_date_local": "2026-07-11T06:34:40Z",
+      "timezone": "(GMT+10:00) Australia/Sydney",
+      "utc_offset": 36000.0,
+      "location_city": null,
+      "location_state": null,
+      "location_country": null,
+      "achievement_count": 2,
+      "kudos_count": 1,
+      "comment_count": 0,
+      "athlete_count": 3,
+      "photo_count": 0,
+      "map": {
+        "id": "a19261252767",
+        "summary_polyline": "hmnmEic~y[Il@AVFNZX@NANs@nCi@lAm@~B]fA_@rDCr@O~@Gr@Sb@Q`AKrAAd@DrAHj@J\\LRJHNFv@JLNZJDFBJ@p@Qb@QhAKlBa@nDUvCAl@I`@@Tn@dAFBP@NDVPNFfDb@R@j@AfAJlA\\t@b@nAQl@Dh@Nd@Td@L|@Dz@P~Dh@?b@MhBc@jEG\\EHGDaAXcAb@w@TS@}AW_ACeBWqB_@s@Ck@Mm@GgLeBMGCGh@aGFuBJk@RYZMb@AnBZj@DpATp@@Ny@A]m@yDc@oBGi@_@wBk@}C_@aBISS[CIBOeAe@i@MKKMQMWOg@GmA@aAF{@Fm@`@qBPgBPuCNmAJa@Ra@Ru@DQFs@Xy@D_@HMl@o@Vi@Lg@?_@GM[_@Ca@Do@FQDGA^EEAOd@gE@q@EMKMa@OYSsCo@]MIK?QpA_J@u@Ec@gAuC_@oA{@uBm@mASk@Uw@gDyIqAuD}@_Ca@kAGa@AWDWFAh@LxBR`APLAMAs@?kC]e@OW_@OIQCyAIeBQkRaCuC_@GEGM?Yb@mGZgDHsAPsADGHAp@Jb@?z@J|@DkAKyAUo@_@CI?MZqFNqAHcBVgCDUDGToB|@uMFWLUjByBNYDMAIGQaAsA_@o@MMYQm@OsCYqAOUKCQLoAV_CBKFIX?bGv@hFr@vBPx@NFFDLJ`BHn@p@zBR^Ym@c@qAOe@EWXz@^|@ZZNDFCLKVk@TW\\Q|Ag@RA\\LN@|@UbAG~@?h@BzBI|@@JFDH?ZGt@Cp@k@tFGjAKp@G`AOvAAb@IX@R?j@KfC_@bDOlCCHOFFb@ALMlAQ|BQrAa@jDIVAz@WrEa@xFETIT]h@G@b@u@JY^_FWbEG`@IR_@n@EDECWVKBOISQi@m@qBiBq@q@g@m@IGG?GD]^UPSD[?{Ek@]Mq@c@a@KmHs@QBEDENWxFFTJFLB|AHdBLnG|@rBRvFn@`BH\\HRJDPCx@Lj@~@vBv@bCz@fBtAnErExLFXt@dBz@bCDd@AZuAjJCXBHHBrAX`AVVLJJAL[t@Md@]bD",
+        "resource_state": 2
+      },
+      "trainer": false,
+      "commute": false,
+      "manual": false,
+      "private": false,
+      "visibility": "followers_only",
+      "flagged": false,
+      "gear_id": "g32166669",
+      "start_latlng": [
+        -33.830124,
+        151.219893
+      ],
+      "end_latlng": [
+        -33.829655,
+        151.220254
+      ],
+      "average_speed": 2.977,
+      "max_speed": 4.42,
+      "has_heartrate": true,
+      "average_heartrate": 155.1,
+      "max_heartrate": 179.0,
+      "heartrate_opt_out": false,
+      "display_hide_heartrate_option": true,
+      "elev_high": 94.2,
+      "elev_low": 70.8,
+      "upload_id": 20379033951,
+      "upload_id_str": "20379033951",
+      "external_id": "9E4775BC-114C-4D64-8486-0209B8D4DBB0.fit",
+      "from_accepted_tag": false,
+      "pr_count": 0,
+      "total_photo_count": 0,
+      "has_kudoed": false,
+      "suffer_score": 152.0
     }
   ]
 }
