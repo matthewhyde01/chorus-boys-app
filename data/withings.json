@@ -1,11 +1,58 @@
 {
-  "updated_at": "2026-07-11T14:00:47.782636Z",
+  "updated_at": "2026-07-12T02:00:54.739091Z",
   "measures": {
     "status": 0,
     "body": {
-      "updatetime": 1783713553,
+      "updatetime": 1783803025,
       "timezone": "Australia/Sydney",
       "measuregrps": [
+        {
+          "grpid": 7978251196,
+          "attrib": 0,
+          "date": 1783802917,
+          "created": 1783803025,
+          "modified": 1783803025,
+          "category": 1,
+          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "measures": [
+            {
+              "value": 81654006,
+              "type": 1,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9
+            },
+            {
+              "value": 63840000,
+              "type": 76,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9,
+              "position": 6
+            },
+            {
+              "value": 45039997,
+              "type": 77,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9,
+              "position": 6
+            },
+            {
+              "value": 17697,
+              "type": 6,
+              "unit": -3
+            }
+          ],
+          "modelid": 16,
+          "model": "Body Smart",
+          "comment": null,
+          "timezone": "Australia/Sydney"
+        },
         {
           "grpid": 7974170800,
           "attrib": 0,
@@ -1290,55 +1337,6 @@
               "value": 17209,
               "type": 6,
               "unit": -3
-            }
-          ],
-          "modelid": 16,
-          "model": "Body Smart",
-          "comment": null,
-          "timezone": "Australia/Sydney"
-        },
-        {
-          "grpid": 7860780076,
-          "attrib": 0,
-          "date": 1781207325,
-          "created": 1781294138,
-          "modified": 1781294138,
-          "category": 1,
-          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
-          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
-          "measures": [
-            {
-              "value": 79451004,
-              "type": 1,
-              "unit": -6,
-              "algo": 0,
-              "fm": 128,
-              "apppfmid": 9
-            },
-            {
-              "value": 16991603,
-              "type": 6,
-              "unit": -6,
-              "algo": 0,
-              "fm": 128
-            },
-            {
-              "value": 62649997,
-              "type": 76,
-              "unit": -6,
-              "algo": 0,
-              "fm": 128,
-              "apppfmid": 9,
-              "position": 6
-            },
-            {
-              "value": 43689998,
-              "type": 77,
-              "unit": -6,
-              "algo": 0,
-              "fm": 128,
-              "apppfmid": 9,
-              "position": 6
             }
           ],
           "modelid": 16,
