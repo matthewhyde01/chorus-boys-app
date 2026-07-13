@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-07-13T02:01:35.290483Z",
-  "sessions_this_week": 3,
+  "updated_at": "2026-07-13T14:01:44.656754Z",
+  "sessions_this_week": 2,
   "muscle_best": {
     "Chest": {
       "e1rm": 76.0,
@@ -397,67 +397,6 @@
       "prs": []
     },
     {
-      "id": "06c38574-71db-460e-8acd-1a19564520e8",
-      "title": "Workout",
-      "date": "2026-07-06",
-      "duration_min": 39,
-      "exercises": [
-        "Incline Bench Press (Barbell)",
-        "Bench Press (Dumbbell)",
-        "Single Arm Landmine Press (Barbell)",
-        "Cable Chest Fly",
-        "Lateral Raise (Dumbbell)",
-        "Bicep Curl (Barbell)",
-        "Push Up"
-      ],
-      "exercise_detail": [
-        {
-          "exercise": "Incline Bench Press (Barbell)",
-          "top_weight_kg": 60,
-          "top_reps": 8
-        },
-        {
-          "exercise": "Bench Press (Dumbbell)",
-          "top_weight_kg": 27.5,
-          "top_reps": 8
-        },
-        {
-          "exercise": "Single Arm Landmine Press (Barbell)",
-          "top_weight_kg": 12.5,
-          "top_reps": 10
-        },
-        {
-          "exercise": "Cable Chest Fly",
-          "top_weight_kg": 10,
-          "top_reps": 15
-        },
-        {
-          "exercise": "Lateral Raise (Dumbbell)",
-          "top_weight_kg": 6,
-          "top_reps": 15
-        },
-        {
-          "exercise": "Bicep Curl (Barbell)",
-          "top_weight_kg": 25,
-          "top_reps": 12
-        }
-      ],
-      "prs": [
-        {
-          "exercise": "Bench Press (Dumbbell)",
-          "e1rm": 34.8,
-          "prev": 31.7,
-          "date": "2026-07-06"
-        },
-        {
-          "exercise": "Bicep Curl (Barbell)",
-          "e1rm": 35.0,
-          "prev": 31.5,
-          "date": "2026-07-06"
-        }
-      ]
-    },
-    {
       "id": "d6803b28-df74-4464-bca5-26fb85adb803",
       "title": "Workout",
       "date": "2026-06-21",
@@ -545,6 +484,44 @@
           "exercise": "Triceps Rope Pushdown",
           "top_weight_kg": 20,
           "top_reps": 15
+        }
+      ],
+      "prs": []
+    },
+    {
+      "id": "7de9345f-25bd-45ab-b727-45c83aee5c68",
+      "title": "Workout",
+      "date": "2026-06-18",
+      "duration_min": 38,
+      "exercises": [
+        "Pull Up",
+        "Lat Pulldown - Reverse Grip",
+        "Squat (Barbell)",
+        "Romanian Deadlift (Barbell)",
+        "Leg Press Horizontal (Machine)",
+        "Walking Lunge (Dumbbell)",
+        "Hanging Knee Raise"
+      ],
+      "exercise_detail": [
+        {
+          "exercise": "Lat Pulldown - Reverse Grip",
+          "top_weight_kg": 60,
+          "top_reps": 12
+        },
+        {
+          "exercise": "Squat (Barbell)",
+          "top_weight_kg": 90,
+          "top_reps": 8
+        },
+        {
+          "exercise": "Romanian Deadlift (Barbell)",
+          "top_weight_kg": 80,
+          "top_reps": 8
+        },
+        {
+          "exercise": "Leg Press Horizontal (Machine)",
+          "top_weight_kg": 110,
+          "top_reps": 12
         }
       ],
       "prs": []
