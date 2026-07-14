@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-13T14:01:44.656754Z",
+  "updated_at": "2026-07-14T02:01:46.328814Z",
   "sessions_this_week": 2,
   "muscle_best": {
     "Chest": {
@@ -527,18 +527,5 @@
       "prs": []
     }
   ],
-  "recent_prs": [
-    {
-      "exercise": "Bench Press (Dumbbell)",
-      "e1rm": 34.8,
-      "prev": 31.7,
-      "date": "2026-07-06"
-    },
-    {
-      "exercise": "Bicep Curl (Barbell)",
-      "e1rm": 35.0,
-      "prev": 31.5,
-      "date": "2026-07-06"
-    }
-  ]
+  "recent_prs": []
 }
