@@ -1,33 +1,33 @@
 date,type,value,unit
-2 Jul 2026 at 1:27 am,Heart Rate Variability,54.85623093362604,ms
-3 Jul 2026 at 1:25 am,Heart Rate Variability,45.57865749817011,ms
-4 Jul 2026 at 1:26 am,Heart Rate Variability,61.36679242669828,ms
-5 Jul 2026 at 1:26 am,Heart Rate Variability,45.9000373762177,ms
-6 Jul 2026 at 1:26 am,Heart Rate Variability,49.83197377586072,ms
-7 Jul 2026 at 1:26 am,Heart Rate Variability,45.71879784447772,ms
-8 Jul 2026 at 1:26 am,Heart Rate Variability,47.88266465619545,ms
-9 Jul 2026 at 1:25 am,Heart Rate Variability,62.18750196887139,ms
-2 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-3 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-4 Jul 2026 at 6:58 am,VO2 Max,57.33,mL/min·kg
-5 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-6 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-7 Jul 2026 at 6:06 pm,VO2 Max,56.79,mL/min·kg
-8 Jul 2026 at 1:05 pm,VO2 Max,56.68,mL/min·kg
-9 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-2 Jul 2026 at 12:09 am,Resting Calories,8461.976823999559,kJ
-3 Jul 2026 at 12:02 am,Resting Calories,8525.247271999538,kJ
-4 Jul 2026 at 12:09 am,Resting Calories,8301.512056000009,kJ
-5 Jul 2026 at 12:05 am,Resting Calories,8389.765168000004,kJ
-6 Jul 2026 at 12:12 am,Resting Calories,8663.093335999594,kJ
-7 Jul 2026 at 12:02 am,Resting Calories,8579.64345599949,kJ
-8 Jul 2026 at 12:13 am,Resting Calories,8371.594055999994,kJ
-9 Jul 2026 at 12:00 am,Resting Calories,4651.465768000007,kJ
-2 Jul 2026 at 12:07 am,Active Calories,6624.389127999983,kJ
-3 Jul 2026 at 12:02 am,Active Calories,5704.022814103561,kJ
-4 Jul 2026 at 12:09 am,Active Calories,5788.764831999995,kJ
-5 Jul 2026 at 12:04 am,Active Calories,6399.545152000053,kJ
-6 Jul 2026 at 12:08 am,Active Calories,7490.100568000039,kJ
-7 Jul 2026 at 12:25 am,Active Calories,7214.906336000019,kJ
-8 Jul 2026 at 12:08 am,Active Calories,6610.964075519532,kJ
-9 Jul 2026 at 12:36 am,Active Calories,3699.789864000009,kJ
+12 Jul 2026 at 1:25 am,Heart Rate Variability,66.27178403709338,ms
+13 Jul 2026 at 1:26 am,Heart Rate Variability,54.74457443202569,ms
+14 Jul 2026 at 1:25 am,Heart Rate Variability,45.07532643588588,ms
+15 Jul 2026 at 1:25 am,Heart Rate Variability,42.84525680390054,ms
+16 Jul 2026 at 1:26 am,Heart Rate Variability,45.9931145065398,ms
+17 Jul 2026 at 1:26 am,Heart Rate Variability,41.52897302577254,ms
+18 Jul 2026 at 1:26 am,Heart Rate Variability,46.44990699348298,ms
+19 Jul 2026 at 1:25 am,Heart Rate Variability,58.49277600377705,ms
+12 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+13 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+14 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+15 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+16 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+17 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+18 Jul 2026 at 7:00 am,VO2 Max,55.64,mL/min·kg
+19 Jul 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+12 Jul 2026 at 12:06 am,Resting Calories,8561.953503999999,kJ
+13 Jul 2026 at 12:18 am,Resting Calories,7724.099135999996,kJ
+14 Jul 2026 at 12:03 am,Resting Calories,8362.498040000008,kJ
+15 Jul 2026 at 12:02 am,Resting Calories,8462.625344000011,kJ
+16 Jul 2026 at 12:04 am,Resting Calories,8420.69747999945,kJ
+17 Jul 2026 at 12:14 am,Resting Calories,8532.406095999515,kJ
+18 Jul 2026 at 12:06 am,Resting Calories,8143.386144000016,kJ
+19 Jul 2026 at 12:01 am,Resting Calories,5602.898999999462,kJ
+12 Jul 2026 at 12:06 am,Active Calories,2265.974904000001,kJ
+13 Jul 2026 at 12:18 am,Active Calories,708.7528640000002,kJ
+14 Jul 2026 at 12:03 am,Active Calories,3906.240975999999,kJ
+15 Jul 2026 at 12:02 am,Active Calories,5044.230400000003,kJ
+16 Jul 2026 at 12:04 am,Active Calories,3771.867632000055,kJ
+17 Jul 2026 at 12:14 am,Active Calories,3530.559616000079,kJ
+18 Jul 2026 at 12:05 am,Active Calories,5129.571447999998,kJ
+19 Jul 2026 at 12:01 am,Active Calories,2781.924864000071,kJ
