@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-07-21T02:01:25.311957Z",
-  "sessions_this_week": 4,
+  "updated_at": "2026-07-21T14:01:31.088650Z",
+  "sessions_this_week": 5,
   "muscle_best": {
     "Chest": {
       "e1rm": 76.0,
@@ -18,9 +18,9 @@
       "date": "2026-07-06"
     },
     "Shoulders": {
-      "e1rm": 9.0,
+      "e1rm": 12.0,
       "exercise": "Lateral Raise (Dumbbell)",
-      "date": "2026-06-17"
+      "date": "2026-07-21"
     },
     "Quad": {
       "e1rm": 168.0,
@@ -78,6 +78,10 @@
       {
         "date": "2026-07-19",
         "e1rm": 34.7
+      },
+      {
+        "date": "2026-07-21",
+        "e1rm": 69.7
       }
     ],
     "Back": [
@@ -170,6 +174,10 @@
       {
         "date": "2026-07-19",
         "e1rm": 19.6
+      },
+      {
+        "date": "2026-07-21",
+        "e1rm": 35.0
       }
     ],
     "Shoulders": [
@@ -192,6 +200,10 @@
       {
         "date": "2026-07-16",
         "e1rm": 9.0
+      },
+      {
+        "date": "2026-07-21",
+        "e1rm": 12.0
       }
     ],
     "Quad": [
@@ -299,7 +311,7 @@
     },
     {
       "week_of": "2026-07-20",
-      "volume_kg": 4228
+      "volume_kg": 8080
     }
   ],
   "weekly_volume_by_muscle": [
@@ -365,16 +377,71 @@
     },
     {
       "week_of": "2026-07-20",
-      "Chest": 0,
+      "Chest": 2566,
       "Back": 5675,
-      "Shoulders": 540,
-      "Arms": 1600,
+      "Shoulders": 2209,
+      "Arms": 3522,
       "Legs": 4175,
       "Core": 0,
-      "total_kg": 11990
+      "total_kg": 18147
     }
   ],
   "recent_workouts": [
+    {
+      "id": "9a0c963f-9057-447c-8560-ca386483fecb",
+      "title": "Workout",
+      "date": "2026-07-21",
+      "duration_min": 42,
+      "exercises": [
+        "Incline Bench Press (Barbell)",
+        "Bench Press (Dumbbell)",
+        "Single Arm Landmine Press (Barbell)",
+        "Cable Chest Fly",
+        "Lateral Raise (Dumbbell)",
+        "Bicep Curl (Barbell)",
+        "Push Up"
+      ],
+      "exercise_detail": [
+        {
+          "exercise": "Incline Bench Press (Barbell)",
+          "top_weight_kg": 55,
+          "top_reps": 8
+        },
+        {
+          "exercise": "Bench Press (Dumbbell)",
+          "top_weight_kg": 26,
+          "top_reps": 8
+        },
+        {
+          "exercise": "Single Arm Landmine Press (Barbell)",
+          "top_weight_kg": 12.5,
+          "top_reps": 10
+        },
+        {
+          "exercise": "Cable Chest Fly",
+          "top_weight_kg": 10,
+          "top_reps": 15
+        },
+        {
+          "exercise": "Lateral Raise (Dumbbell)",
+          "top_weight_kg": 8,
+          "top_reps": 15
+        },
+        {
+          "exercise": "Bicep Curl (Barbell)",
+          "top_weight_kg": 25,
+          "top_reps": 12
+        }
+      ],
+      "prs": [
+        {
+          "exercise": "Lateral Raise (Dumbbell)",
+          "e1rm": 12.0,
+          "prev": 9.0,
+          "date": "2026-07-21"
+        }
+      ]
+    },
     {
       "id": "02319c66-0a82-49f0-acfe-90986715e7dc",
       "title": "Workout",
@@ -559,43 +626,6 @@
           "date": "2026-07-16"
         }
       ]
-    },
-    {
-      "id": "d6803b28-df74-4464-bca5-26fb85adb803",
-      "title": "Workout",
-      "date": "2026-06-21",
-      "duration_min": 40,
-      "exercises": [
-        "Deadlift (Trap bar)",
-        "Chin Up",
-        "Dumbbell Push Press",
-        "Bulgarian Split Squat",
-        "Bent Over Row (Barbell)",
-        "Farmers Walk"
-      ],
-      "exercise_detail": [
-        {
-          "exercise": "Deadlift (Trap bar)",
-          "top_weight_kg": 92.5,
-          "top_reps": 5
-        },
-        {
-          "exercise": "Dumbbell Push Press",
-          "top_weight_kg": 16,
-          "top_reps": 8
-        },
-        {
-          "exercise": "Bulgarian Split Squat",
-          "top_weight_kg": 16,
-          "top_reps": 10
-        },
-        {
-          "exercise": "Bent Over Row (Barbell)",
-          "top_weight_kg": 55,
-          "top_reps": 10
-        }
-      ],
-      "prs": []
     }
   ],
   "recent_prs": [
@@ -604,6 +634,12 @@
       "e1rm": 35.5,
       "prev": 34.8,
       "date": "2026-07-16"
+    },
+    {
+      "exercise": "Lateral Raise (Dumbbell)",
+      "e1rm": 12.0,
+      "prev": 9.0,
+      "date": "2026-07-21"
     }
   ]
 }
