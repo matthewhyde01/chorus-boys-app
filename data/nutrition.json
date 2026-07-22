@@ -1,41 +1,41 @@
 date,type,value,unit
-2 Jul 2026 at 12:23 pm,Dietary Calories,15709.44198786737,kJ
-3 Jul 2026 at 10:11 am,Dietary Calories,15726.74078927132,kJ
-4 Jul 2026 at 6:21 am,Dietary Calories,17785.88389790339,kJ
-5 Jul 2026 at 10:47 am,Dietary Calories,16370.42371732043,kJ
-6 Jul 2026 at 10:48 am,Dietary Calories,16056.35341275447,kJ
-7 Jul 2026 at 10:41 am,Dietary Calories,16601.19661101652,kJ
-8 Jul 2026 at 10:41 am,Dietary Calories,16651.61372024594,kJ
-9 Jul 2026 at 10:42 am,Dietary Calories,5607.454361478934,kJ
-2 Jul 2026 at 12:23 pm,Protein,191.8929156324448,g
-3 Jul 2026 at 10:11 am,Protein,218.4148038521194,g
-4 Jul 2026 at 6:21 am,Protein,226.6089751232724,g
-5 Jul 2026 at 10:47 am,Protein,208.3445518697392,g
-6 Jul 2026 at 10:48 am,Protein,193.4446816769469,g
-7 Jul 2026 at 10:41 am,Protein,220.8654812864375,g
-8 Jul 2026 at 10:41 am,Protein,221.4982035032679,g
-9 Jul 2026 at 10:42 am,Protein,74.84966666666666,g
-2 Jul 2026 at 12:23 pm,Carbohydrates,337.9767837653625,g
-3 Jul 2026 at 10:11 am,Carbohydrates,390.9560328987761,g
-4 Jul 2026 at 6:21 am,Carbohydrates,424.3054215501043,g
-5 Jul 2026 at 10:47 am,Carbohydrates,366.2538516935665,g
-6 Jul 2026 at 10:48 am,Carbohydrates,438.4917501144787,g
-7 Jul 2026 at 10:41 am,Carbohydrates,405.5126659365345,g
-8 Jul 2026 at 10:41 am,Carbohydrates,405.4595200387782,g
-9 Jul 2026 at 10:42 am,Carbohydrates,173.7328541666666,g
-2 Jul 2026 at 12:23 pm,Fiber,22.69003184559975,g
-3 Jul 2026 at 10:11 am,Fiber,26.20920187262233,g
-4 Jul 2026 at 6:21 am,Fiber,24.01773173291355,g
-5 Jul 2026 at 10:47 am,Fiber,27.71898805006459,g
-6 Jul 2026 at 10:48 am,Fiber,32.99095122161971,g
-7 Jul 2026 at 10:48 am,Fiber,32.3917672876257,g
-8 Jul 2026 at 10:48 am,Fiber,34.88676630192295,g
-9 Jul 2026 at 10:48 am,Fiber,12.37600694444444,g
-2 Jul 2026 at 12:23 pm,Total Fat,183.6881767839907,g
-3 Jul 2026 at 10:11 am,Total Fat,147.3972647830482,g
-4 Jul 2026 at 6:21 am,Total Fat,184.8740596669521,g
-5 Jul 2026 at 10:47 am,Total Fat,166.5220407813226,g
-6 Jul 2026 at 10:48 am,Total Fat,151.4225292097249,g
-7 Jul 2026 at 10:41 am,Total Fat,168.2118068404897,g
-8 Jul 2026 at 10:41 am,Total Fat,170.7238194878144,g
-9 Jul 2026 at 10:42 am,Total Fat,39.16188888888889,g
+15 Jul 2026 at 8:06 am,Dietary Calories,15058.03358850301,kJ
+16 Jul 2026 at 8:06 am,Dietary Calories,16132.72677269904,kJ
+17 Jul 2026 at 8:06 am,Dietary Calories,16583.32680350411,kJ
+18 Jul 2026 at 8:06 am,Dietary Calories,5773.681119862425,kJ
+19 Jul 2026 at 2:10 pm,Dietary Calories,15390.31661691461,kJ
+20 Jul 2026 at 2:10 pm,Dietary Calories,13877.68661224816,kJ
+21 Jul 2026 at 2:10 pm,Dietary Calories,15278.55239110629,kJ
+22 Jul 2026 at 2:10 pm,Dietary Calories,9420.839089463252,kJ
+15 Jul 2026 at 8:06 am,Protein,153.0636736368069,g
+16 Jul 2026 at 8:06 am,Protein,201.2698901960784,g
+17 Jul 2026 at 8:06 am,Protein,202.9680901960784,g
+18 Jul 2026 at 8:06 am,Protein,66.30799999999999,g
+19 Jul 2026 at 2:10 pm,Protein,199.7634858314856,g
+20 Jul 2026 at 2:10 pm,Protein,194.2442444665403,g
+21 Jul 2026 at 2:10 pm,Protein,181.2992001527884,g
+22 Jul 2026 at 2:10 pm,Protein,139.0159901960784,g
+15 Jul 2026 at 8:06 am,Carbohydrates,407.4526925100327,g
+16 Jul 2026 at 8:06 am,Carbohydrates,463.6989952380952,g
+17 Jul 2026 at 8:06 am,Carbohydrates,459.5779809523809,g
+18 Jul 2026 at 8:06 am,Carbohydrates,159.21775,g
+19 Jul 2026 at 2:10 pm,Carbohydrates,418.5469210879511,g
+20 Jul 2026 at 2:10 pm,Carbohydrates,408.5475743346747,g
+21 Jul 2026 at 2:10 pm,Carbohydrates,409.558957343723,g
+22 Jul 2026 at 2:10 pm,Carbohydrates,260.0478666666667,g
+15 Jul 2026 at 8:06 am,Fiber,29.40939156651631,g
+16 Jul 2026 at 8:06 am,Fiber,30.46021587301587,g
+17 Jul 2026 at 8:06 am,Fiber,32.08993015873016,g
+18 Jul 2026 at 8:06 am,Fiber,16.20569444444445,g
+19 Jul 2026 at 2:10 pm,Fiber,29.84042888458208,g
+20 Jul 2026 at 2:10 pm,Fiber,32.10093047611571,g
+21 Jul 2026 at 2:10 pm,Fiber,26.88381673881674,g
+22 Jul 2026 at 2:10 pm,Fiber,21.66894444444444,g
+15 Jul 2026 at 8:06 am,Total Fat,151.6893292502981,g
+16 Jul 2026 at 8:06 am,Total Fat,132.8275947712418,g
+17 Jul 2026 at 8:06 am,Total Fat,146.6999947712418,g
+18 Jul 2026 at 8:06 am,Total Fat,48.83688888888889,g
+19 Jul 2026 at 2:10 pm,Total Fat,129.1421066272478,g
+20 Jul 2026 at 2:10 pm,Total Fat,103.3081096669716,g
+21 Jul 2026 at 2:10 pm,Total Fat,145.012135896783,g
+22 Jul 2026 at 2:10 pm,Total Fat,68.09569477124182,g
