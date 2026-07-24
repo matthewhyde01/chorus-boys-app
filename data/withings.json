@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-23T14:00:56.013799Z",
+  "updated_at": "2026-07-24T02:00:43.349933Z",
   "measures": {
     "status": 0,
     "body": {
@@ -1158,50 +1158,6 @@
             },
             {
               "value": 17439,
-              "type": 6,
-              "unit": -3
-            }
-          ],
-          "modelid": 16,
-          "model": "Body Smart",
-          "comment": null,
-          "timezone": "Australia/Sydney"
-        },
-        {
-          "grpid": 7904914563,
-          "attrib": 0,
-          "date": 1782241463,
-          "created": 1782241518,
-          "modified": 1782241518,
-          "category": 1,
-          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
-          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
-          "measures": [
-            {
-              "value": 79938,
-              "type": 1,
-              "unit": -3,
-              "algo": 218300672,
-              "fm": 128
-            },
-            {
-              "value": 6264,
-              "type": 76,
-              "unit": -2,
-              "algo": 218300672,
-              "fm": 128,
-              "position": 6
-            },
-            {
-              "value": 4371,
-              "type": 77,
-              "unit": -2,
-              "algo": 218300672,
-              "fm": 128,
-              "position": 6
-            },
-            {
-              "value": 17514,
               "type": 6,
               "unit": -3
             }
