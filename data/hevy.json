@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-07-26T02:01:34.722348Z",
-  "sessions_this_week": 4,
+  "updated_at": "2026-07-26T14:01:35.477866Z",
+  "sessions_this_week": 3,
   "muscle_best": {
     "Chest": {
       "e1rm": 76.0,
@@ -529,61 +529,6 @@
       "prs": []
     },
     {
-      "id": "fab7ec43-f5b5-4c6b-80c7-5db8d20ef424",
-      "title": "Workout",
-      "date": "2026-07-19",
-      "duration_min": 60,
-      "exercises": [
-        "Incline Bench Press (Dumbbell)",
-        "Shoulder Press (Dumbbell)",
-        "Seated Cable Row - Bar Wide Grip",
-        "Single Arm Cable Row",
-        "Face Pull",
-        "Hammer Curl (Dumbbell)",
-        "Triceps Rope Pushdown",
-        "Plank",
-        "Side Plank"
-      ],
-      "exercise_detail": [
-        {
-          "exercise": "Incline Bench Press (Dumbbell)",
-          "top_weight_kg": 26,
-          "top_reps": 10
-        },
-        {
-          "exercise": "Shoulder Press (Dumbbell)",
-          "top_weight_kg": 16,
-          "top_reps": 10
-        },
-        {
-          "exercise": "Seated Cable Row - Bar Wide Grip",
-          "top_weight_kg": 60,
-          "top_reps": 12
-        },
-        {
-          "exercise": "Single Arm Cable Row",
-          "top_weight_kg": 20,
-          "top_reps": 12
-        },
-        {
-          "exercise": "Face Pull",
-          "top_weight_kg": 20,
-          "top_reps": 15
-        },
-        {
-          "exercise": "Hammer Curl (Dumbbell)",
-          "top_weight_kg": 14,
-          "top_reps": 12
-        },
-        {
-          "exercise": "Triceps Rope Pushdown",
-          "top_weight_kg": 20,
-          "top_reps": 15
-        }
-      ],
-      "prs": []
-    },
-    {
       "id": "d6803b28-df74-4464-bca5-26fb85adb803",
       "title": "Workout",
       "date": "2026-06-21",
@@ -616,6 +561,61 @@
           "exercise": "Bent Over Row (Barbell)",
           "top_weight_kg": 55,
           "top_reps": 10
+        }
+      ],
+      "prs": []
+    },
+    {
+      "id": "e5e29c41-82c9-440a-b147-d7b7abc77f50",
+      "title": "Workout",
+      "date": "2026-06-20",
+      "duration_min": 55,
+      "exercises": [
+        "Incline Bench Press (Dumbbell)",
+        "Shoulder Press (Dumbbell)",
+        "Seated Cable Row - Bar Wide Grip",
+        "Single Arm Cable Row",
+        "Face Pull",
+        "Hammer Curl (Dumbbell)",
+        "Triceps Rope Pushdown",
+        "Plank",
+        "Side Plank"
+      ],
+      "exercise_detail": [
+        {
+          "exercise": "Incline Bench Press (Dumbbell)",
+          "top_weight_kg": 24,
+          "top_reps": 10
+        },
+        {
+          "exercise": "Shoulder Press (Dumbbell)",
+          "top_weight_kg": 14,
+          "top_reps": 10
+        },
+        {
+          "exercise": "Seated Cable Row - Bar Wide Grip",
+          "top_weight_kg": 55,
+          "top_reps": 12
+        },
+        {
+          "exercise": "Single Arm Cable Row",
+          "top_weight_kg": 20,
+          "top_reps": 12
+        },
+        {
+          "exercise": "Face Pull",
+          "top_weight_kg": 20,
+          "top_reps": 15
+        },
+        {
+          "exercise": "Hammer Curl (Dumbbell)",
+          "top_weight_kg": 12,
+          "top_reps": 12
+        },
+        {
+          "exercise": "Triceps Rope Pushdown",
+          "top_weight_kg": 20,
+          "top_reps": 15
         }
       ],
       "prs": []
