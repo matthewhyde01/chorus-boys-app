@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-07-27T02:01:22.104176Z",
+  "updated_at": "2026-07-27T14:02:13.982807Z",
   "sessions_this_week": 3,
   "muscle_best": {
     "Chest": {
-      "e1rm": 76.0,
-      "exercise": "Incline Bench Press (Barbell)",
-      "date": "2026-06-17"
+      "e1rm": 88.7,
+      "exercise": "Bench Press (Barbell)",
+      "date": "2026-07-27"
     },
     "Back": {
       "e1rm": 84.0,
@@ -18,9 +18,9 @@
       "date": "2026-07-06"
     },
     "Shoulders": {
-      "e1rm": 12.0,
-      "exercise": "Lateral Raise (Dumbbell)",
-      "date": "2026-07-21"
+      "e1rm": 40.0,
+      "exercise": "Overhead Press (Barbell)",
+      "date": "2026-07-27"
     },
     "Quad": {
       "e1rm": 168.0,
@@ -82,6 +82,10 @@
       {
         "date": "2026-07-21",
         "e1rm": 69.7
+      },
+      {
+        "date": "2026-07-27",
+        "e1rm": 88.7
       }
     ],
     "Back": [
@@ -132,6 +136,10 @@
       {
         "date": "2026-07-24",
         "e1rm": 84.0
+      },
+      {
+        "date": "2026-07-27",
+        "e1rm": 79.3
       }
     ],
     "Biceps": [
@@ -182,6 +190,10 @@
       {
         "date": "2026-07-21",
         "e1rm": 35.0
+      },
+      {
+        "date": "2026-07-27",
+        "e1rm": 17.5
       }
     ],
     "Shoulders": [
@@ -208,6 +220,10 @@
       {
         "date": "2026-07-21",
         "e1rm": 12.0
+      },
+      {
+        "date": "2026-07-27",
+        "e1rm": 40.0
       }
     ],
     "Quad": [
@@ -324,6 +340,10 @@
     {
       "week_of": "2026-07-20",
       "volume_kg": 17940
+    },
+    {
+      "week_of": "2026-07-27",
+      "volume_kg": 5710
     }
   ],
   "weekly_volume_by_muscle": [
@@ -396,9 +416,60 @@
       "Legs": 18775,
       "Core": 0,
       "total_kg": 38657
+    },
+    {
+      "week_of": "2026-07-27",
+      "Chest": 1440,
+      "Back": 4500,
+      "Shoulders": 1570,
+      "Arms": 4565,
+      "Legs": 0,
+      "Core": 425,
+      "total_kg": 12500
     }
   ],
   "recent_workouts": [
+    {
+      "id": "16f9b458-1efb-4d62-9dc2-db2b87deb90b",
+      "title": "Workout",
+      "date": "2026-07-27",
+      "duration_min": 28,
+      "exercises": [
+        "Bench Press (Barbell)",
+        "Bent Over Row (Barbell)",
+        "Overhead Press (Barbell)",
+        "Lat Pulldown (Cable)",
+        "Bicep Curl (Dumbbell)"
+      ],
+      "exercise_detail": [
+        {
+          "exercise": "Bench Press (Barbell)",
+          "top_weight_kg": 70,
+          "top_reps": 8
+        },
+        {
+          "exercise": "Bent Over Row (Barbell)",
+          "top_weight_kg": 60,
+          "top_reps": 8
+        },
+        {
+          "exercise": "Overhead Press (Barbell)",
+          "top_weight_kg": 30,
+          "top_reps": 10
+        },
+        {
+          "exercise": "Lat Pulldown (Cable)",
+          "top_weight_kg": 59.5,
+          "top_reps": 10
+        },
+        {
+          "exercise": "Bicep Curl (Dumbbell)",
+          "top_weight_kg": 12.5,
+          "top_reps": 12
+        }
+      ],
+      "prs": []
+    },
     {
       "id": "4cabd5b4-d2d2-43c8-8136-642d056362ed",
       "title": "Workout",
@@ -490,43 +561,6 @@
           "date": "2026-07-21"
         }
       ]
-    },
-    {
-      "id": "02319c66-0a82-49f0-acfe-90986715e7dc",
-      "title": "Workout",
-      "date": "2026-07-20",
-      "duration_min": 39,
-      "exercises": [
-        "Deadlift (Trap bar)",
-        "Chin Up",
-        "Dumbbell Push Press",
-        "Bulgarian Split Squat (Dumbbell)",
-        "Bent Over Row (Barbell)",
-        "Farmers Walk"
-      ],
-      "exercise_detail": [
-        {
-          "exercise": "Deadlift (Trap bar)",
-          "top_weight_kg": 90,
-          "top_reps": 5
-        },
-        {
-          "exercise": "Dumbbell Push Press",
-          "top_weight_kg": 17.5,
-          "top_reps": 8
-        },
-        {
-          "exercise": "Bulgarian Split Squat (Dumbbell)",
-          "top_weight_kg": 15,
-          "top_reps": 10
-        },
-        {
-          "exercise": "Bent Over Row (Barbell)",
-          "top_weight_kg": 55,
-          "top_reps": 10
-        }
-      ],
-      "prs": []
     },
     {
       "id": "d6803b28-df74-4464-bca5-26fb85adb803",
