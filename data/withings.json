@@ -1,11 +1,105 @@
 {
-  "updated_at": "2026-07-28T14:00:57.929436Z",
+  "updated_at": "2026-07-29T02:00:41.717696Z",
   "measures": {
     "status": 0,
     "body": {
-      "updatetime": 1785092877,
+      "updatetime": 1785278107,
       "timezone": "Australia/Sydney",
       "measuregrps": [
+        {
+          "grpid": 8049281293,
+          "attrib": 0,
+          "date": 1785278020,
+          "created": 1785278107,
+          "modified": 1785278107,
+          "category": 1,
+          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "measures": [
+            {
+              "value": 81070007,
+              "type": 1,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9
+            },
+            {
+              "value": 63239994,
+              "type": 76,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9,
+              "position": 6
+            },
+            {
+              "value": 44450000,
+              "type": 77,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9,
+              "position": 6
+            },
+            {
+              "value": 17873,
+              "type": 6,
+              "unit": -3
+            }
+          ],
+          "modelid": 16,
+          "model": "Body Smart",
+          "comment": null,
+          "timezone": "Australia/Sydney"
+        },
+        {
+          "grpid": 8049281294,
+          "attrib": 0,
+          "date": 1785178930,
+          "created": 1785278107,
+          "modified": 1785278107,
+          "category": 1,
+          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
+          "measures": [
+            {
+              "value": 81959007,
+              "type": 1,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9
+            },
+            {
+              "value": 63459999,
+              "type": 76,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9,
+              "position": 6
+            },
+            {
+              "value": 44360000,
+              "type": 77,
+              "unit": -6,
+              "algo": 0,
+              "fm": 128,
+              "apppfmid": 9,
+              "position": 6
+            },
+            {
+              "value": 18485,
+              "type": 6,
+              "unit": -3
+            }
+          ],
+          "modelid": 16,
+          "model": "Body Smart",
+          "comment": null,
+          "timezone": "Australia/Sydney"
+        },
         {
           "grpid": 8040251724,
           "attrib": 0,
@@ -1167,50 +1261,6 @@
             },
             {
               "value": 17811,
-              "type": 6,
-              "unit": -3
-            }
-          ],
-          "modelid": 16,
-          "model": "Body Smart",
-          "comment": null,
-          "timezone": "Australia/Sydney"
-        },
-        {
-          "grpid": 7924960253,
-          "attrib": 0,
-          "date": 1782673276,
-          "created": 1782673322,
-          "modified": 1782673322,
-          "category": 1,
-          "deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
-          "hash_deviceid": "8d7ae9c2a18bea13599fab701c51f9180b930dcc",
-          "measures": [
-            {
-              "value": 80340,
-              "type": 1,
-              "unit": -3,
-              "algo": 218300672,
-              "fm": 128
-            },
-            {
-              "value": 6273,
-              "type": 76,
-              "unit": -2,
-              "algo": 218300672,
-              "fm": 128,
-              "position": 6
-            },
-            {
-              "value": 4340,
-              "type": 77,
-              "unit": -2,
-              "algo": 218300672,
-              "fm": 128,
-              "position": 6
-            },
-            {
-              "value": 17812,
               "type": 6,
               "unit": -3
             }

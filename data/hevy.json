@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-28T14:01:35.028895Z",
+  "updated_at": "2026-07-29T02:01:14.182124Z",
   "sessions_this_week": 2,
   "muscle_best": {
     "Chest": {
@@ -638,12 +638,5 @@
       "prs": []
     }
   ],
-  "recent_prs": [
-    {
-      "exercise": "Lateral Raise (Dumbbell)",
-      "e1rm": 12.0,
-      "prev": 9.0,
-      "date": "2026-07-21"
-    }
-  ]
+  "recent_prs": []
 }
