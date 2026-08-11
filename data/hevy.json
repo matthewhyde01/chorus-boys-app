@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-10T14:01:40.328061Z",
+  "updated_at": "2026-08-11T02:01:58.115421Z",
   "sessions_this_week": 3,
   "muscle_best": {
     "Chest": {
@@ -794,12 +794,6 @@
     }
   ],
   "recent_prs": [
-    {
-      "exercise": "Overhead Press (Barbell)",
-      "e1rm": 46.7,
-      "prev": 40.0,
-      "date": "2026-08-03"
-    },
     {
       "exercise": "Seated Leg Curl (Machine)",
       "e1rm": 66.5,
