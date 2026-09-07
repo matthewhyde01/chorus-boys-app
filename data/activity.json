@@ -1,33 +1,33 @@
 date,type,value,unit
-25 Aug 2026 at 12:10 am,Heart Rate Variability,58.83636989251483,ms
-26 Aug 2026 at 12:10 am,Heart Rate Variability,49.37796418306154,ms
-27 Aug 2026 at 12:10 am,Heart Rate Variability,60.12878432561885,ms
-28 Aug 2026 at 12:10 am,Heart Rate Variability,56.96902969258326,ms
-29 Aug 2026 at 12:10 am,Heart Rate Variability,47.48558327813404,ms
-30 Aug 2026 at 12:10 am,Heart Rate Variability,50.86012738832289,ms
 31 Aug 2026 at 12:10 am,Heart Rate Variability,51.05937840306288,ms
-1 Sep 2026 at 5:20 am,Heart Rate Variability,40.43598515650568,ms
-25 Aug 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-26 Aug 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-27 Aug 2026 at 1:22 pm,VO2 Max,56.3,mL/min·kg
-28 Aug 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-29 Aug 2026 at 7:50 am,VO2 Max,56.17,mL/min·kg
-30 Aug 2026 at 7:13 am,VO2 Max,56.6,mL/min·kg
+1 Sep 2026 at 5:20 am,Heart Rate Variability,45.51245098650799,ms
+2 Sep 2026 at 12:10 am,Heart Rate Variability,46.6296939778943,ms
+3 Sep 2026 at 12:10 am,Heart Rate Variability,58.08742179788702,ms
+4 Sep 2026 at 12:11 am,Heart Rate Variability,58.62895740962541,ms
+5 Sep 2026 at 6:19 am,Heart Rate Variability,49.7681113759086,ms
+6 Sep 2026 at 6:15 am,Heart Rate Variability,69.41530489549339,ms
+7 Sep 2026 at 12:10 am,Heart Rate Variability,63.58738680339833,ms
 31 Aug 2026 at 12:00 am,VO2 Max,0,mL/min·kg
 1 Sep 2026 at 5:55 pm,VO2 Max,56.56,mL/min·kg
-25 Aug 2026 at 12:08 am,Resting Calories,8544.974832000007,kJ
-26 Aug 2026 at 12:10 am,Resting Calories,8637.968415999563,kJ
-27 Aug 2026 at 12:14 am,Resting Calories,8497.243759999626,kJ
-28 Aug 2026 at 12:02 am,Resting Calories,8374.644191999998,kJ
-29 Aug 2026 at 12:27 am,Resting Calories,7924.822352000004,kJ
-30 Aug 2026 at 12:00 am,Resting Calories,8552.171311999922,kJ
+2 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+3 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+4 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+5 Sep 2026 at 7:54 am,VO2 Max,55.82,mL/min·kg
+6 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+7 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
 31 Aug 2026 at 12:09 am,Resting Calories,8011.226135999655,kJ
-1 Sep 2026 at 12:27 am,Resting Calories,6398.674879999597,kJ
-25 Aug 2026 at 12:08 am,Active Calories,4503.373087999996,kJ
-26 Aug 2026 at 12:10 am,Active Calories,5918.648744000106,kJ
-27 Aug 2026 at 12:14 am,Active Calories,3434.281592000078,kJ
-28 Aug 2026 at 12:23 am,Active Calories,2342.119519999997,kJ
-29 Aug 2026 at 12:27 am,Active Calories,4091.74698399999,kJ
-30 Aug 2026 at 12:00 am,Active Calories,7140.857904000017,kJ
+1 Sep 2026 at 12:27 am,Resting Calories,8280.638079999597,kJ
+2 Sep 2026 at 12:02 am,Resting Calories,8659.403047999609,kJ
+3 Sep 2026 at 12:01 am,Resting Calories,8605.006864000004,kJ
+4 Sep 2026 at 12:06 am,Resting Calories,8363.246976000002,kJ
+5 Sep 2026 at 12:07 am,Resting Calories,8402.471975999999,kJ
+6 Sep 2026 at 12:36 am,Resting Calories,8219.204408000005,kJ
+7 Sep 2026 at 12:14 am,Resting Calories,6892.261359999501,kJ
 31 Aug 2026 at 12:09 am,Active Calories,1876.444504000029,kJ
-1 Sep 2026 at 5:04 am,Active Calories,6051.666472000064,kJ
+1 Sep 2026 at 5:04 am,Active Calories,6110.798944000064,kJ
+2 Sep 2026 at 12:25 am,Active Calories,6395.545248000071,kJ
+3 Sep 2026 at 12:07 am,Active Calories,4923.237488000001,kJ
+4 Sep 2026 at 12:03 am,Active Calories,2805.451496000003,kJ
+5 Sep 2026 at 6:14 am,Active Calories,4689.046455999989,kJ
+6 Sep 2026 at 6:13 am,Active Calories,4350.56504000008,kJ
+7 Sep 2026 at 12:00 am,Active Calories,6412.226856000108,kJ
