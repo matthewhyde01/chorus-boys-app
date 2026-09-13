@@ -1,33 +1,33 @@
 date,type,value,unit
-1 Sep 2026 at 5:20 am,Heart Rate Variability,45.51245098650799,ms
-2 Sep 2026 at 12:10 am,Heart Rate Variability,46.6296939778943,ms
-3 Sep 2026 at 12:10 am,Heart Rate Variability,58.08742179788702,ms
-4 Sep 2026 at 12:11 am,Heart Rate Variability,58.62895740962541,ms
-5 Sep 2026 at 6:19 am,Heart Rate Variability,49.7681113759086,ms
 6 Sep 2026 at 6:15 am,Heart Rate Variability,69.41530489549339,ms
 7 Sep 2026 at 12:10 am,Heart Rate Variability,60.01137237195168,ms
-8 Sep 2026 at 12:10 am,Heart Rate Variability,59.20361116205144,ms
-1 Sep 2026 at 5:55 pm,VO2 Max,56.56,mL/min·kg
-2 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-3 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-4 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
-5 Sep 2026 at 7:54 am,VO2 Max,55.82,mL/min·kg
+8 Sep 2026 at 12:10 am,Heart Rate Variability,54.68476394932888,ms
+9 Sep 2026 at 12:10 am,Heart Rate Variability,61.80534407733407,ms
+10 Sep 2026 at 5:21 am,Heart Rate Variability,60.67259546157158,ms
+11 Sep 2026 at 12:10 am,Heart Rate Variability,55.08794615711372,ms
+12 Sep 2026 at 12:10 am,Heart Rate Variability,73.8913022353758,ms
+13 Sep 2026 at 12:10 am,Heart Rate Variability,82.60047603829152,ms
 6 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
 7 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
 8 Sep 2026 at 5:30 pm,VO2 Max,55.81,mL/min·kg
-1 Sep 2026 at 12:27 am,Resting Calories,8280.638079999597,kJ
-2 Sep 2026 at 12:02 am,Resting Calories,8659.403047999609,kJ
-3 Sep 2026 at 12:01 am,Resting Calories,8605.006864000004,kJ
-4 Sep 2026 at 12:06 am,Resting Calories,8363.246976000002,kJ
-5 Sep 2026 at 12:07 am,Resting Calories,8402.471975999999,kJ
+9 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+10 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+11 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
+12 Sep 2026 at 7:56 am,VO2 Max,55.54,mL/min·kg
+13 Sep 2026 at 12:00 am,VO2 Max,0,mL/min·kg
 6 Sep 2026 at 12:36 am,Resting Calories,8219.204408000005,kJ
 7 Sep 2026 at 12:14 am,Resting Calories,8671.059671999499,kJ
-8 Sep 2026 at 12:02 am,Resting Calories,7129.912559999607,kJ
-1 Sep 2026 at 5:04 am,Active Calories,6110.798944000064,kJ
-2 Sep 2026 at 12:25 am,Active Calories,6395.545248000071,kJ
-3 Sep 2026 at 12:07 am,Active Calories,4923.237488000001,kJ
-4 Sep 2026 at 12:03 am,Active Calories,2805.451496000003,kJ
-5 Sep 2026 at 6:14 am,Active Calories,4689.046455999989,kJ
+8 Sep 2026 at 12:02 am,Resting Calories,8696.272455999606,kJ
+9 Sep 2026 at 12:31 am,Resting Calories,8532.14250399957,kJ
+10 Sep 2026 at 12:28 am,Resting Calories,8529.075631999562,kJ
+11 Sep 2026 at 12:19 am,Resting Calories,8374.970543999998,kJ
+12 Sep 2026 at 12:14 am,Resting Calories,8032.058272000001,kJ
+13 Sep 2026 at 12:07 am,Resting Calories,4119.068504000012,kJ
 6 Sep 2026 at 6:13 am,Active Calories,4350.56504000008,kJ
 7 Sep 2026 at 12:00 am,Active Calories,6475.212792000109,kJ
-8 Sep 2026 at 12:02 am,Active Calories,5618.241727999995,kJ
+8 Sep 2026 at 12:02 am,Active Calories,5657.562959999995,kJ
+9 Sep 2026 at 12:31 am,Active Calories,5434.346560000064,kJ
+10 Sep 2026 at 4:59 am,Active Calories,5897.532096000136,kJ
+11 Sep 2026 at 12:19 am,Active Calories,2739.691568000002,kJ
+12 Sep 2026 at 12:14 am,Active Calories,4655.930095999996,kJ
+13 Sep 2026 at 12:05 am,Active Calories,2854.37082400001,kJ
